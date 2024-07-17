@@ -2,7 +2,7 @@ package papucode;
 
 public class ClaseObjeto {
     public static void main(String[] args) {
-
+//      Un cambio que quiero commitear a github
         Casa casa1 = null;
         System.out.println(casa1.colorDeLaClase);
         casa1.colorDeLaClase="Gris";
