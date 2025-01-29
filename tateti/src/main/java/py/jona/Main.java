@@ -3,8 +3,6 @@ package py.jona;
 import java.util.Scanner;
 
 public class Main{
-    static final String RESET = "\033[0m";
-
     // Colors
     static final String RED = "\033[31m";
     static final String BLUE = "\033[34m";
@@ -20,9 +18,8 @@ public class Main{
 
     //Clean
     static final String CLEAN_SCREEN = "\033[2J";
-    static final String CLEAN_LINE = "\033[2K";
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // Reset all attributes
 
 
@@ -36,40 +33,46 @@ public class Main{
         printBoard(board);
 
         //play
+        String character = "X";
         while (checkWin(board) == null) {
             System.out.println("Type the row: ");
             int i = scanner.nextInt();
             System.out.println("Type the column: ");
             int j = scanner.nextInt();
-            board[i][j] = "X";
-            String itsVoid = board[i][j];
-            if (!validMove(i, j, itsVoid)) {
+            if (itsInvalidMove(i, j) || itsNotVoid(board, i, j)) {   //if its true type the row and column again
                 continue;
             }
-            printBoard(board);
+            if (board[i][j].equals("O")){
+                printBoard(board);
+            }
+            board[i][j] = character;
+            if (board[i][j].equals("X")){
+                printBoard(board);
+            }
+
             if (checkWin(board) != null) {
                 continue;
             }
+
             System.out.println("Type the row: ");
             i = scanner.nextInt();
             System.out.println("Type the column: ");
             j = scanner.nextInt();
-            board[i][j] = "O";
-            itsVoid = board[i][j];
-            if (!validMove(i, j, itsVoid)) {
+            if (itsInvalidMove(i, j) || itsNotVoid(board, i, j)) {   //if its true type the row and column again
+                board[i][j] = "O";
                 continue;
             }
-            printBoard(board);
+            if (board[i][j].equals("O")){
+                printBoard(board);
+            }
+            board[i][j] = "X";
+            if (board[i][j].equals("X")){
+                printBoard(board);
+            }
         }
         System.out.println("Finish");
     }
 
-    static void prettyPrintln(String str, String ... properties) {
-        prettyPrint(str+"\n", properties);
-    }
-    static void prettyPrint(String str, String ... properties) {
-        System.out.print(String.join("", properties) + str + DEFAULT);
-    }
     static String stylePiece(String piece) {
         return (piece.equals(" ") ? " " : piece.equals("X") ? RED+BOLD+piece : BLUE+BOLD+piece) + DEFAULT;
     }
@@ -98,10 +101,15 @@ public class Main{
         }
     }
 
-    public static boolean validMove (int i, int j, String board) {
-        if (i > 3) return false;
-        if (j > 3) return false;
-        return !board.equals(" ");
+    public static boolean itsNotVoid(String[][] board, int i, int j) {
+        if (board[i][j].equals(" ")) return false;
+        return true;
+    }
+
+    public static boolean itsInvalidMove(int i, int j) {
+        if (i > 3) return true;
+        if (j > 3) return true;
+        return false;
     }
 
     public static String checkWin(String[][] player) {
