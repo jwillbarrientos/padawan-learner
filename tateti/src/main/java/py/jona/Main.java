@@ -39,35 +39,20 @@ public class Main{
             int i = scanner.nextInt();
             System.out.println("Type the column: ");
             int j = scanner.nextInt();
-            if (itsInvalidMove(i, j) || itsNotVoid(board, i, j)) {   //if its true type the row and column again
+            if(itsInvalidMove(i, j) || itsNotVoid(board, i, j)) {   //if its true type the row and column again
                 continue;
             }
-            if (board[i][j].equals("O")){
-                printBoard(board);
-            }
+
             board[i][j] = character;
-            if (board[i][j].equals("X")){
+            if(board[i][j].equals("X")) {
                 printBoard(board);
-            }
-
-            if (checkWin(board) != null) {
+                character = "O";
                 continue;
             }
 
-            System.out.println("Type the row: ");
-            i = scanner.nextInt();
-            System.out.println("Type the column: ");
-            j = scanner.nextInt();
-            if (itsInvalidMove(i, j) || itsNotVoid(board, i, j)) {   //if its true type the row and column again
-                board[i][j] = "O";
-                continue;
-            }
-            if (board[i][j].equals("O")){
+            if(board[i][j].equals("O")) {
                 printBoard(board);
-            }
-            board[i][j] = "X";
-            if (board[i][j].equals("X")){
-                printBoard(board);
+                character = "X";
             }
         }
         System.out.println("Finish");
