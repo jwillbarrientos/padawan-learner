@@ -2,6 +2,10 @@ package py.jona;
 
 import java.util.Scanner;
 
+/**
+ * Para ejecutar:
+ * mvn -DskipTests clean package & java -jar target\tateti-1.0-SNAPSHOT.jar
+ */
 public class Main{
     //Reset all attributes
     static final String RESET = "\033[0m";
@@ -23,8 +27,38 @@ public class Main{
     static final String CLEAN_SCREEN = "\033[2J";
     static final String CLEAN_LINE = "\033[J";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // Reset all attributes
+
+        TerminalKeyReader keyReader = new TerminalKeyReader();
+
+        System.out.println("Start typing (press ESC to exit):");
+
+        while (true) {
+            int key = keyReader.readKey();
+            if (key == KeyType.ESCAPE) {
+                System.out.println("ESC");
+                break;
+            }
+
+            switch (key) {
+                case KeyType.UP_ARROW:
+                    System.out.println("^"); continue;
+                case KeyType.DOWN_ARROW:
+                    System.out.println("D");continue;
+                case KeyType.LEFT_ARROW:
+                    System.out.println("<-");continue;
+                case KeyType.RIGHT_ARROW:
+                    System.out.println("->");continue;
+                case KeyType.ENTER:
+                    System.out.println("Enter");continue;
+                case KeyType.OTROS:
+                    System.out.println("Other");
+            }
+        }
+
+        System.exit(0);
+
 
 
         System.out.println(CLEAN_SCREEN + CURSOR_HOME);
