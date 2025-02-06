@@ -1,10 +1,11 @@
 package py.jona;
 
-import java.util.Scanner;
+import static py.jona.KeyType.*;
 
 /**
  * Para ejecutar:
  * mvn -DskipTests clean package & java -jar target\tateti-1.0-SNAPSHOT.jar
+ * mvn "-DskipTests" clean package ; java "-jar" target\tateti-1.0-SNAPSHOT.jar
  */
 public class Main{
     //Reset all attributes
@@ -19,82 +20,92 @@ public class Main{
     static final String BOLD = "\033[1m";
     static final String BLINK = "\033[5m";
 
-    // Cursor control
-    static final String CURSOR_HOME = "\033[H";
-    static final String CURSOR_END = "\033[26;0H";
-
-    //Clean
+    // Clean attributes
     static final String CLEAN_SCREEN = "\033[2J";
-    static final String CLEAN_LINE = "\033[J";
+    static String character = "X";
+
+    static TerminalHelper thelper;
 
     public static void main(String[] args) throws Exception {
-        // Reset all attributes
+        thelper = new TerminalHelper();
 
-        TerminalKeyReader keyReader = new TerminalKeyReader();
+        thelper.cls();
+        thelper.setCursorBlock();
 
-        System.out.println("Start typing (press ESC to exit):");
-
-        while (true) {
-            int key = keyReader.readKey();
-            if (key == KeyType.ESCAPE) {
-                System.out.println("ESC");
-                break;
-            }
-
-            switch (key) {
-                case KeyType.UP_ARROW:
-                    System.out.println("^"); continue;
-                case KeyType.DOWN_ARROW:
-                    System.out.println("D");continue;
-                case KeyType.LEFT_ARROW:
-                    System.out.println("<-");continue;
-                case KeyType.RIGHT_ARROW:
-                    System.out.println("->");continue;
-                case KeyType.ENTER:
-                    System.out.println("Enter");continue;
-                case KeyType.OTROS:
-                    System.out.println("Other");
-            }
-        }
-
-        System.exit(0);
-
-
-
-        System.out.println(CLEAN_SCREEN + CURSOR_HOME);
-        Scanner scanner = new Scanner(System.in);
-        String [][] board = new String[][] {
-            {" ", " ", " "},
-            {" ", " ", " "},
-            {" ", " ", " "}
+        String[][] board = new String[][]{
+                {" ", " ", " "},
+                {" ", " ", " "},
+                {" ", " ", " "}
         };
+
         printBoard(board);
-
-        //play
-        String character = "X";
-        while (checkWin(board) == null) {
-            System.out.println("Type the row: ");
-            int i = scanner.nextInt();
-            System.out.println("Type the column: ");
-            int j = scanner.nextInt();
-            if(invalidMove(board, i, j)) {   //if its true type the row and column again
-                continue;
+        thelper.moveCursor(1,2);
+        int i = 0;
+        int j = 0;
+        int row = 1;
+        int column = 2;
+        do {
+            while (true) {
+                int key = thelper.readKey();
+                if (key == UP_ARROW) {
+                    if (row == 1) {
+                        continue;
+                    } else {
+                        j--;
+                        thelper.moveCursor(row - 2, column);
+                        row -= 2;
+                        continue;
+                    }
+                }
+                if (key == DOWN_ARROW) {
+                    if (row == 5) {
+                        continue;
+                    } else {
+                        j++;
+                        thelper.moveCursor(row + 2, column);
+                        row += 2;
+                        continue;
+                    }
+                }
+                if (key == RIGHT_ARROW) {
+                    if (column == 14) {
+                        continue;
+                    } else {
+                        i++;
+                        thelper.moveCursor(row, column + 6);
+                        column += 6;
+                        continue;
+                    }
+                }
+                if (key == LEFT_ARROW) {
+                    if (column == 0) {
+                        continue;
+                    } else {
+                        i--;
+                        thelper.moveCursor(row, column - 6);
+                        column -= 6;
+                        continue;
+                    }
+                }
+                if (key == ENTER) {
+                    if (invalidMove(board, i, j)) continue;
+                    board[i][j] = character;
+                    printBoard(board);
+                    if (character.equals("X")) {
+                        character = "O";
+                    } else {
+                        character = "X";
+                    }
+                    thelper.moveCursor(row,column);
+                    break;
+                }
             }
-
-            board[i][j] = character;
-            if(board[i][j].equals("X")) {
-                printBoard(board);
-                character = "O";
-                continue;
-            }
-
-            if(board[i][j].equals("O")) {
-                printBoard(board);
-                character = "X";
-            }
+        } while (checkWin(board) == null);
+        thelper.moveCursor(8, 5);
+        String whoWon = checkWin(board);
+        if (whoWon != null) {
+            System.out.println(GREEN + BLINK + "Win: " + DEFAULT + stylePiece(whoWon) + RESET);
         }
-        System.exit(0);
-        System.out.println(CURSOR_END + CLEAN_LINE);
     }
 
     static String stylePiece(String piece) {
@@ -102,21 +113,7 @@ public class Main{
     }
 
     public static void printBoard(String[][] board) {
-        System.out.println(DEFAULT + CLEAN_SCREEN + CURSOR_HOME);
-        System.out.println("    Positions    ");
-        System.out.println();
-        System.out.println("     │     │     ");
-        System.out.println(" 0.0 │ 1.0 │ 2.0 ");
-        System.out.println("─────┼─────┼─────");
-        System.out.println(" 0.1 │ 1.1 │ 2.1");
-        System.out.println("─────┼─────┼─────");
-        System.out.println(" 0.2 │ 1.2 │ 2.2 ");
-        System.out.println("     │     │     ");
-        System.out.println();
-        System.out.println("─────────────────");
-        System.out.println();
-        System.out.println("      Game       ");
-        System.out.println();
+        thelper.cls();
         System.out.println("     │     │     ");
         System.out.println("  " + stylePiece(board[0][0]) + "  │  " + stylePiece(board[1][0]) + "  │  " + stylePiece(board[2][0]));
         System.out.println("─────┼─────┼─────");
@@ -124,29 +121,21 @@ public class Main{
         System.out.println("─────┼─────┼─────");
         System.out.println("  " + stylePiece(board[0][2]) + "  │  " + stylePiece(board[1][2]) + "  │  " + stylePiece(board[2][2]));
         System.out.println("     │     │     " );
-
-        String whoWon = checkWin(board);
-        if (whoWon != null) {
-            System.out.println();
-            System.out.println(GREEN + BLINK + "     Win: " + DEFAULT + stylePiece(whoWon) + RESET);
-        }
     }
 
     public static boolean invalidMove(String[][] board, int i, int j) {
-        if (i >= 3 || i < 0) return true;
-        if (j >= 3 || j < 0) return true;
         return !board[i][j].equals(" ");
     }
 
     public static String checkWin(String[][] player) {
         /*
-                 |     |
-             0.0 | 1.0 | 2.0
-            -----|-----|-----
-             0.1 | 1.1 | 2.1"
-            -----|-----|-----
-             0.2 | 1.2 | 2.2
-                 |     |
+                  │     │
+              0.0 │ 1.0 │ 2.0
+             ─────┼─────┼─────
+              0.1 │ 1.1 │ 2.1"
+             ─────┼─────┼─────
+              0.2 │ 1.2 │ 2.2
+                  │     │
          */
         //horizontal
         if ((!player[0][0].equals(" ")) && (player[0][0].equals(player[1][0])) && (player[0][0].equals(player[2][0]))) return player[0][0];

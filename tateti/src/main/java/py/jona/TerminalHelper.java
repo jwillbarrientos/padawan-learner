@@ -2,22 +2,52 @@ package py.jona;
 
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.InfoCmp;
 import org.jline.utils.NonBlockingReader;
 
 import java.io.IOException;
 
-public class TerminalKeyReader implements AutoCloseable {
+public class TerminalHelper implements AutoCloseable {
     private final Terminal terminal;
     private final NonBlockingReader reader;
 
     // Constructor sets up the terminal in raw mode
-    public TerminalKeyReader() throws IOException {
+    public TerminalHelper() throws IOException {
         this.terminal = TerminalBuilder.builder()
                 .jna(true)
                 .system(true)
                 .build();
+//        terminal.
         this.terminal.enterRawMode();
         reader = terminal.reader();
+
+       // Runtime.getRuntime().addShutdownHook(new Thread(()-> {
+       //     try {
+       //         System.out.println("exiting...");
+       //         System.out.flush();
+       //         Thread.sleep(1000);
+       //         System.out.println("\033[0 q\033[H\033[2J"); // restore cursor // cursor home // clean screen
+       //         System.out.flush();
+       //         reader.close();
+       //         terminal.close();
+       //     } catch (Exception e) {
+       //         e.printStackTrace();
+       //     }
+       // }));
+    }
+
+    public void moveCursor(int row, int column) {
+        terminal.puts(InfoCmp.Capability.cursor_address, row, column);
+        terminal.flush();
+    }
+    public void cls() {
+        terminal.puts(InfoCmp.Capability.clear_screen);
+        terminal.flush();
+    }
+
+    public void setCursorBlock() {
+        terminal.writer().print("\033[2 q");
+        terminal.writer().flush();
     }
 
     // Main method to read a key and return the corresponding KeyType
