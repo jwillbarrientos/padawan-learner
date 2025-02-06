@@ -46,7 +46,7 @@ public class TerminalHelper implements AutoCloseable {
     }
 
     public void setCursorBlock() {
-        terminal.writer().print("\033[2 q");
+        terminal.writer().print("\033[1 q");
         terminal.writer().flush();
     }
 
