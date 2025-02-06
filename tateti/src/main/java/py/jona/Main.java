@@ -11,9 +11,10 @@ public class Main{
     //Reset all attributes
     static final String RESET = "\033[0m";
     // Colors
-    static final String RED = "\033[31m";
-    static final String BLUE = "\033[34m";
+    static final String RED = "\033[91m";
+    static final String BLUE = "\033[94m";
     static final String GREEN = "\033[92m";
+    static final String SKY_BLUE = "\033[96m";
     static final String DEFAULT = "\033[39m";
 
     // Text attributes
@@ -38,64 +39,54 @@ public class Main{
                 {" ", " ", " "}
         };
 
-        printBoard(board);
-        thelper.moveCursor(1,2);
+        printBoard(board, character);
         int i = 0;
         int j = 0;
         int row = 1;
         int column = 2;
+        thelper.moveCursor(row, column);
         do {
             while (true) {
                 int key = thelper.readKey();
                 if (key == UP_ARROW) {
-                    if (row == 1) {
-                        continue;
-                    } else {
-                        j--;
-                        thelper.moveCursor(row - 2, column);
-                        row -= 2;
-                        continue;
-                    }
+                    if (row == 1) continue;
+                    j--;
+                    thelper.moveCursor(row - 2, column);
+                    row -= 2;
+                    continue;
                 }
                 if (key == DOWN_ARROW) {
-                    if (row == 5) {
-                        continue;
-                    } else {
-                        j++;
-                        thelper.moveCursor(row + 2, column);
-                        row += 2;
-                        continue;
-                    }
+                    if (row == 5) continue;
+                    j++;
+                    thelper.moveCursor(row + 2, column);
+                    row += 2;
+                    continue;
                 }
                 if (key == RIGHT_ARROW) {
-                    if (column == 14) {
-                        continue;
-                    } else {
-                        i++;
-                        thelper.moveCursor(row, column + 6);
-                        column += 6;
-                        continue;
-                    }
+                    if (column == 14) continue;
+                    i++;
+                    thelper.moveCursor(row, column + 6);
+                    column += 6;
+                    continue;
                 }
                 if (key == LEFT_ARROW) {
-                    if (column == 0) {
-                        continue;
-                    } else {
-                        i--;
-                        thelper.moveCursor(row, column - 6);
-                        column -= 6;
-                        continue;
-                    }
+                    if (column == 2) continue;
+                    i--;
+                    thelper.moveCursor(row, column - 6);
+                    column -= 6;
+                    continue;
                 }
                 if (key == ENTER) {
                     if (invalidMove(board, i, j)) continue;
                     board[i][j] = character;
-                    printBoard(board);
                     if (character.equals("X")) {
+                        thelper.moveCursor(8, 5);
                         character = "O";
                     } else {
+                        thelper.moveCursor(8, 5);
                         character = "X";
                     }
+                    printBoard(board, character);
                     thelper.moveCursor(row,column);
                     break;
                 }
@@ -103,7 +94,10 @@ public class Main{
         } while (checkWin(board) == null);
         thelper.moveCursor(8, 5);
         String whoWon = checkWin(board);
-        if (whoWon != null) {
+        if (whoWon.equals("Draw")) {
+            System.out.println(SKY_BLUE + BLINK + " Draw" + RESET);
+        }
+        if (whoWon.equals("X") || whoWon.equals("O")) {
             System.out.println(GREEN + BLINK + "Win: " + DEFAULT + stylePiece(whoWon) + RESET);
         }
     }
@@ -112,7 +106,7 @@ public class Main{
         return (piece.equals(" ") ? " " : piece.equals("X") ? RED+BOLD+piece : BLUE+BOLD+piece) + DEFAULT;
     }
 
-    public static void printBoard(String[][] board) {
+    public static void printBoard(String[][] board, String character) {
         thelper.cls();
         System.out.println("     │     │     ");
         System.out.println("  " + stylePiece(board[0][0]) + "  │  " + stylePiece(board[1][0]) + "  │  " + stylePiece(board[2][0]));
@@ -121,6 +115,15 @@ public class Main{
         System.out.println("─────┼─────┼─────");
         System.out.println("  " + stylePiece(board[0][2]) + "  │  " + stylePiece(board[1][2]) + "  │  " + stylePiece(board[2][2]));
         System.out.println("     │     │     " );
+        if (checkWin(board) == null) {
+            if (character.equals("X")) {
+                thelper.moveCursor(8, 5);
+                System.out.println(RED + "X" + DEFAULT + " plays");
+            } else {
+                thelper.moveCursor(8, 5);
+                System.out.println(BLUE + "O" + DEFAULT + " plays");
+            }
+        }
     }
 
     public static boolean invalidMove(String[][] board, int i, int j) {
@@ -148,6 +151,8 @@ public class Main{
         //diagonal
         if ((!player[0][0].equals(" ")) && (player[0][0].equals(player[1][1])) && (player[0][0].equals(player[2][2]))) return player[0][0];
         if ((!player[2][0].equals(" ")) && (player[2][0].equals(player[1][1])) && (player[2][0].equals(player[0][2]))) return player[2][0];
+        //draw
+        if ((!player[0][0].equals(" ")) && (!player[1][0].equals(" ")) && (!player[2][0].equals(" ")) && (!player[0][1].equals(" ")) && (!player[1][1].equals(" ")) && (!player[2][1].equals(" ")) && (!player[0][2].equals(" ")) && (!player[1][2].equals(" ")) && (!player[2][2].equals(" "))) return "Draw";
         return null;
     }
 }
