@@ -5,7 +5,6 @@ import java.util.Map;
 
 public class FindNotRepeatedElement {
     public static void main(String[] args) {
-
         int[] arr = null;
 //        arr = new int[] {2, 2, 3, 3, 1, 3, 5, 6, 4, 5, 4};
         arr = new int[] {6,4,3,3,2,6,5,9,2,4,5};
