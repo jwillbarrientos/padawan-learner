@@ -19,7 +19,7 @@
 //    }
 //
 //    public static void main(String args[]) {
-//        Person employee = new Employee("Pavithra", "Female", 1094826);
+//        simplyLearn.inheritance.exercises.Person employee = new Employee("Pavithra", "Female", 1094826);
 //
 //        employee.Office();
 //        employee.changeName("Pavithra Tripathy");
