@@ -8,16 +8,28 @@ import org.jline.utils.NonBlockingReader;
 import java.io.IOException;
 
 public class TerminalHelper implements AutoCloseable {
+
+    //Reset all attributes
+    static final String RESET = "\033[0m";
+    // Colors
+    static final String RED = "\033[91m";
+    static final String BLUE = "\033[94m";
+    static final String GREEN = "\033[92m";
+    static final String SKY_BLUE = "\033[96m";
+    static final String DEFAULT = "\033[39m";
+
+    // Text attributes
+    static final String BOLD = "\033[1m";
+    static final String BLINK = "\033[5m";
+
     private final Terminal terminal;
     private final NonBlockingReader reader;
 
-    // Constructor sets up the terminal in raw mode
     public TerminalHelper() throws IOException {
         this.terminal = TerminalBuilder.builder()
                 .jna(true)
                 .system(true)
                 .build();
-//        terminal.
         this.terminal.enterRawMode();
         reader = terminal.reader();
     }
@@ -34,6 +46,11 @@ public class TerminalHelper implements AutoCloseable {
     public void setCursorBlock() {
         terminal.writer().print("\033[1 q");
         terminal.writer().flush();
+    }
+
+    public void printWithColors(String text, String color, boolean blink) {
+        System.out.print(color + (blink ? BLINK : "") + text + DEFAULT+RESET);
+        System.out.flush();
     }
 
     // Main method to read a key and return the corresponding KeyType
@@ -54,10 +71,8 @@ public class TerminalHelper implements AutoCloseable {
             }
 
             int secondChar = reader.read();
-//            System.out.println("reader.read(): secondChar"+ secondChar);
             if (secondChar == 79) { // '['
                 int thirdChar = reader.read();
-//                System.out.println("reader.read(): thirdChar"+ thirdChar);
                 switch (thirdChar) {
                     case 65: return KeyType.UP_ARROW;
                     case 66: return KeyType.DOWN_ARROW;

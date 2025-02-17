@@ -8,21 +8,7 @@ import static py.jona.KeyType.*;
  * mvn "-DskipTests" clean package ; java "-jar" target\tateti-1.0-SNAPSHOT.jar
  */
 public class Main{
-    //Reset all attributes
-    static final String RESET = "\033[0m";
-    // Colors
-    static final String RED = "\033[91m";
-    static final String BLUE = "\033[94m";
-    static final String GREEN = "\033[92m";
-    static final String SKY_BLUE = "\033[96m";
-    static final String DEFAULT = "\033[39m";
 
-    // Text attributes
-    static final String BOLD = "\033[1m";
-    static final String BLINK = "\033[5m";
-
-    // Clean attributes
-    static final String CLEAN_SCREEN = "\033[2J";
     static String character = "X";
 
     static TerminalHelper thelper;
@@ -95,15 +81,15 @@ public class Main{
         thelper.moveCursor(8, 5);
         String whoWon = checkWin(board);
         if (whoWon.equals("Draw")) {
-            System.out.println(SKY_BLUE + BLINK + " Draw" + RESET);
+            thelper.printWithColors(" Draw\n", TerminalHelper.SKY_BLUE, true);
         }
         if (whoWon.equals("X") || whoWon.equals("O")) {
-            System.out.println(GREEN + BLINK + "Win: " + DEFAULT + stylePiece(whoWon) + RESET);
+            thelper.printWithColors("Win: "+stylePiece(whoWon)+"\n", TerminalHelper.GREEN, true);
         }
     }
 
     static String stylePiece(String piece) {
-        return (piece.equals(" ") ? " " : piece.equals("X") ? RED+BOLD+piece : BLUE+BOLD+piece) + DEFAULT;
+        return (piece.equals(" ") ? " " : piece.equals("X") ? TerminalHelper.RED+TerminalHelper.BOLD+piece : TerminalHelper.BLUE+TerminalHelper.BOLD+piece) + TerminalHelper.DEFAULT;
     }
 
     public static void printBoard(String[][] board, String character) {
@@ -118,11 +104,12 @@ public class Main{
         if (checkWin(board) == null) {
             if (character.equals("X")) {
                 thelper.moveCursor(8, 5);
-                System.out.println(RED + "X" + DEFAULT + " plays");
+                thelper.printWithColors("X", TerminalHelper.RED, false);
             } else {
                 thelper.moveCursor(8, 5);
-                System.out.println(BLUE + "O" + DEFAULT + " plays");
+                thelper.printWithColors("O", TerminalHelper.BLUE, false);
             }
+            System.out.print(" plays");
         }
     }
 
