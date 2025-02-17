@@ -20,20 +20,6 @@ public class TerminalHelper implements AutoCloseable {
 //        terminal.
         this.terminal.enterRawMode();
         reader = terminal.reader();
-
-       // Runtime.getRuntime().addShutdownHook(new Thread(()-> {
-       //     try {
-       //         System.out.println("exiting...");
-       //         System.out.flush();
-       //         Thread.sleep(1000);
-       //         System.out.println("\033[0 q\033[H\033[2J"); // restore cursor // cursor home // clean screen
-       //         System.out.flush();
-       //         reader.close();
-       //         terminal.close();
-       //     } catch (Exception e) {
-       //         e.printStackTrace();
-       //     }
-       // }));
     }
 
     public void moveCursor(int row, int column) {

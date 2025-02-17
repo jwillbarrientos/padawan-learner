@@ -6,7 +6,7 @@ public class TwoNumberSum {
     public static void main(String[] args) {
         int[] array = {3, 5, -4, 8, 11, 1, -1, 6};
         int targetSum = 10;
-        int[] newArray = twoNumberSum(array, 10);
+        int[] newArray = twoNumberSum(array, targetSum);
         System.out.println(Arrays.toString(newArray));
     }
     public static int[] twoNumberSum(int[] array, int targetSum) {
