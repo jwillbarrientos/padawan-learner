@@ -26,6 +26,7 @@ public class Main{
         };
 
         printBoard(board, character);
+        printNextPlayerIfNotWon(board, character);
         int i = 0;
         int j = 0;
         int row = 1;
@@ -73,6 +74,7 @@ public class Main{
                         character = "X";
                     }
                     printBoard(board, character);
+                    printNextPlayerIfNotWon(board, character);
                     thelper.moveCursor(row,column);
                     break;
                 }
@@ -101,6 +103,10 @@ public class Main{
         System.out.println("─────┼─────┼─────");
         System.out.println("  " + stylePiece(board[0][2]) + "  │  " + stylePiece(board[1][2]) + "  │  " + stylePiece(board[2][2]));
         System.out.println("     │     │     " );
+
+    }
+
+    private static void printNextPlayerIfNotWon(String[][] board, String character) {
         if (checkWin(board) == null) {
             if (character.equals("X")) {
                 thelper.moveCursor(8, 5);
