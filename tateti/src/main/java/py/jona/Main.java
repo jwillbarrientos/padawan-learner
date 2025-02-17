@@ -9,9 +9,15 @@ import static py.jona.KeyType.*;
  */
 public class Main{
 
-    static String character = "X";
+    static String currentPlayer = "X";
 
     static TerminalHelper thelper;
+
+    static String[][] board = new String[][]{
+            {" ", " ", " "},
+            {" ", " ", " "},
+            {" ", " ", " "}
+    };
 
     public static void main(String[] args) throws Exception {
         thelper = new TerminalHelper();
@@ -19,14 +25,10 @@ public class Main{
         thelper.cls();
         thelper.setCursorBlock();
 
-        String[][] board = new String[][]{
-                {" ", " ", " "},
-                {" ", " ", " "},
-                {" ", " ", " "}
-        };
 
-        printBoard(board, character);
-        printNextPlayerIfNotWon(board, character);
+
+        printBoard();
+        printNextPlayerIfNotWon();
         int i = 0;
         int j = 0;
         int row = 1;
@@ -64,24 +66,24 @@ public class Main{
                     continue;
                 }
                 if (key == ENTER) {
-                    if (invalidMove(board, i, j)) continue;
-                    board[i][j] = character;
-                    if (character.equals("X")) {
+                    if (invalidMove(i, j)) continue;
+                    board[i][j] = currentPlayer;
+                    if (currentPlayer.equals("X")) {
                         thelper.moveCursor(8, 5);
-                        character = "O";
+                        currentPlayer = "O";
                     } else {
                         thelper.moveCursor(8, 5);
-                        character = "X";
+                        currentPlayer = "X";
                     }
-                    printBoard(board, character);
-                    printNextPlayerIfNotWon(board, character);
+                    printBoard();
+                    printNextPlayerIfNotWon();
                     thelper.moveCursor(row,column);
                     break;
                 }
             }
-        } while (checkWin(board) == null);
+        } while (checkWin() == null);
         thelper.moveCursor(8, 5);
-        String whoWon = checkWin(board);
+        String whoWon = checkWin();
         if (whoWon.equals("Draw")) {
             thelper.printWithColors(" Draw\n", TerminalHelper.SKY_BLUE, true);
         }
@@ -94,7 +96,7 @@ public class Main{
         return (piece.equals(" ") ? " " : piece.equals("X") ? TerminalHelper.RED+TerminalHelper.BOLD+piece : TerminalHelper.BLUE+TerminalHelper.BOLD+piece) + TerminalHelper.DEFAULT;
     }
 
-    public static void printBoard(String[][] board, String character) {
+    public static void printBoard() {
         thelper.cls();
         System.out.println("     │     │     ");
         System.out.println("  " + stylePiece(board[0][0]) + "  │  " + stylePiece(board[1][0]) + "  │  " + stylePiece(board[2][0]));
@@ -106,9 +108,9 @@ public class Main{
 
     }
 
-    private static void printNextPlayerIfNotWon(String[][] board, String character) {
-        if (checkWin(board) == null) {
-            if (character.equals("X")) {
+    private static void printNextPlayerIfNotWon() {
+        if (checkWin() == null) {
+            if (currentPlayer.equals("X")) {
                 thelper.moveCursor(8, 5);
                 thelper.printWithColors("X", TerminalHelper.RED, false);
             } else {
@@ -119,11 +121,12 @@ public class Main{
         }
     }
 
-    public static boolean invalidMove(String[][] board, int i, int j) {
+    public static boolean invalidMove(int i, int j) {
         return !board[i][j].equals(" ");
     }
 
-    public static String checkWin(String[][] player) {
+
+    public static String checkWin() {
         /*
                   │     │
               0.0 │ 1.0 │ 2.0
@@ -134,18 +137,18 @@ public class Main{
                   │     │
          */
         //horizontal
-        if ((!player[0][0].equals(" ")) && (player[0][0].equals(player[1][0])) && (player[0][0].equals(player[2][0]))) return player[0][0];
-        if ((!player[0][1].equals(" ")) && (player[0][1].equals(player[1][1])) && (player[0][1].equals(player[2][1]))) return player[0][1];
-        if ((!player[0][2].equals(" ")) && (player[0][2].equals(player[1][2])) && (player[0][2].equals(player[2][2]))) return player[0][2];
+        if ((!board[0][0].equals(" ")) && (board[0][0].equals(board[1][0])) && (board[0][0].equals(board[2][0]))) return board[0][0];
+        if ((!board[0][1].equals(" ")) && (board[0][1].equals(board[1][1])) && (board[0][1].equals(board[2][1]))) return board[0][1];
+        if ((!board[0][2].equals(" ")) && (board[0][2].equals(board[1][2])) && (board[0][2].equals(board[2][2]))) return board[0][2];
         //vertical
-        if ((!player[0][0].equals(" ")) && (player[0][0].equals(player[0][1])) && (player[0][0].equals(player[0][2]))) return player[0][0];
-        if ((!player[1][0].equals(" ")) && (player[1][0].equals(player[1][1])) && (player[1][0].equals(player[1][2]))) return player[1][0];
-        if ((!player[2][0].equals(" ")) && (player[2][0].equals(player[2][1])) && (player[2][0].equals(player[2][2]))) return player[2][0];
+        if ((!board[0][0].equals(" ")) && (board[0][0].equals(board[0][1])) && (board[0][0].equals(board[0][2]))) return board[0][0];
+        if ((!board[1][0].equals(" ")) && (board[1][0].equals(board[1][1])) && (board[1][0].equals(board[1][2]))) return board[1][0];
+        if ((!board[2][0].equals(" ")) && (board[2][0].equals(board[2][1])) && (board[2][0].equals(board[2][2]))) return board[2][0];
         //diagonal
-        if ((!player[0][0].equals(" ")) && (player[0][0].equals(player[1][1])) && (player[0][0].equals(player[2][2]))) return player[0][0];
-        if ((!player[2][0].equals(" ")) && (player[2][0].equals(player[1][1])) && (player[2][0].equals(player[0][2]))) return player[2][0];
+        if ((!board[0][0].equals(" ")) && (board[0][0].equals(board[1][1])) && (board[0][0].equals(board[2][2]))) return board[0][0];
+        if ((!board[2][0].equals(" ")) && (board[2][0].equals(board[1][1])) && (board[2][0].equals(board[0][2]))) return board[2][0];
         //draw
-        if ((!player[0][0].equals(" ")) && (!player[1][0].equals(" ")) && (!player[2][0].equals(" ")) && (!player[0][1].equals(" ")) && (!player[1][1].equals(" ")) && (!player[2][1].equals(" ")) && (!player[0][2].equals(" ")) && (!player[1][2].equals(" ")) && (!player[2][2].equals(" "))) return "Draw";
+        if ((!board[0][0].equals(" ")) && (!board[1][0].equals(" ")) && (!board[2][0].equals(" ")) && (!board[0][1].equals(" ")) && (!board[1][1].equals(" ")) && (!board[2][1].equals(" ")) && (!board[0][2].equals(" ")) && (!board[1][2].equals(" ")) && (!board[2][2].equals(" "))) return "Draw";
         return null;
     }
 }
