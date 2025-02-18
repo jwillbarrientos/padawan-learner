@@ -7,16 +7,10 @@ import org.jline.utils.NonBlockingReader;
 
 import java.io.IOException;
 
-public class TerminalHelper implements AutoCloseable {
+public class TerminalHelper {
 
     //Reset all attributes
     static final String RESET = "\033[0m";
-    // Colors
-    static final String RED = "\033[91m";
-    static final String BLUE = "\033[94m";
-    static final String GREEN = "\033[92m";
-    static final String SKY_BLUE = "\033[96m";
-    static final String DEFAULT = "\033[39m";
 
     // Text attributes
     static final String BOLD = "\033[1m";
@@ -48,15 +42,14 @@ public class TerminalHelper implements AutoCloseable {
         terminal.writer().flush();
     }
 
-    public void printWithColors(String text, String color, boolean blink) {
-        System.out.print(color + (blink ? BLINK : "") + text + DEFAULT+RESET);
+    public void printWithColors(String text, Colors color, boolean blink) {
+        System.out.print(color.escapeSequence + (blink ? BLINK : "") + text + Colors.DEFAULT.escapeSequence + RESET);
         System.out.flush();
     }
 
     // Main method to read a key and return the corresponding KeyType
-    public int readKey() throws IOException, InterruptedException {
+    public KeyType readKey() throws IOException, InterruptedException {
         int firstChar = reader.read();
-//        System.out.println("reader.read(): first char"+ firstChar);
 
         if (firstChar == '\n' || firstChar == '\r') { // Handle enter key
             return KeyType.ENTER;
@@ -90,12 +83,5 @@ public class TerminalHelper implements AutoCloseable {
         }
 
         return KeyType.OTROS; // any other character
-    }
-
-    // Properly close resources
-    @Override
-    public void close() throws IOException {
-        reader.close();
-        terminal.close();
     }
 }
