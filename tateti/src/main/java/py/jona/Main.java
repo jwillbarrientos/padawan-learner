@@ -7,16 +7,7 @@ package py.jona;
  */
 public class Main{
 
-    enum Player {
-        X(Colors.RED),
-        O(Colors.BLUE);
-        public final Colors color;
-        Player(Colors color) {
-            this.color = color;
-        }
-    }
-
-    static Player cPlayer = Player.X;
+    static Player currentPlayer = Player.X;
     static TerminalHelper thelper;
     static String[][] board = new String[][]{
             {" ", " ", " "},
@@ -69,8 +60,8 @@ public class Main{
                 case ENTER:
                     if (invalidMove(i, j)) continue;
                     plays++;
-                    board[i][j] = cPlayer.name();
-                    cPlayer = cPlayer == Player.X ? Player.O : Player.X;
+                    board[i][j] = currentPlayer.name();
+                    currentPlayer = currentPlayer == Player.X ? Player.O : Player.X;
             }
 
             won = checkWin();
@@ -108,8 +99,8 @@ public class Main{
     private static void printNextPlayerIfNotWon() {
         if (checkWin() == null) {
             thelper.moveCursor(8, 5);
-            thelper.printWithColors(cPlayer.name(), cPlayer.color, false);
-            System.out.println(" plays");
+            thelper.printWithColors(currentPlayer.name(), currentPlayer.color, false);
+            System.out.println(" turn");
         }
     }
 

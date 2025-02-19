@@ -9,6 +9,7 @@
         <module name="tateti" />
         <module name="ocfa" />
         <module name="oca" />
+        <module name="terminal-chat" />
       </profile>
     </annotationProcessing>
   </component>
