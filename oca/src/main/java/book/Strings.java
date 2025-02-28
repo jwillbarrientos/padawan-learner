@@ -1,7 +1,17 @@
 package book;
 
+import java.util.Arrays;
+
 public class Strings {
     public static void main(String[] args) {
+        String replaceTest1 = "Hola";
+        replaceTest1.replace("ola", "alo");
+        StringBuilder replaceTest2 = new StringBuilder("Hola");
+        replaceTest2.replace(1, 4, "alo");
+
+        System.out.println(replaceTest1);
+        System.out.println(replaceTest2);
+
         StringBuilder sb1 = new StringBuilder("123");
         char[] name = {'J', 'a', 'v', 'a'};
         sb1.insert(1, name, 1, 3);
