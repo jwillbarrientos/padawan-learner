@@ -2,6 +2,11 @@ package book;
 
 public class Strings {
     public static void main(String[] args) {
+        StringBuilder sb1 = new StringBuilder("123");
+        char[] name = {'J', 'a', 'v', 'a'};
+        sb1.insert(1, name, 1, 3);
+        System.out.println(sb1);
+
         String morning1 = new String("Morning");
         System.out.println("Morning" == morning1);
 

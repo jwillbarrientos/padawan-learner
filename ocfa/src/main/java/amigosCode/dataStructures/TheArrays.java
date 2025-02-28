@@ -20,7 +20,10 @@ public class TheArrays {
 
         System.out.println(Arrays.toString(colors));
 
-        int[] numbers = {100, 200};
+        int[] numbers = {1, 23, 21, 41, 25, 67, 654};
+        Arrays.sort(numbers);
+
+        System.out.println(Arrays.toString(numbers));
 
         System.out.println(colors.length);
 

@@ -1,9 +1,9 @@
-package py.jona;
+package py.jona.client;
 
 import java.io.*;
 import java.net.*;
 
-public class Client {
+class Client {
     // Use same port as server
     private static final int PORT = 1500;
     private static final String SERVER_ADDRESS = "localhost";
@@ -29,9 +29,8 @@ public class Client {
             // Main thread handles sending messages
             String message;
             while ((message = consoleInput.readLine()) != null) {
-                socketOut.println(message);
+                 socketOut.println(message);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

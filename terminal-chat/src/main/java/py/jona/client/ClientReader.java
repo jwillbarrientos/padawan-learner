@@ -1,9 +1,9 @@
-package py.jona;
+package py.jona.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class ClientReader implements Runnable {
+class ClientReader implements Runnable {
     BufferedReader socketIn;
     public ClientReader(BufferedReader socketIn) {
         this.socketIn = socketIn;
@@ -13,7 +13,7 @@ public class ClientReader implements Runnable {
         try {
             String message;
             while ((message = socketIn.readLine()) != null) {
-                System.out.println("Server: " + message);
+                System.out.println(message);
             }
         } catch (IOException e) {
             System.out.println("Server disconnected");
