@@ -1,7 +1,5 @@
 package book;
 
-import java.util.Arrays;
-
 public class Strings {
     public static void main(String[] args) {
         String replaceTest1 = "Hola";
