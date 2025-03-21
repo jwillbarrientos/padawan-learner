@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Lists {
     public static void main(String[] args) {
-       //List<String> colorsUnmodifiable = List.of("blue", "yellow");
+       List<String> colorsUnmodifiable = List.of("blue", "yellow");
 
        //List<String> colors = new ArrayList<>();
        //colors.add("blue");
