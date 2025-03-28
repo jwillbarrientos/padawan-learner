@@ -2,7 +2,7 @@ package book;
 
 import java.util.ArrayList;
 
-public class ClassCastException {
+public class ClassCastException1 {
     public static void main(String[] args) {
         ArrayList<Ink> inks = new ArrayList<Ink>();
         inks.add(new Ink());
