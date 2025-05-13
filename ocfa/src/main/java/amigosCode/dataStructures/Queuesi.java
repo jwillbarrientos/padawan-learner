@@ -23,9 +23,12 @@ public class Queuesi {
         while (personListIterator.hasPrevious()) {
             System.out.println(personListIterator.previous());
         }
+        System.out.println();
+        
+        queues();
     }
 
-    private static void zqueues() {
+    public static void queues() {
         Queue<Person> queue = new LinkedList<>();
 
         queue.add(new Person("Alex", 21));

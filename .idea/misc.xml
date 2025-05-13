@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/ocfa/pom.xml" />
         <option value="$PROJECT_DIR$/oca/pom.xml" />
         <option value="$PROJECT_DIR$/terminal-chat/pom.xml" />
+        <option value="$PROJECT_DIR$/simple-http-server/pom.xml" />
       </list>
     </option>
   </component>
