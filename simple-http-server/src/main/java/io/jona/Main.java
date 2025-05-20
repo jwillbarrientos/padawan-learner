@@ -4,62 +4,52 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Main {
+
+    static Path CONTENT_ROOT = Paths.get("C:\\Users\\barri\\IdeaProjects\\padawan-learner\\simple-http-server\\web-root");
+
     private static final int PORT = 8080;
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(PORT);
         while(true) {
             //1. aceptar conexion de cliente
             Socket client = serverSocket.accept();
+            HttpRequest request = new HttpRequest();
+            request.readFromSocket(client);
+            System.out.println("Objeto request construido: \n" + request);
 
-            //2. leer el request http completo del cliente
-            InputStream inputStream = client.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.US_ASCII);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            while (true) {
-                String line = bufferedReader.readLine();
-                System.out.println(line);
-                if (line.isEmpty())
-                    break;
+            HttpResponse response = new HttpResponse();
+
+            if (request.getPath().equals("/")) {
+                response.setResponseCode(HttpCodes.OK_200);
+                response.setContentType(MimeType.TEXT_HTML, "UTF-8");
+                response.setBody( Files.readString(CONTENT_ROOT.resolve(Paths.get("index.html")), StandardCharsets.UTF_8) );
+            } else if (CONTENT_ROOT.resolve(request.getPath()).toFile().exists()) {
+                response.setResponseCode(HttpCodes.OK_200);
+                if (request.getPath().endsWith("html")) {
+                    response.setContentType(MimeType.TEXT_HTML, "UTF-8");
+                } else if (request.getPath().endsWith("ico")) {
+                    response.setContentType(MimeType.FAVICON);
+                }
+                response.setBody(Files.readAllBytes(CONTENT_ROOT.resolve(Paths.get(request.getPath()))));
+            } else {
+                response.setResponseCode(HttpCodes.NOT_FOUND_404);
+                response.setContentType(MimeType.TEXT_PLAIN);
+                response.setBody("Este recurso no existe");
             }
 
-            //3. preparar respuesta del cliente
-            String header = """
-                    HTTP/1.1 200 OK
-                    Date: Tue, 13 May 2025 16:48:00 GMT
-                    Server: jonatitoServer
-                    Content-Type: text/html; charset=UTF-8
-                    Content-Length: ${bodyLen}
-                    Vary: Accept-Encoding
-                    
-                    """;
-
-            String body = """
-                    <!DOCTYPE html><head>
-                        <title>Welcome</title>
-                    </head>
-                    <body>
-                        <h1>Hello, World!</h1>
-                        <p>Welcome to the localhost server.</p>
-                    </body>
-                    </html>
-                    """;
-            byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
-
-            header = header.replace("${bodyLen}", String.valueOf(bodyBytes.length));
-            byte[] headerBytes = header.getBytes(StandardCharsets.US_ASCII);
-            System.out.println("Respuesta al navegador: ");
-            System.out.println(header);
-            System.out.println(body);
-
+            byte[] responseBytes = response.buildResponse();
+            System.out.println("Respuesta al navegador:\n "+ response);
             //4. enviar respuesta
-            client.getOutputStream().write(headerBytes);
-            client.getOutputStream().write(bodyBytes);
+            client.getOutputStream().write(responseBytes);
             client.getOutputStream().flush();
-
             //5. cerrar conexion
             client.close();
         }
     }
+
 }
