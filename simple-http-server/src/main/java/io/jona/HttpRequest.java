@@ -6,31 +6,28 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpRequest {
-    private String method; //esto tiene que ser un enum con dos valores iniciales GET y POST
+    private Methods method; //esto tiene que ser un enum con dos valores iniciales GET y POST
     private String path;
-    private String protocol; //esto tiene que ser un enum con dos valores iniciales HTTP_1_1 y UNSUPPORTED
-    private Map<String, String> queryParams = new HashMap<>();
-    private Map<String, String> headers = new HashMap<>();
+    private Protocols protocol; //esto tiene que ser un enum con dos valores iniciales HTTP_1_1 y UNSUPPORTED
+    private Map<String, String> queryParams = new LinkedHashMap<>();
+    private Map<String, String> headers = new LinkedHashMap<>();
 
-    public String getProtocol() {
+    public void setMethod(Methods method) { this.method = method; }
+    public void setProtocol(Protocols protocol) { this.protocol = protocol; }
+    public Protocols getProtocol() {
         return protocol;
     }
-
-    public String getMethod() {
+    public Methods getMethod() {
        return method;
     }
-
     public String getPath() {
         return path;
     }
-
-    public Map getHeaders() {
-        return headers;
-    }
+    public Map<String, String> getHeaders() { return headers; }
 
     public void readFromSocket(Socket client) throws IOException {
         InputStream inputStream = client.getInputStream();
@@ -38,42 +35,53 @@ public class HttpRequest {
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = bufferedReader.readLine();
         System.out.println(line);
-        int i = 0;
-        while (line.charAt(i) != ' ') {
-            method = line.substring(0, i + 1);
-            i++;
+        String[] methodPathProtocol = line.split(" ", 3);
+        method = Methods.valueOf(methodPathProtocol[0]);
+        path = methodPathProtocol[1];
+        path = path.startsWith("/")? path.substring(1) : path;
+        protocol = methodPathProtocol[2].equals(Protocols.HTTP_1_1.desc)? Protocols.HTTP_1_1 : Protocols.UNSUPPORTED;
+        boolean containsQueryParams = false;
+        String[] queryAndParamsTogether = new String[0];
+        if(methodPathProtocol[1].contains("\\?")) {
+            String[] pathQueryParams = methodPathProtocol[1].split("\\?", 2);
+            path = pathQueryParams[0];
+            queryAndParamsTogether = pathQueryParams[1].split("&");
+            containsQueryParams = true;
         }
-        i++;
-        int j = i;
-        while (line.charAt(j) != ' ') {
-            path = line.substring(i, j);
-            j++;
-        }
-        j++;
-        int k = j;
-        while (k < line.length()) {
-            protocol = line.substring(j, k + 1);
-            k++;
-        }
-        while(true) {
+        while(true) { //initialize headers
             line = bufferedReader.readLine();
+            System.out.println(line);
             String[] keyAndValue = line.split(": ", 2);
-            System.out.println(String.join(" ", keyAndValue));
             if(line == null || line.isEmpty())
                 break;
             headers.put(keyAndValue[0], keyAndValue[1]);
+        }
+        if (containsQueryParams && queryAndParamsTogether.length > 1) {
+            int i = 0;
+            while (i < queryAndParamsTogether.length) { //initialize queryParams
+                System.out.println(String.join(" ", queryAndParamsTogether));
+                String[] queryAndParamsSeparate = queryAndParamsTogether[i].split("=", 2);
+                queryParams.put(queryAndParamsSeparate[0], queryAndParamsSeparate[1]);
+                i++;
+            }
         }
     }
 
     @Override
     public String toString() { //hacer que se vea lindo
-        final StringBuilder sb = new StringBuilder("HttpRequest{\n");
-        sb.append("method='\n").append(method).append('\'');
-        sb.append(", path='\n").append(path).append('\'');
-        sb.append(", protocol=\n'").append(protocol).append('\'');
-        sb.append(", queryParams=\n").append(queryParams);
-        sb.append(", headers=\n").append(headers);
-        sb.append('}');
+        final StringBuilder sb = new StringBuilder("HttpRequest {\n");
+        sb.append("method = ").append(method).append('\n');
+        sb.append("path = ").append(path).append('\n');
+        sb.append("protocol = ").append(protocol).append('\n');
+        sb.append("queryParams = \n");
+        for(Map.Entry<String, String> entry : queryParams.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append('\n');
+        }
+        sb.append("headers = \n");
+        for(Map.Entry<String, String> entry : headers.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append('\n');
+        }
+        sb.append("}\n");
         return sb.toString();
     }
 }

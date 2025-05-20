@@ -10,6 +10,4 @@ public enum HttpCodes {
         this.code = code;
         this.desc = desc;
     }
-
-
 }

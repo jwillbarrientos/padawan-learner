@@ -10,23 +10,19 @@ public class HttpResponse {
     private HttpCodes responseCode;
     private LocalDateTime date = LocalDateTime.now();
     private String serverName = "jonatitoServer";
-    private String contentType; //tiene que ser un enum de mimetypes
+    private String contentType;
     private byte[] body;
 
-    public void setResponseCode(HttpCodes responseCode) {
-        this.responseCode = responseCode;
-    }
-
+    public void setResponseCode(HttpCodes responseCode) { this.responseCode = responseCode; }
     public void setContentType(MimeType mimeType, String charset) {
-        this.contentType = mimeType.value+"; "+ charset;
+        this.contentType = mimeType.value + "; " + charset;
     }
     public void setContentType(MimeType mimeType) {
         this.contentType = mimeType.value;
     }
-
-
     public void setBody(String body) {
         this.body = body.getBytes(StandardCharsets.UTF_8);
+        System.out.println("Body for response:\n"+ body);
     }
     public void setBody(byte[] body) {
         this.body = body;
@@ -43,7 +39,7 @@ public class HttpResponse {
                 """.formatted(protocol, responseCode.code, responseCode.desc, date, serverName, contentType, body.length);
 
         byte[] headerBytes = headers.getBytes(StandardCharsets.US_ASCII);
-
+        System.out.println("Response HEADERS: \n"+ headers);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             baos.write(headerBytes);
@@ -54,7 +50,4 @@ public class HttpResponse {
         byte[] output = baos.toByteArray();
         return output;
     }
-
-
-
 }
