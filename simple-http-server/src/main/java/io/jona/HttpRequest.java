@@ -42,13 +42,13 @@ public class HttpRequest {
         protocol = methodPathProtocol[2].equals(Protocols.HTTP_1_1.desc)? Protocols.HTTP_1_1 : Protocols.UNSUPPORTED;
         boolean containsQueryParams = false;
         String[] queryAndParamsTogether = new String[0];
-        if(methodPathProtocol[1].contains("\\?")) {
+        if (methodPathProtocol[1].contains("\\?")) {
             String[] pathQueryParams = methodPathProtocol[1].split("\\?", 2);
             path = pathQueryParams[0];
             queryAndParamsTogether = pathQueryParams[1].split("&");
             containsQueryParams = true;
         }
-        while(true) { //initialize headers
+        while (true) { //initialize headers
             line = bufferedReader.readLine();
             System.out.println(line);
             String[] keyAndValue = line.split(": ", 2);
@@ -74,11 +74,11 @@ public class HttpRequest {
         sb.append("path = ").append(path).append('\n');
         sb.append("protocol = ").append(protocol).append('\n');
         sb.append("queryParams = \n");
-        for(Map.Entry<String, String> entry : queryParams.entrySet()) {
+        for (Map.Entry<String, String> entry : queryParams.entrySet()) {
             sb.append(entry.getKey()).append(": ").append(entry.getValue()).append('\n');
         }
         sb.append("headers = \n");
-        for(Map.Entry<String, String> entry : headers.entrySet()) {
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
             sb.append(entry.getKey()).append(": ").append(entry.getValue()).append('\n');
         }
         sb.append("}\n");

@@ -15,7 +15,7 @@ public class HttpResponse {
 
     public void setResponseCode(HttpCodes responseCode) { this.responseCode = responseCode; }
     public void setContentType(MimeType mimeType, String charset) {
-        this.contentType = mimeType.value + "; " + charset;
+        this.contentType = mimeType.value + "; charset=" + charset;
     }
     public void setContentType(MimeType mimeType) {
         this.contentType = mimeType.value;
