@@ -10,6 +10,7 @@
         <module name="ocfa" />
         <module name="oca" />
         <module name="terminal-chat" />
+        <module name="ocp" />
         <module name="simple-http-server" />
       </profile>
     </annotationProcessing>
