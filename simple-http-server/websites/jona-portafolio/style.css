@@ -48,7 +48,37 @@ main.center-content {
   margin-bottom: 20px;
 }
 
+.cert-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align tops */
+  gap: 40px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.cert-row div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 0 10px;
+  flex: 0 1 400px;
+}
+
+.cert-row img {
+  max-width: 1000px;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+}
+
+main.content {
+  max-width: 1000px;
+}
+
 .video-row {
+  text-align: center;
   display: flex;
   justify-content: center;
   gap: 20px;
@@ -92,7 +122,6 @@ main.center-content {
 .intro-container {
   display: block;
 }
-
 
 .intro-text {
   line-height: 1.6;

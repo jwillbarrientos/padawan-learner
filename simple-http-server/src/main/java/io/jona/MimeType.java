@@ -8,6 +8,7 @@ public enum MimeType {
     FAVICON("image/x-icon", ".ico", false),
     IMAGE_PNG("image/png", ".png", false),
     IMAGE_JPG("image/jpeg", ".jpg", false),
+    VIDEO_MP4("video/mp4", ".mp4", false),
     UNKNOW("", "", false);
 
 
