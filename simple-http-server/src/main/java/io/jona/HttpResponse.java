@@ -4,22 +4,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Objects;
 
 public class HttpResponse {
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+    private ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private String protocol = "HTTP/1.1";
     private HttpCodes responseCode;
-    private LocalDateTime date = LocalDateTime.now();
+    private String date = now.format(formatter);
     private String serverName = "jonatitoServer";
     private String contentType;
     private byte[] body;
 
     public void setResponseCode(HttpCodes responseCode) { this.responseCode = responseCode; }
-    public void setContentType(MimeType mimeType, String charset) {
-        this.contentType = mimeType.value + "; charset=" + charset;
-    }
+    public void setContentType(MimeType mimeType, String charset) { this.contentType = mimeType.value + "; charset=" + charset; }
     public void setContentType(MimeType mimeType) {
         this.contentType = mimeType.value;
     }
+    public String getContentType() { return this.contentType; }
     public void setBody(String body) {
         this.body = body.getBytes(StandardCharsets.UTF_8);
         System.out.println("Body for response:\n"+ body);
@@ -29,14 +35,28 @@ public class HttpResponse {
     }
 
     byte[] buildResponse() {
-        String headers = """
-                %s %s %s
-                Date: %s
-                Server: %s
-                Content-Type: %s
-                Content-Length: %s
-                
-                """.formatted(protocol, responseCode.code, responseCode.desc, date, serverName, contentType, body.length);
+        String headers;
+        if(this.contentType.equals("video/mp4")) {
+            headers = """
+                    %s %s %s
+                    Date: %s
+                    Server: %s
+                    Content-Type: %s
+                    Content-Range:  
+                    Content-Length: %s
+                    Accept-Ranges: bytes
+                    
+                    """.formatted(protocol, responseCode.code, responseCode.desc, date, serverName, contentType, body.length);
+        } else {
+            headers = """
+                    %s %s %s
+                    Date: %s
+                    Server: %s
+                    Content-Type: %s
+                    Content-Length: %s
+                    
+                    """.formatted(protocol, responseCode.code, responseCode.desc, date, serverName, contentType, body.length);
+        }
 
         byte[] headerBytes = headers.getBytes(StandardCharsets.US_ASCII);
         System.out.println("Response HEADERS: \n"+ headers);

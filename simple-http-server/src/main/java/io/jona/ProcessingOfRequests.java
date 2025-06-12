@@ -10,7 +10,8 @@ import static io.jona.Main.CONTENT_ROOT;
 public class ProcessingOfRequests {
     public static void processRequest(HttpRequest request, HttpResponse response) {
         boolean requestedResourceExistsAsFile = CONTENT_ROOT.resolve(request.getPath()).toFile().exists();
-        if (request.getPath().isEmpty()) {
+        boolean welcomePageRequested = request.getPath().isEmpty() || request.getPath().equals("/");
+        if (welcomePageRequested) {
             response.setResponseCode(HttpCodes.OK_200);
             response.setContentType(MimeType.TEXT_HTML, "UTF-8");
             try {
@@ -18,10 +19,10 @@ public class ProcessingOfRequests {
             } catch (IOException e) {
 
             }
+        //} else if (response.getContentType().equals(MimeType.VIDEO_MP4.value)) {
+        //    response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
         } else if (requestedResourceExistsAsFile) {
-            if (CONTENT_ROOT.resolve(request.getPath()).toFile().exists()) {
-                response.setResponseCode(HttpCodes.OK_200);
-            }
+            response.setResponseCode(HttpCodes.OK_200);
             String extension = request.getPath().substring(request.getPath().lastIndexOf("."));
             MimeType mimeType = MimeType.getMimeForExtension(extension);
             if (mimeType.requiresEncoding) {

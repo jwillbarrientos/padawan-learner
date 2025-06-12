@@ -6,13 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLOutput;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpRequest {
-    private Methods method; //esto tiene que ser un enum con dos valores iniciales GET y POST
+    private Methods method;
     private String path;
-    private Protocols protocol; //esto tiene que ser un enum con dos valores iniciales HTTP_1_1 y UNSUPPORTED
+    private Protocols protocol;
     private Map<String, String> queryParams = new LinkedHashMap<>();
     private Map<String, String> headers = new LinkedHashMap<>();
 
@@ -50,6 +51,11 @@ public class HttpRequest {
         }
         while (true) { //initialize headers
             line = bufferedReader.readLine();
+            if (line.startsWith("Range:")) {
+                headers.put("Range: ", "bytes=1000000-2000000");
+                System.out.println(line.substring(0, 13) + "1000000-2000000");
+                continue;
+            }
             System.out.println(line);
             String[] keyAndValue = line.split(": ", 2);
             if(line == null || line.isEmpty())
@@ -68,7 +74,7 @@ public class HttpRequest {
     }
 
     @Override
-    public String toString() { //hacer que se vea lindo
+    public String toString() {
         final StringBuilder sb = new StringBuilder("HttpRequest {\n");
         sb.append("method = ").append(method).append('\n');
         sb.append("path = ").append(path).append('\n');

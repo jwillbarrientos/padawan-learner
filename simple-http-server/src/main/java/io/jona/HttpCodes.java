@@ -3,7 +3,8 @@ package io.jona;
 public enum HttpCodes {
 
     OK_200(200, "OK"),
-    NOT_FOUND_404(404, "NOT FOUND");
+    NOT_FOUND_404(404, "NOT FOUND"),
+    PARTIAL_CONTENT_206(206, "PARTIAL CONTENT");
 
     public final int code;
     public final String desc;
