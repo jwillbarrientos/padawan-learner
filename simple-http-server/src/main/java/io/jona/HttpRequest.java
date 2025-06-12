@@ -16,6 +16,7 @@ public class HttpRequest {
     private Protocols protocol;
     private Map<String, String> queryParams = new LinkedHashMap<>();
     private Map<String, String> headers = new LinkedHashMap<>();
+    private String range;
 
     public void setMethod(Methods method) { this.method = method; }
     public void setProtocol(Protocols protocol) { this.protocol = protocol; }
@@ -25,10 +26,10 @@ public class HttpRequest {
     public Methods getMethod() {
        return method;
     }
-    public String getPath() {
-        return path;
-    }
+    public String getPath() { return path; }
     public Map<String, String> getHeaders() { return headers; }
+    public void setRange(String range) { this.range = range; }
+    public String getRange() { return this.range; }
 
     public void readFromSocket(Socket client) throws IOException {
         InputStream inputStream = client.getInputStream();
@@ -51,16 +52,13 @@ public class HttpRequest {
         }
         while (true) { //initialize headers
             line = bufferedReader.readLine();
-            if (line.startsWith("Range:")) {
-                headers.put("Range: ", "bytes=1000000-2000000");
-                System.out.println(line.substring(0, 13) + "1000000-2000000");
-                continue;
-            }
             System.out.println(line);
             String[] keyAndValue = line.split(": ", 2);
-            if(line == null || line.isEmpty())
+            if (line.isEmpty())
                 break;
             headers.put(keyAndValue[0], keyAndValue[1]);
+            if (keyAndValue[0].equals("Range"))
+                setRange(keyAndValue[1]);
         }
         if (containsQueryParams && queryAndParamsTogether.length > 1) {
             int i = 0;

@@ -3,6 +3,7 @@ package io.jona;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static io.jona.Main.CONTENT_ROOT;
@@ -19,32 +20,38 @@ public class ProcessingOfRequests {
             } catch (IOException e) {
 
             }
-        //} else if (response.getContentType().equals(MimeType.VIDEO_MP4.value)) {
+        }
+        //if (response.getContentType().equals(MimeType.VIDEO_MP4.value)) {
         //    response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
-        } else if (requestedResourceExistsAsFile) {
-            response.setResponseCode(HttpCodes.OK_200);
+        //    response.setContentType(MimeType.VIDEO_MP4);
+        //    response.setRange(request.getHeaders().get("Range: "));
+        if (requestedResourceExistsAsFile) {
             String extension = request.getPath().substring(request.getPath().lastIndexOf("."));
             MimeType mimeType = MimeType.getMimeForExtension(extension);
+            if (mimeType.equals(MimeType.VIDEO_MP4)) {
+                response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
+                response.setRange(request.getHeaders().get("Range"));
+                response.setPath(request.getPath());
+                response.setRange(request.getRange());
+            } else {
+                response.setResponseCode(HttpCodes.OK_200);
+            }
             if (mimeType.requiresEncoding) {
                 response.setContentType(mimeType, "UTF-8");
             } else {
                 response.setContentType(mimeType);
-            }
-
-            try {
-                response.setBody(Files.readAllBytes(CONTENT_ROOT.resolve(Paths.get(request.getPath()))));
-            } catch (IOException e) {
-
             }
         } else {
             response.setResponseCode(HttpCodes.NOT_FOUND_404);
             response.setContentType(MimeType.TEXT_PLAIN);
             response.setBody("Este recurso no existe");
         }
+        //Path filePath = CONTENT_ROOT.resolve(Paths.get(request.getPath()));
+        //response.setBody(filePath);
         try {
             response.setBody(Files.readAllBytes(CONTENT_ROOT.resolve(Paths.get(request.getPath()))));
         } catch (IOException e) {
-
+            throw new RuntimeException(e);
         }
     }
 }
