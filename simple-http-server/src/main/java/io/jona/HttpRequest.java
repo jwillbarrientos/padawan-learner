@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLOutput;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -16,20 +15,11 @@ public class HttpRequest {
     private Protocols protocol;
     private Map<String, String> queryParams = new LinkedHashMap<>();
     private Map<String, String> headers = new LinkedHashMap<>();
-    private String range;
+    private long range;
 
-    public void setMethod(Methods method) { this.method = method; }
-    public void setProtocol(Protocols protocol) { this.protocol = protocol; }
-    public Protocols getProtocol() {
-        return protocol;
-    }
-    public Methods getMethod() {
-       return method;
-    }
     public String getPath() { return path; }
-    public Map<String, String> getHeaders() { return headers; }
-    public void setRange(String range) { this.range = range; }
-    public String getRange() { return this.range; }
+    public void setRange(long range) { this.range = range; }
+    public long getRange() { return this.range; }
 
     public void readFromSocket(Socket client) throws IOException {
         InputStream inputStream = client.getInputStream();
@@ -57,8 +47,12 @@ public class HttpRequest {
             if (line.isEmpty())
                 break;
             headers.put(keyAndValue[0], keyAndValue[1]);
-            if (keyAndValue[0].equals("Range"))
-                setRange(keyAndValue[1]);
+            if (keyAndValue[0].equals("Range")) {
+                String bytesRange = keyAndValue[1].substring("bytes=".length());
+                String startStr = bytesRange.split("-")[0];
+                long sof = Long.parseLong(startStr);
+                setRange(sof);
+            }
         }
         if (containsQueryParams && queryAndParamsTogether.length > 1) {
             int i = 0;
