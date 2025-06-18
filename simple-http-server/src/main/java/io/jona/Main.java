@@ -17,7 +17,7 @@ public class Main {
         ServerSocket serverSocket = new ServerSocket(PORT);
         while (true) {
             Socket client = serverSocket.accept();
-            new Thread(() -> {
+//            new Thread(() -> {
                 try {
                     HttpRequest request = new HttpRequest();
                     request.readFromSocket(client);
@@ -34,7 +34,7 @@ public class Main {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }).start();
+//            }).start();
         }
     }
 }

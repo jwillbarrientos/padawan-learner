@@ -24,7 +24,7 @@ public class HttpResponse {
     private long range;
     private long startOfFile;
     private long enfOfFile;
-    public static final long JUMP = 2561024;
+    public static final long CHUNK_SIZE_BYTES = 2561024;
     long totalFileSize;
     private byte[] body;
 

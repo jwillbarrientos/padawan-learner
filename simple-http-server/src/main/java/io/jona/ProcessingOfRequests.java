@@ -53,7 +53,7 @@ public class ProcessingOfRequests {
         try {
             if (response.getContentType().equals("video/mp4")) {
                 Path filePath = CONTENT_ROOT.resolve(Paths.get(request.getPath()));
-                long end = Math.min(response.getStartOfFile() + HttpResponse.JUMP - 1, response.getTotalFileSize() - 1);
+                long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
                 response.setEnfOfFile(end);
                 response.setBody(filePath, response.getStartOfFile(), response.getEnfOfFile());
             } else {
