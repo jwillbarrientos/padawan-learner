@@ -1,5 +1,8 @@
 package io.jona;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,11 +12,13 @@ import java.nio.file.Paths;
 import static io.jona.ProcessingOfRequests.processRequest;
 
 public class Main {
-
     static Path CONTENT_ROOT = Paths.get("C:\\Users\\barri\\IdeaProjects\\padawan-learner\\simple-http-server\\websites\\jona-portafolio");
+
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     private static final int PORT = 8080;
     public static void main(String[] args) throws IOException {
+        logger.info("Server started");
         ServerSocket serverSocket = new ServerSocket(PORT);
         while (true) {
             Socket client = serverSocket.accept();
@@ -32,7 +37,7 @@ public class Main {
 
                     client.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Fallo en la clase main", e);
                 }
 //            }).start();
         }

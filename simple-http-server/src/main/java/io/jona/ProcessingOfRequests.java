@@ -1,5 +1,8 @@
 package io.jona;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -9,6 +12,8 @@ import java.nio.file.Paths;
 import static io.jona.Main.CONTENT_ROOT;
 
 public class ProcessingOfRequests {
+    private static final Logger logger = LoggerFactory.getLogger(ProcessingOfRequests.class);
+
     public static void processRequest(HttpRequest request, HttpResponse response) throws IOException {
         boolean requestedResourceExistsAsFile = CONTENT_ROOT.resolve(request.getPath()).toFile().exists();
         boolean welcomePageRequested = request.getPath().isEmpty() || request.getPath().equals("/");
@@ -17,8 +22,9 @@ public class ProcessingOfRequests {
             response.setContentType(MimeType.TEXT_HTML, "UTF-8");
             try {
                 response.setBody(Files.readString(CONTENT_ROOT.resolve(Paths.get("index.html")), StandardCharsets.UTF_8));
+                logger.info("Served File: public/index.html (MIME: text/html, Size: {} bytes", response.getBody().length);
             } catch (IOException e) {
-
+                logger.error("Fallo tratando de leer el archivo para el response del welcome page", e);
             }
             return;
         }
@@ -27,6 +33,7 @@ public class ProcessingOfRequests {
             response.setResponseCode(HttpCodes.NOT_FOUND_404);
             response.setContentType(MimeType.TEXT_PLAIN);
             response.setBody("Este recurso no existe");
+            logger.info("Served File: NOT FOUND");
             return;
         }
 
@@ -60,7 +67,7 @@ public class ProcessingOfRequests {
                 response.setBody(Files.readAllBytes(CONTENT_ROOT.resolve(Paths.get(request.getPath()))));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("Fallo seteando el body", e);
         }
     }
 }

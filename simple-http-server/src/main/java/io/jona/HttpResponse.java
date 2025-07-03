@@ -1,5 +1,8 @@
 package io.jona;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -13,6 +16,8 @@ import java.util.Locale;
 
 
 public class HttpResponse {
+    private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
     private ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private String protocol = "HTTP/1.1";
@@ -40,7 +45,7 @@ public class HttpResponse {
     public void setRange(long range) { this.range = range; }
     public void setBody(String body) {
         this.body = body.getBytes(StandardCharsets.UTF_8);
-        System.out.println("Body for response:\n"+ body);
+        logger.trace("Body for response:\n {}", body);
     }
     public void setTotalFileSize(long totalFileSize) { this.totalFileSize = totalFileSize; }
     public long getTotalFileSize() { return this.totalFileSize; }
@@ -112,13 +117,14 @@ public class HttpResponse {
         headers = headers.replace("\n", "\r\n");
 
         byte[] headerBytes = headers.getBytes(StandardCharsets.US_ASCII);
-        System.out.println("Response HEADERS: \n"+ headers);
+        logger.debug("Status: {}", responseCode.code);
+        logger.trace("Response HEADERS: \n {}", headers);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
                 baos.write(headerBytes);
                 baos.write(this.body);
         } catch (IOException ignored) {
-
+            logger.error("Fallo tratando de escribir el archivo");
         }
         return baos.toByteArray();
     }
