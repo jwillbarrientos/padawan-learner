@@ -1,4 +1,4 @@
-package book.Concurrency;
+package book.concurrency;
 
 public class SimpleConcurrencyExample {
     private static int counter = 0;

@@ -1,4 +1,4 @@
-package book.SingletonPattern;
+package book.singletonPattern;
 
 /*
     Singleton: Design pattern that it is used to have an only instance of a specific class, shared between more classes

@@ -1,4 +1,4 @@
-package book.SingletonPattern;
+package book.singletonPattern;
 
 public class LlamaTrainer {
     public boolean feedLlamas(int  numberOfLlamas) {

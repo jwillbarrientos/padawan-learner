@@ -1,4 +1,4 @@
-package book.SingletonPattern;
+package book.singletonPattern;
 
 public class StaffRegister {
     private static final StaffRegister instance;

@@ -1,6 +1,6 @@
-package book.BuilderPattern;
+package book.builderPattern;
 
-import book.InmutableObjects.Animal;
+import book.inmutableObjects.Animal;
 
 import java.util.List;
 

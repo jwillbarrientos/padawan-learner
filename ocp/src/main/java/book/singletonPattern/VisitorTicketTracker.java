@@ -1,4 +1,4 @@
-package book.SingletonPattern;
+package book.singletonPattern;
 
 // Lazy instantiation
 public class VisitorTicketTracker {

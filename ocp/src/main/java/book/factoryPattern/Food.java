@@ -1,4 +1,4 @@
-package book.FactoryPattern;
+package book.factoryPattern;
 
 public abstract class Food {
     private int quantity;

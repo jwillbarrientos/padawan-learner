@@ -1,4 +1,4 @@
-package book.Concurrency;
+package book.concurrency;
 
 import java.util.concurrent.*;
 public class FindMin extends RecursiveTask<Integer> {

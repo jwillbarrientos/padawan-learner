@@ -1,4 +1,4 @@
-package book.Concurrency;
+package book.concurrency;
 
 import java.util.Arrays;
 import java.util.Random;

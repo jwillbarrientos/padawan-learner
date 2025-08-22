@@ -1,4 +1,4 @@
-package book.FactoryPattern;
+package book.factoryPattern;
 
 public class FoodFactory {
     public static Food getFood(String animalName) {

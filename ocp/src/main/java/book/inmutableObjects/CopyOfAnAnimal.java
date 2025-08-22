@@ -1,4 +1,4 @@
-package book.InmutableObjects;
+package book.inmutableObjects;
 
 import java.util.ArrayList;
 import java.util.Arrays;
