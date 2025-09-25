@@ -1,4 +1,4 @@
-package serializableExample;
+package book.serializableExample;
 
 import java.io.*;
 import java.nio.file.Files;

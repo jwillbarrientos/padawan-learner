@@ -1,4 +1,4 @@
-package serializableExample;
+package book.serializableExample;
 
 import java.io.Serializable;
 

@@ -1,3 +1,5 @@
+package book;
+
 public class ParenthesesExcercise {
     public static void main(String[] args) {
         char[] array = {'(', '(', '(', ')', '(', ')', '(', ')', ')', '(', ')', ')'};
