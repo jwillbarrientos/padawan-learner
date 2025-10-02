@@ -1,4 +1,4 @@
-package io.jona;
+package io.jona.simplehttpserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

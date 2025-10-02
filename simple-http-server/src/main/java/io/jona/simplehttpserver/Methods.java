@@ -1,4 +1,4 @@
-package io.jona;
+package io.jona.simplehttpserver;
 
 public enum Methods {
     GET,

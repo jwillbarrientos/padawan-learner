@@ -5,7 +5,7 @@ package py.jona;
  * mvn -DskipTests clean package & java -jar target\tateti-1.0-SNAPSHOT.jar
  * mvn "-DskipTests" clean package ; java "-jar" target\tateti-1.0-SNAPSHOT.jar
  */
-public class Main{
+public class Main {
 
     static Player currentPlayer = Player.X;
     static TerminalHelper thelper;

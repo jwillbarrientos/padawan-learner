@@ -1,4 +1,4 @@
-package io.jona;
+package io.jona.simplehttpserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static io.jona.ProcessingOfRequests.processRequest;
+import static io.jona.simplehttpserver.ProcessingOfRequests.processRequest;
 
 public class Main {
     static Path CONTENT_ROOT = Paths.get("C:\\Users\\barri\\IdeaProjects\\padawan-learner\\simple-http-server\\websites\\jona-portafolio");

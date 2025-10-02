@@ -6,12 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="simple-http-server" />
+        <module name="meme-store" />
         <module name="tateti" />
         <module name="ocfa" />
         <module name="oca" />
         <module name="terminal-chat" />
         <module name="ocp" />
-        <module name="simple-http-server" />
       </profile>
     </annotationProcessing>
   </component>
