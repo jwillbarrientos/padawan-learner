@@ -4,11 +4,11 @@ public enum Platforms {
     YOU_TUBE, INSTAGRAM, TIKTOK, FACEBOOK, INVALID_PLATFORM;
 
     public static Platforms whatPlatformIs(String url) {
-        if (url.contains("facebook.com")) {
+        if (url.contains("facebook.com") || url.contains("fb.watch")) {
             return FACEBOOK;
-        } else if (url.contains("youtube.com")) {
+        } else if (url.contains("youtube.com") || url.contains("youtu.be")) {
             return YOU_TUBE;
-        } else if (url.contains("instagram.com")) {
+        } else if (url.contains("instagram.com") || url.contains("instagr.am")) {
             return INSTAGRAM;
         } else if (url.contains("tiktok.com")) {
             return TIKTOK;

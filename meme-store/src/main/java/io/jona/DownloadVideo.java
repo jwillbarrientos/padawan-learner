@@ -2,23 +2,33 @@ package io.jona;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Properties;
 
 public class DownloadVideo {
     private static final Logger logger = LoggerFactory.getLogger(DownloadVideo.class);
+    private static Platforms platform;
+    private static Executables exe;
     private static final Properties props = new Properties();
+    private static Process process;
     public static void main(String[] args) {
         //https://www.tiktok.com/@gertu0k/video/7258798530066713862
-        //https://www.instagram.com/reel/DOWR1MPDaE4/?igsh=MTR6N3duemJmd3R0eA%3D%3D
-        //https://www.youtube.com/shorts/Msn1xgzBwTg
+        //https://www.instagram.com/reel/DM2mUqnKUYS/?igsh=MWNuOG5leXRjajE0dg==
+        //https://www.youtube.com/watch?v=lWHYJOayAUg
         //https://www.facebook.com/reel/718363154596932
-        runDownloader("https://www.facebook.com/reel/718363154596932");
+        runDownloader("https://youtu.be/lWHYJOayAUg?si=UgHR7MhnOECnnluj");
     }
 
     public static void runDownloader(String url) {
-        Platforms platform = Platforms.whatPlatformIs(url);
+        platform = Platforms.whatPlatformIs(url);
+        if(platform == Platforms.YOU_TUBE)
+            exe = Executables.YOUTUBE_DL;
+        else
+            exe = Executables.YT_DLP;
         String[] command = new String[4];
         logger.info("user.dir: "+ System.getProperty("user.dir"));
         try (FileInputStream fis = new FileInputStream("./app.properties")) {
@@ -43,12 +53,42 @@ public class DownloadVideo {
                     logger.debug("Invalid url");
                     return;
             }
-            Process process = Runtime.getRuntime().exec(command);
+            process = Runtime.getRuntime().exec(command);
+            new Thread(DownloadVideo::printProcessOutput, "OutputThread").start();
+            new Thread(DownloadVideo::printProcessErr, "ErrThread").start();
             process.waitFor();
             logger.debug("Download finished");
         } catch (Exception e) {
             logger.error("Download failed", e);
         }
+    }
+
+    public static void printProcessOutput() {
+        logger.trace("Entering printProcessOutput() with param: {}", process);
+        try(BufferedReader reader = new BufferedReader(
+                new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while((line = reader.readLine()) != null) {
+                logger.debug(exe.name() + ": {}", line);
+            }
+        } catch (IOException e) {
+            logger.error(exe.name() + ": IOException reading the InputStream of process", e);
+        }
+        logger.debug("Printing InputStream of process without exception");
+    }
+
+    public static void printProcessErr() {
+        logger.trace("Entering printProcessErr() with param: {}", process);
+        try(BufferedReader errorReader = new BufferedReader(
+                new InputStreamReader(process.getErrorStream()))) {
+            String line;
+            while((line = errorReader.readLine()) != null) {
+                logger.error(exe.name() + ": {}", line);
+            }
+        } catch (IOException e) {
+            logger.error(exe.name() + ": IOException reading the ErrorStream of process", e);
+        }
+        logger.debug("Printing ErrorStream of process without Exception");
     }
 
     public static String[] buildCommand(String[] command, String downloader, String destinyFolder, String url) {

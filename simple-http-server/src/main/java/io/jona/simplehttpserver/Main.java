@@ -27,7 +27,6 @@ public class Main {
                     HttpRequest request = new HttpRequest();
                     request.readFromSocket(client);
                     HttpResponse response = new HttpResponse();
-
                     processRequest(request, response);
 
                     byte[] responseBytes = response.buildResponse();
