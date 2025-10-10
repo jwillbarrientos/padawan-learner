@@ -6,17 +6,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="simple-http-server" />
+        <module name="jona-framework" />
         <module name="meme-store" />
-        <module name="tateti" />
-        <module name="ocfa" />
-        <module name="oca" />
-        <module name="terminal-chat" />
-        <module name="ocp" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="logs" target="21" />
+      <module name="oca" target="1.8" />
+      <module name="ocfa" target="21" />
+      <module name="ocp" target="1.8" />
+      <module name="pom.xml" target="21" />
+      <module name="simple-http-server" target="21" />
+      <module name="tateti" target="21" />
+      <module name="terminal-chat" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
