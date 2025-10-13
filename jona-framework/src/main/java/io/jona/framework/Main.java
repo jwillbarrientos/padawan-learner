@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import static io.jona.framework.ProcessingOfRequests.processRequest;
 
@@ -26,7 +27,7 @@ public class Main {
                     HttpRequest request = new HttpRequest();
                     request.readFromSocket(client);
                     HttpResponse response = new HttpResponse();
-                    processRequest(request, response, "");
+                    processRequest(request, response, "", new HashMap<>());
 
                     byte[] responseBytes = response.buildResponse();
 

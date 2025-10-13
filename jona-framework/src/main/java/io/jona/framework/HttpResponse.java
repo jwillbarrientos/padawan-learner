@@ -12,10 +12,21 @@ import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
 
 
 public class HttpResponse {
+    public HttpResponse() {
+        super();
+    }
+
+    public HttpResponse(HttpCodes responseCode) {
+        this.responseCode = responseCode;
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
@@ -33,8 +44,24 @@ public class HttpResponse {
     long totalFileSize;
     private byte[] body;
 
+    public HttpResponse(String protocol, Path path, HttpCodes responseCode, String date, String serverName, String contentType, long range, long startOfFile, long enfOfFile, long totalFileSize, byte[] body) {
+        this.protocol = protocol;
+        this.path = path;
+        this.responseCode = responseCode;
+        this.date = date;
+        this.serverName = serverName;
+        this.contentType = contentType;
+        this.range = range;
+        this.startOfFile = startOfFile;
+        this.enfOfFile = enfOfFile;
+        this.totalFileSize = totalFileSize;
+        if(path.toString().contains("getdate"))
+            this.body = this.getDate().getBytes();
+    }
+
     public void setPath(String path) { this.path = Paths.get(path); }
     public void setResponseCode(HttpCodes responseCode) { this.responseCode = responseCode; }
+    public String getDate() { return this.date; }
     public void setContentType(MimeType mimeType, String charset) { this.contentType = mimeType.value + "; charset=" + charset; }
     public void setContentType(MimeType mimeType) { this.contentType = mimeType.value; }
     public String getContentType() { return this.contentType; }
@@ -51,8 +78,6 @@ public class HttpResponse {
     public long getTotalFileSize() { return this.totalFileSize; }
     public void setBody(byte[] body) { this.body = body; }
     public byte[] getBody() { return this.body; }
-
-//    todo: added by Alan
     public void setBody(Path body, long starPositionOfReading, long endPositionOfReading) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(body.toFile(), "r")) {
             long fileLength = file.length();
@@ -71,6 +96,7 @@ public class HttpResponse {
             this.body = buffer; // assign to the response body
         }
     }
+
     byte[] buildResponse() {
         String headers;
         if(this.contentType.equals("video/mp4")) {

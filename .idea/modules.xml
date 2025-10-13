@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/padawan-learner.iml" filepath="$PROJECT_DIR$/.idea/padawan-learner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/oca/oca.iml" filepath="$PROJECT_DIR$/oca/oca.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ocfa/ocfa.iml" filepath="$PROJECT_DIR$/ocfa/ocfa.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ocp/ocp.iml" filepath="$PROJECT_DIR$/ocp/ocp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/simple-http-server/simple-http-server.iml" filepath="$PROJECT_DIR$/simple-http-server/simple-http-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tateti/tateti.iml" filepath="$PROJECT_DIR$/tateti/tateti.iml" />
+      <module fileurl="file://$PROJECT_DIR$/terminal-chat/terminal-chat.iml" filepath="$PROJECT_DIR$/terminal-chat/terminal-chat.iml" />
     </modules>
   </component>
 </project>

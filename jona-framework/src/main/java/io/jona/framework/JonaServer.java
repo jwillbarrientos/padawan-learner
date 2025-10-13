@@ -1,9 +1,10 @@
 package io.jona.framework;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import static io.jona.framework.ProcessingOfRequests.processRequest;
@@ -11,6 +12,7 @@ import static io.jona.framework.ProcessingOfRequests.processRequest;
 public class JonaServer {
     private final int port;
     private volatile String staticContentLocation;
+    private final Map<String, Function<HttpRequest, HttpResponse>> endPoints = new HashMap<>();
 
     public JonaServer() {
         this(8080);
@@ -20,8 +22,8 @@ public class JonaServer {
         this.port = port;
     }
 
-    public void registerEndPoint(Methods method, String tag, Function<HttpResponse, HttpRequest> function) {
-
+    public void registerEndPoint(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
+        endPoints.put(path, function);
     }
 
     public void addStaticContent(String location) {
@@ -30,13 +32,22 @@ public class JonaServer {
 
     public void start() throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
-        while(true) {
+        loop: while(true) {
             try (Socket client = serverSocket.accept()) {
                 System.out.println("Server started");
                 HttpRequest request = new HttpRequest();
                 request.readFromSocket(client);
+                System.out.println(request.getPath());
                 HttpResponse response = new HttpResponse();
-                processRequest(request, response, staticContentLocation);
+                boolean isDynamic = endPoints.containsKey("/" + request.getPath());
+                if (isDynamic) {
+                    Function<HttpRequest, HttpResponse> function = endPoints.get("/" + request.getPath());
+                    response = function.apply(request);
+//                    response.setBody(response.getDate().getBytes());
+//                    response.setContentType(MimeType.TEXT_PLAIN);
+                } else {
+                    processRequest(request, response, staticContentLocation, endPoints);
+                }
 
                 byte[] responseBytes = response.buildResponse();
 
