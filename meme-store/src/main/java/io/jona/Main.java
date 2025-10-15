@@ -16,12 +16,10 @@ public class Main {
 //        jonaServer.registerEndPoint(Methods.GET, "/api/add-label", ...);
 //        jonaServer.registerEndPoint(Methods.GET, "/api/edit-label", ...);
 //        jonaServer.registerEndPoint(Methods.GET, "/api/remove-label", ...);
-//        jonaServer.registerEndPoint(Methods.GET, "/getdate", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.OK_200).setPath("/getdate").setContentType(MimeType.TEXT_PLAIN).build());
         jonaServer.registerEndPoint(Methods.GET, "/setcookie", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.NO_CONTENT_204).addCookie("hola", "myCookie").addCookie("hola2", "myCookie2").build());
-        //jonaServer.registerEndPoint(Methods.GET, "/readcookies", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.NO_CONTENT_204).readCookies().build());
         jonaServer.registerEndPoint(Methods.GET, "/deletecookies", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.NO_CONTENT_204).deleteCookies().build());
-        jonaServer.registerEndPoint(Methods.GET, "/getdate", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.OK_200).setContentType(MimeType.TEXT_PLAIN).setBody(LocalDateTime.now().toString().getBytes()).build());
         jonaServer.registerEndPoint(Methods.GET, "/api/getdate", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.OK_200).setContentType(MimeType.TEXT_PLAIN).setBody(LocalDateTime.now().toString().getBytes()).build());
+        jonaServer.registerEndPoint(Methods.GET, "/getdate", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.OK_200).setContentType(MimeType.TEXT_PLAIN).setBody(LocalDateTime.now().toString().getBytes()).build());
         jonaServer.addStaticContent("./web-root");
         jonaServer.start();
     }

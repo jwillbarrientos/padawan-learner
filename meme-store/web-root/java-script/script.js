@@ -57,39 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-//document.addEventListener("DOMContentLoaded", () => {
-//    const readCookieBtn = document.getElementById("readCookies");
-//    readCookieBtn.addEventListener("click", async () => {
-//        try {
-//            const response = await fetch("/readcookies");
-//
-//            if (!response.ok) {
-//                throw new Error("Network response was not ok");
-//            }
-//
-//            const data = await response.text();
-//
-//            console.log("🍪 Cookies from server:", data);
-//            alert("🍪 Cookies from server:\n" + data);
-//        } catch (err) {
-//             console.error("Error reading cookies:", err);
-//        }
-//    });
-//});
-
-document.addEventListener("DOMContentLoaded", () => {
-    const readCookieBtn = document.getElementById("readCookies");
-    readCookieBtn.addEventListener("click", () => {
-        if (document.cookie) {
-            alert("🍪 Current cookies:\n" + document.cookie);
-            console.log("🍪 Current cookies:\n" + document.cookie);
-        } else {
-            alert("❌ No cookies found.");
-            console.log("❌ No cookies found.");
-        }
-    });
-});
-
 document.addEventListener("DOMContentLoaded", () => {
     const deleteCookieBtn = document.getElementById("deleteCookies");
     deleteCookieBtn.addEventListener("click", async () => {
