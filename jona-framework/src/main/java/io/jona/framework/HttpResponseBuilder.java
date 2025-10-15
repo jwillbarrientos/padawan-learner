@@ -22,7 +22,6 @@ public class HttpResponseBuilder {
     private long totalFileSize;
     private byte[] body;
     private HashMap<String, String> cookies = new HashMap<>();
-    //private boolean readCookies;
     private boolean deleteCookies;
 
     public HttpResponseBuilder setResponseCode(HttpCodes responseCode) {
@@ -71,11 +70,6 @@ public class HttpResponseBuilder {
         cookies.put(key, value);
         return this;
     }
-
-    //public HttpResponseBuilder readCookies() {
-    //    readCookies = true;
-    //    return this;
-    //}
 
     public HttpResponseBuilder deleteCookies() {
         deleteCookies = true;

@@ -40,7 +40,6 @@ public class HttpResponse {
     private long totalFileSize;
     private byte[] body;
     private HashMap<String, String> cookies;
-    //private boolean readCookies;
     private boolean deleteCookies;
 
     public HttpResponse(String protocol, HttpCodes responseCode, String serverName, String contentType, long range, long startOfFile, long enfOfFile, long totalFileSize, byte[] body, HashMap<String, String> cookies, boolean deleteCookies) {
@@ -54,7 +53,6 @@ public class HttpResponse {
         this.totalFileSize = totalFileSize;
         this.body = body;
         this.cookies = cookies;
-        //this.readCookies = readCookies;
         this.deleteCookies = deleteCookies;
     }
 
@@ -94,18 +92,15 @@ public class HttpResponse {
             this.body = buffer; // assign to the response body
         }
     }
-    //public void addCookie(String key, String value) { cookies.put(key, value); }
-    //public Map<String, String> getCookies() { return cookies; }
 
     byte[] buildResponse() {
-        String headers = protocol + " " + responseCode.code + " " + responseCode.desc + " \r\n";
-        boolean hasNoBody = body == null;
-        if(hasNoBody && cookies != null && !deleteCookies) {
+        String headers = protocol + " " + responseCode.code + " " + responseCode.desc + "\n";
+        if(cookies != null && !deleteCookies) {
             for (Map.Entry<String, String> cookie : cookies.entrySet()) {
                 String cookieString = cookie.getKey() + "=" + cookie.getValue();
                 headers += "Set-Cookie: " + cookieString + "\n";
             }
-        } else if (hasNoBody && deleteCookies) {
+        } else if (deleteCookies) {
             headers += "Clear-Site-Data: \"cookies\"\n";
         //} else if (hasNoBody && readCookies) {
         //    headers += "Cookie: ";
@@ -114,7 +109,9 @@ public class HttpResponse {
         //        headers += cookieString + "; ";
         //    }
         //    headers += "\n";
-        } else if (this.contentType.equals("video/mp4")) {
+        }
+
+        if (body != null && contentType != null && contentType.equals("video/mp4")) {
             headers += """
                     Date: %s
                     Server: %s
@@ -133,7 +130,7 @@ public class HttpResponse {
                             totalFileSize,
                             this.body.length
                     );
-        } else {
+        } else if (body != null){
             headers += """
                     Date: %s
                     Server: %s
@@ -146,18 +143,36 @@ public class HttpResponse {
                             contentType,
                             body.length
                     );
+        } else {
+            headers += """
+                    Date: %s
+                    Server: %s
+                    
+                    """
+                    .formatted(
+                            date, serverName
+                    );
         }
+
+//        if(cookies != null && !cookies.isEmpty()) {
+//            headers += "Cookie: ";
+//            for (Map.Entry<String, String> cookie : cookies.entrySet()) {
+//                String cookieString = cookie.getKey() + "=" + cookie.getValue();
+//                headers += cookieString + "; ";
+//            }
+//            headers += "\n";
+//        }
         headers = headers.replace("\n", "\r\n");
 
         byte[] headerBytes = headers.getBytes(StandardCharsets.US_ASCII);
         logger.debug("Status: {}", responseCode.code);
         logger.trace("Response HEADERS: \n {}", headers);
-        if(hasNoBody)
+        if(body == null)
             return headerBytes;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-                baos.write(headerBytes);
-                baos.write(this.body);
+            baos.write(headerBytes);
+            baos.write(this.body);
         } catch (IOException ignored) {
             logger.error("Fallo tratando de escribir el archivo");
         }

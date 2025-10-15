@@ -19,7 +19,14 @@ public class Main {
         jonaServer.registerEndPoint(Methods.GET, "/setcookie", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.NO_CONTENT_204).addCookie("hola", "myCookie").addCookie("hola2", "myCookie2").build());
         jonaServer.registerEndPoint(Methods.GET, "/deletecookies", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.NO_CONTENT_204).deleteCookies().build());
         jonaServer.registerEndPoint(Methods.GET, "/api/getdate", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.OK_200).setContentType(MimeType.TEXT_PLAIN).setBody(LocalDateTime.now().toString().getBytes()).build());
-        jonaServer.registerEndPoint(Methods.GET, "/getdate", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.OK_200).setContentType(MimeType.TEXT_PLAIN).setBody(LocalDateTime.now().toString().getBytes()).build());
+        jonaServer.registerEndPoint(Methods.GET, "/getdate",
+                r -> {
+            return new HttpResponseBuilder()
+                    .setResponseCode(HttpCodes.OK_200)
+                    .setContentType(MimeType.TEXT_PLAIN)
+                    .setBody(LocalDateTime.now()+ " - " + r.getHeaders().get("Cookie"))
+                    .build();
+        });
         jonaServer.addStaticContent("./web-root");
         jonaServer.start();
     }

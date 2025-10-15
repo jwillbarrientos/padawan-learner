@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class HttpRequest {
     public String getPath() { return path; }
     public void setProtocol(Protocols protocol) { this.protocol = protocol; }
     public Protocols getProtocol() { return protocol; }
+    public Map<String, String> getHeaders() { return this.headers; }
     public void setRange(long range) { this.range = range; }
     public long getRange() { return this.range; }
 
