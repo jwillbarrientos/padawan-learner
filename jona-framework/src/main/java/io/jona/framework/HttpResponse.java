@@ -2,20 +2,17 @@ package io.jona.framework;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
 
 
 public class HttpResponse {
@@ -32,7 +29,6 @@ public class HttpResponse {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
     private ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private String protocol = "HTTP/1.1";
-    private Path path;
     private HttpCodes responseCode;
     private String date = now.format(formatter);
     private String serverName = "jonatitoServer";
@@ -41,25 +37,27 @@ public class HttpResponse {
     private long startOfFile;
     private long enfOfFile;
     public static final long CHUNK_SIZE_BYTES = 2561024;
-    long totalFileSize;
+    private long totalFileSize;
     private byte[] body;
+    private HashMap<String, String> cookies;
+    //private boolean readCookies;
+    private boolean deleteCookies;
 
-    public HttpResponse(String protocol, Path path, HttpCodes responseCode, String date, String serverName, String contentType, long range, long startOfFile, long enfOfFile, long totalFileSize, byte[] body) {
+    public HttpResponse(String protocol, HttpCodes responseCode, String serverName, String contentType, long range, long startOfFile, long enfOfFile, long totalFileSize, byte[] body, HashMap<String, String> cookies, boolean deleteCookies) {
         this.protocol = protocol;
-        this.path = path;
         this.responseCode = responseCode;
-        this.date = date;
         this.serverName = serverName;
         this.contentType = contentType;
         this.range = range;
         this.startOfFile = startOfFile;
         this.enfOfFile = enfOfFile;
         this.totalFileSize = totalFileSize;
-        if(path.toString().contains("getdate"))
-            this.body = this.getDate().getBytes();
+        this.body = body;
+        this.cookies = cookies;
+        //this.readCookies = readCookies;
+        this.deleteCookies = deleteCookies;
     }
 
-    public void setPath(String path) { this.path = Paths.get(path); }
     public void setResponseCode(HttpCodes responseCode) { this.responseCode = responseCode; }
     public String getDate() { return this.date; }
     public void setContentType(MimeType mimeType, String charset) { this.contentType = mimeType.value + "; charset=" + charset; }
@@ -96,12 +94,28 @@ public class HttpResponse {
             this.body = buffer; // assign to the response body
         }
     }
+    //public void addCookie(String key, String value) { cookies.put(key, value); }
+    //public Map<String, String> getCookies() { return cookies; }
 
     byte[] buildResponse() {
-        String headers;
-        if(this.contentType.equals("video/mp4")) {
-            headers = """
-                    %s %s %s
+        String headers = protocol + " " + responseCode.code + " " + responseCode.desc + " \r\n";
+        boolean hasNoBody = body == null;
+        if(hasNoBody && cookies != null && !deleteCookies) {
+            for (Map.Entry<String, String> cookie : cookies.entrySet()) {
+                String cookieString = cookie.getKey() + "=" + cookie.getValue();
+                headers += "Set-Cookie: " + cookieString + "\n";
+            }
+        } else if (hasNoBody && deleteCookies) {
+            headers += "Clear-Site-Data: \"cookies\"\n";
+        //} else if (hasNoBody && readCookies) {
+        //    headers += "Cookie: ";
+        //    for (Map.Entry<String, String> cookie : cookies.entrySet()) {
+        //        String cookieString = cookie.getKey() + "=" + cookie.getValue();
+        //        headers += cookieString + "; ";
+        //    }
+        //    headers += "\n";
+        } else if (this.contentType.equals("video/mp4")) {
+            headers += """
                     Date: %s
                     Server: %s
                     Content-Type: %s
@@ -111,9 +125,6 @@ public class HttpResponse {
                     
                     """
                     .formatted(
-                            protocol,
-                            responseCode.code,
-                            responseCode.desc,
                             date,
                             serverName,
                             contentType,
@@ -123,8 +134,7 @@ public class HttpResponse {
                             this.body.length
                     );
         } else {
-            headers = """
-                    %s %s %s
+            headers += """
                     Date: %s
                     Server: %s
                     Content-Type: %s
@@ -132,9 +142,6 @@ public class HttpResponse {
                     
                     """
                     .formatted(
-                            protocol,
-                            responseCode.code,
-                            responseCode.desc,
                             date, serverName,
                             contentType,
                             body.length
@@ -145,6 +152,8 @@ public class HttpResponse {
         byte[] headerBytes = headers.getBytes(StandardCharsets.US_ASCII);
         logger.debug("Status: {}", responseCode.code);
         logger.trace("Response HEADERS: \n {}", headers);
+        if(hasNoBody)
+            return headerBytes;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
                 baos.write(headerBytes);

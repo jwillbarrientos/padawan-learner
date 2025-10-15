@@ -4,40 +4,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpResponseBuilder {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponseBuilder.class);
 
-    public final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-    public final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private String protocol = "HTTP/1.1";
     private Path path;
     private HttpCodes responseCode;
-    private String date = now.format(formatter);
     private String serverName = "jonatitoServer";
     private String contentType;
     private long range;
     private long startOfFile;
     private long enfOfFile;
     public static final long CHUNK_SIZE_BYTES = 2561024;
-    long totalFileSize;
+    private long totalFileSize;
     private byte[] body;
+    private HashMap<String, String> cookies = new HashMap<>();
+    //private boolean readCookies;
+    private boolean deleteCookies;
 
-    public HttpResponseBuilder setPath(String path) {
-        this.path = Paths.get(path);
-        return this;
-    }
     public HttpResponseBuilder setResponseCode(HttpCodes responseCode) {
         this.responseCode = responseCode;
-        return this;
-    }
-    public HttpResponseBuilder setDate(String date) {
-        this.date = date;
         return this;
     }
     public HttpResponseBuilder setContentType(MimeType mimeType, String charset) {
@@ -74,5 +63,26 @@ public class HttpResponseBuilder {
         return this;
     }
 
-    public HttpResponse build() { return new HttpResponse(protocol, path, responseCode, date, serverName, contentType, range, startOfFile, enfOfFile, totalFileSize, body); }
+    public HttpResponseBuilder setBody() {
+        return this;
+    }
+
+    public HttpResponseBuilder addCookie(String key, String value) {
+        cookies.put(key, value);
+        return this;
+    }
+
+    //public HttpResponseBuilder readCookies() {
+    //    readCookies = true;
+    //    return this;
+    //}
+
+    public HttpResponseBuilder deleteCookies() {
+        deleteCookies = true;
+        return this;
+    }
+
+    public HttpResponse build() {
+        return new HttpResponse(protocol, responseCode, serverName, contentType, range, startOfFile, enfOfFile, totalFileSize, body, cookies, deleteCookies);
+    }
 }

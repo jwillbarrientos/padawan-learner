@@ -16,14 +16,22 @@ public class ProcessingOfRequests {
         String welcomePage = "index.html";
         boolean welcomePageRequested = request.getPath().isEmpty() || request.getPath().equals("/") || endPoints.containsKey(request.getPath());
         String relativePath = location + "/" + request.getPath(); // /index.html === ./web-root//index.html
+        Path path = Paths.get(relativePath).toAbsolutePath();
         relativePath = relativePath.replaceAll("/{2,}", "/");
         if(welcomePageRequested) {
             relativePath = location + "/index.html";
         }
 
-        try(InputStream resourceAsStream = new FileInputStream(relativePath)) {
-            boolean requestedResourceExistsAsFile = resourceAsStream != null;
+        boolean requestedResourceExistsAsFile = path.toFile().exists();
+        if (!requestedResourceExistsAsFile) {
+            response.setResponseCode(HttpCodes.NOT_FOUND_404);
+            response.setContentType(MimeType.TEXT_PLAIN);
+            response.setBody("Este recurso no existe");
+            logger.info("Served File: NOT FOUND");
+            return;
+        }
 
+        try(InputStream resourceAsStream = new FileInputStream(relativePath)) {
             if (welcomePageRequested) {
                 response.setResponseCode(HttpCodes.OK_200);
                 response.setContentType(MimeType.TEXT_HTML, "UTF-8");
@@ -33,14 +41,6 @@ public class ProcessingOfRequests {
                 } catch (Exception e) {
                     logger.error("Fallo tratando de leer el archivo para el response del welcome page", e);
                 }
-                return;
-            }
-
-            if (!requestedResourceExistsAsFile) {
-                response.setResponseCode(HttpCodes.NOT_FOUND_404);
-                response.setContentType(MimeType.TEXT_PLAIN);
-                response.setBody("Este recurso no existe");
-                logger.info("Served File: NOT FOUND");
                 return;
             }
 
@@ -56,15 +56,13 @@ public class ProcessingOfRequests {
             try {
                     if (mimeType == MimeType.VIDEO_MP4) {
                         response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
-                        response.setPath(request.getPath());
                         response.setRange(request.getRange());
                         response.setStartOfFile(request.getRange());
                         response.setTotalFileSize(resourceAsStream.readAllBytes().length);
 
-                        Path filePath = Paths.get(relativePath);
                         long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
                         response.setEnfOfFile(end);
-                        response.setBody(filePath, response.getStartOfFile(), response.getEnfOfFile());
+                        response.setBody(path, response.getStartOfFile(), response.getEnfOfFile());
                     } else {
                         response.setResponseCode(HttpCodes.OK_200);
                         response.setBody(resourceAsStream.readAllBytes());

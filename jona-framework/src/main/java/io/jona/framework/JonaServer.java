@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static io.jona.framework.ProcessingOfRequests.processRequest;
 
@@ -13,6 +15,7 @@ public class JonaServer {
     private final int port;
     private volatile String staticContentLocation;
     private final Map<String, Function<HttpRequest, HttpResponse>> endPoints = new HashMap<>();
+    private final Map<String, Function<HttpRequest, HttpResponse>> filters = new HashMap<>();
 
     public JonaServer() {
         this(8080);
@@ -20,6 +23,10 @@ public class JonaServer {
 
     public JonaServer(int port) {
         this.port = port;
+    }
+
+    public void registerFilter(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
+        filters.put(path, function);
     }
 
     public void registerEndPoint(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
@@ -32,7 +39,7 @@ public class JonaServer {
 
     public void start() throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
-        loop: while(true) {
+        while(true) {
             try (Socket client = serverSocket.accept()) {
                 System.out.println("Server started");
                 HttpRequest request = new HttpRequest();
@@ -40,11 +47,20 @@ public class JonaServer {
                 System.out.println(request.getPath());
                 HttpResponse response = new HttpResponse();
                 boolean isDynamic = endPoints.containsKey("/" + request.getPath());
-                if (isDynamic) {
+                boolean isValid = true;
+                for(String regex : filters.keySet()) {
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher("/" + request.getPath());
+                    if ((matcher.matches())) {
+                        isValid = false;
+                        Function<HttpRequest, HttpResponse> function = filters.get(regex);
+                        response = function.apply(request);
+                        break;
+                    }
+                }
+                if (isDynamic && isValid) {
                     Function<HttpRequest, HttpResponse> function = endPoints.get("/" + request.getPath());
                     response = function.apply(request);
-//                    response.setBody(response.getDate().getBytes());
-//                    response.setContentType(MimeType.TEXT_PLAIN);
                 } else {
                     processRequest(request, response, staticContentLocation, endPoints);
                 }
