@@ -103,6 +103,6 @@ public class JbdcTest {
 
     public static void queryClients(ResultSet rs) throws SQLException {
         while(rs.next())
-            System.out.println(rs.getInt(1));
+            System.out.println(rs.getString(1));
     }
 }
