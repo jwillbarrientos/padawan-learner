@@ -11,6 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="db" target="21" />
       <module name="logs" target="21" />
       <module name="oca" target="1.8" />
       <module name="ocfa" target="21" />

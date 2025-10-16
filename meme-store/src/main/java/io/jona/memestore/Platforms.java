@@ -1,4 +1,4 @@
-package io.jona;
+package io.jona.memestore;
 
 public enum Platforms {
     YOU_TUBE, INSTAGRAM, TIKTOK, FACEBOOK, INVALID_PLATFORM;

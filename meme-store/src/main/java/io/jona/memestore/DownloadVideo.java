@@ -1,4 +1,4 @@
-package io.jona;
+package io.jona.memestore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +19,9 @@ public class DownloadVideo {
         //https://www.tiktok.com/@gertu0k/video/7258798530066713862
         //https://www.instagram.com/reel/DM2mUqnKUYS/?igsh=MWNuOG5leXRjajE0dg==
         //https://www.youtube.com/watch?v=lWHYJOayAUg
+        //https://youtu.be/lWHYJOayAUg?si=UgHR7MhnOECnnluj
         //https://www.facebook.com/reel/718363154596932
-        runDownloader("https://youtu.be/lWHYJOayAUg?si=UgHR7MhnOECnnluj");
+        runDownloader("https://www.tiktok.com/@gertu0k/video/7258798530066713862");
     }
 
     public static void runDownloader(String url) {
