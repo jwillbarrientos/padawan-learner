@@ -1,10 +1,10 @@
 package io.jona.framework;
 
 import lombok.extern.slf4j.Slf4j;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+
+import java.sql.*;
+import java.util.List;
+import java.util.function.Function;
 
 @Slf4j
 public class JonaDb {
@@ -16,9 +16,6 @@ public class JonaDb {
         JonaDb.url = url;
         JonaDb.user = user;
         JonaDb.password = password;
-        System.out.println(JonaDb.url);
-        System.out.println(JonaDb.user);
-        System.out.println(JonaDb.password);
     }
 
     public static boolean insert(Table table) {
@@ -32,7 +29,6 @@ public class JonaDb {
                     stmt.setString(j, values[i].toString());
             }
             int rowsInserted = stmt.executeUpdate();
-
             if (rowsInserted > 0) {
                 System.out.println("A new client was inserted successfully!");
                 return true;
@@ -41,5 +37,27 @@ public class JonaDb {
             log.error("Insert fail " + e);
         }
         return false;
+    }
+
+    public static boolean delete(Table table) {
+        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+            PreparedStatement stmt = conn.prepareStatement(table.getDelete((Integer) table.getValues()[0]));
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("Client deleted successfully!");
+                return true;
+            }
+        } catch (SQLException e) {
+            log.error("Delete fail " + e);
+        }
+        return false;
+    }
+
+    public static <T extends Table> T selectSingle(String query, Function<ResultSet, T> rowMapper, String... queryMappings) {
+
+    }
+
+    public static <T extends Table> List<T> selectList(String query, Function<ResultSet, T> rowMapper, String ... queryMappings) {
+
     }
 }

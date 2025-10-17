@@ -2,6 +2,7 @@ package io.jona.memestore.dto;
 
 import io.jona.framework.Table;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,15 +11,15 @@ import java.util.function.Function;
 @Slf4j
 @AllArgsConstructor
 public class Video extends Table {
-    int id;
-    String name;
-    String link;
-    String path;
-    int durationSeconds;
-    String videoState;
-    int clientId;
+    private int id;
+    private String name;
+    private String link;
+    private String path;
+    private int durationSeconds;
+    private String videoState;
+    private int clientId;
 
-    public String getDelete() {
+    public String getDelete(int id) {
         return "delete from video where id = " + id;
     }
 

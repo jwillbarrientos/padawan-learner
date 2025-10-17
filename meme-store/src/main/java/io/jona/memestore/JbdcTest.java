@@ -66,8 +66,9 @@ public class JbdcTest {
 //        );
         Client client = new Client(1, "barrientosjonah@gmail.com", "1234");
         JonaDb.init(AppProps.getJdbcUrl(), AppProps.getDbUser(), AppProps.getDbPassword());
-        System.out.println(AppProps.getJdbcUrl());
         boolean successInsert = JonaDb.insert(client);
         System.out.println(successInsert);
+        boolean successDelete = JonaDb.delete(client);
+        System.out.println(successDelete);
     }
 }
