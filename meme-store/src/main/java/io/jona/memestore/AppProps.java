@@ -9,7 +9,7 @@ import java.util.Properties;
 public class AppProps {
     private static final Properties props = new Properties();
     static {
-        try (FileInputStream fis = new FileInputStream("./app.properties")) {
+        try (FileInputStream fis = new FileInputStream("C:/Users/barri/IdeaProjects/padawan-learner/meme-store/app.properties")) {
             props.load(fis);
         } catch (IOException e) {
             log.error("while loading app.properties", e);
