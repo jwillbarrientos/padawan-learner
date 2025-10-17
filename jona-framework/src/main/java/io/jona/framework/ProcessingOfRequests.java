@@ -1,19 +1,15 @@
 package io.jona.framework;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.function.Function;
 
+@Slf4j
 public class ProcessingOfRequests {
-    private static final Logger logger = LoggerFactory.getLogger(ProcessingOfRequests.class);
-
     public static void processRequest(HttpRequest request, HttpResponse response, String location, Map<String, Function<HttpRequest, HttpResponse>> endPoints) throws IOException {
-        String welcomePage = "index.html";
         boolean welcomePageRequested = request.getPath().isEmpty() || request.getPath().equals("/") || endPoints.containsKey(request.getPath());
         String relativePath = location + "/" + request.getPath(); // /index.html === ./web-root//index.html
         Path path = Paths.get(relativePath).toAbsolutePath();
@@ -27,7 +23,7 @@ public class ProcessingOfRequests {
             response.setResponseCode(HttpCodes.NOT_FOUND_404);
             response.setContentType(MimeType.TEXT_PLAIN);
             response.setBody("Este recurso no existe");
-            logger.info("Served File: NOT FOUND");
+            log.info("Served File: NOT FOUND");
             return;
         }
 
@@ -37,9 +33,9 @@ public class ProcessingOfRequests {
                 response.setContentType(MimeType.TEXT_HTML, "UTF-8");
                 try {
                     response.setBody(resourceAsStream.readAllBytes());
-                    logger.info("Served File: public/index.html (MIME: text/html, Size: {} bytes", response.getBody().length);
+                    log.info("Served File: public/index.html (MIME: text/html, Size: {} bytes", response.getBody().length);
                 } catch (Exception e) {
-                    logger.error("Fallo tratando de leer el archivo para el response del welcome page", e);
+                    log.error("Fallo tratando de leer el archivo para el response del welcome page", e);
                 }
                 return;
             }
@@ -68,7 +64,7 @@ public class ProcessingOfRequests {
                         response.setBody(resourceAsStream.readAllBytes());
                     }
             } catch (IOException e) {
-                logger.error("Fallo seteando el body", e);
+                log.error("Fallo seteando el body", e);
             }
         }
     }

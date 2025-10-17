@@ -1,11 +1,12 @@
 package io.jona.memestore;
 
+import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.util.function.Function;
 
+@Slf4j
 public class JbdcTest {
     public static void main(String[] args) throws SQLException, IOException {
 //        class Table {
@@ -67,8 +68,7 @@ public class JbdcTest {
 //
 //
 //
-//        String url = AppProps.jdbcUrl();//"jdbc:h2:tcp://localhost/C:/Users/barri/IdeaProjects/padawan-learner/meme-store/db/memedb";
-        String url = "jdbc:h2:tcp://localhost/C:/Users/barri/IdeaProjects/padawan-learner/meme-store/db/memedb";
+        String url = AppProps.getJdbcUrl();
         try(Connection conn = DriverManager.getConnection(url, "sa", "sa")) {
             Statement stmt = conn.createStatement();
             dropAndCreateDb(stmt);

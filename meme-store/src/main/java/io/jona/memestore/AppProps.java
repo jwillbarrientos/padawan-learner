@@ -1,39 +1,43 @@
 package io.jona.memestore;
 
+import lombok.extern.slf4j.Slf4j;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+@Slf4j
 public class AppProps {
     private static final Properties props = new Properties();
     static {
         try (FileInputStream fis = new FileInputStream("./app.properties")) {
             props.load(fis);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("while loading app.properties", e);
+            System.exit(-1 );
         }
     }
 
-    public String getYoutubeDlWin() {
+    public static String getYoutubeDlWin() {
         return props.getProperty("youtubeDl.win");
     }
 
-    public String getYtDlWin() {
+    public static String getYtDlWin() {
         return props.getProperty("ytDl.win");
     }
 
-    public String getVideOutputPath() {
+    public static String getVideOutputPath() {
         return props.getProperty("videOutputPath");
     }
 
-    public String getJdbcUrl() {
+    public static String getJdbcUrl() {
         return props.getProperty("jdbcUrl");
     }
 
-    public String getDbUser() {
+    public static String getDbUser() {
         return props.getProperty("dbUser");
     }
-    public String getDbPassword() {
+
+    public static String getDbPassword() {
         return props.getProperty("dbPassword");
     }
 }

@@ -1,41 +1,34 @@
 package io.jona.framework;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 public class HttpRequest {
-    private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
-
+    @Setter
     private Methods method;
+    @Setter @Getter
     private String path;
+    @Setter
     private Protocols protocol;
     private Map<String, String> queryParams = new LinkedHashMap<>();
+    @Getter
     private Map<String, String> headers = new LinkedHashMap<>();
+    @Setter @Getter
     private long range;
-
-    public void setMethod(Methods method) { this.method = method; }
-    public Methods getMethod() { return method; }
-    public void setPath(String path) { this.path = path; }
-    public String getPath() { return path; }
-    public void setProtocol(Protocols protocol) { this.protocol = protocol; }
-    public Protocols getProtocol() { return protocol; }
-    public Map<String, String> getHeaders() { return this.headers; }
-    public void setRange(long range) { this.range = range; }
-    public long getRange() { return this.range; }
 
     public void readFromSocket(Socket client) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream(), StandardCharsets.US_ASCII));
         String line = bufferedReader.readLine();
-        logger.trace(line);
+        log.trace(line);
         String[] methodPathProtocol = line.split(" ", 3);
         setMethod(Methods.valueOf(methodPathProtocol[0]));
         path = methodPathProtocol[1];
@@ -49,10 +42,10 @@ public class HttpRequest {
             queryAndParamsTogether = pathQueryParams[1].split("&");
             containsQueryParams = true;
         }
-        logger.debug("Received {} request for: {}", method, path);
+        log.debug("Received {} request for: {}", method, path);
         while (true) { //initialize headers
             line = bufferedReader.readLine();
-            logger.trace(line);
+            log.trace(line);
             String[] keyAndValue = line.split(": ", 2);
             if (line.isEmpty())
                 break;
@@ -67,7 +60,7 @@ public class HttpRequest {
         if (containsQueryParams && queryAndParamsTogether.length > 1) {
             int i = 0;
             while (i < queryAndParamsTogether.length) { //initialize queryParams
-                logger.debug(String.join(" ", queryAndParamsTogether));
+                log.debug(String.join(" ", queryAndParamsTogether));
                 String[] queryAndParamsSeparate = queryAndParamsTogether[i].split("=", 2);
                 queryParams.put(queryAndParamsSeparate[0], queryAndParamsSeparate[1]);
                 i++;

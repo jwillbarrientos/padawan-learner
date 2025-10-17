@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Map;
 
 public class HttpResponseBuilder {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponseBuilder.class);

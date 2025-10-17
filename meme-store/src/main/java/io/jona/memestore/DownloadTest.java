@@ -1,5 +1,6 @@
 package io.jona.memestore;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
@@ -12,6 +13,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class DownloadTest {
     private static final Logger logger = LoggerFactory.getLogger(DownloadTest.class);
     public static void main(String[] args) {
