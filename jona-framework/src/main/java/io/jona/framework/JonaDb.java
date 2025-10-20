@@ -26,12 +26,14 @@ public class JonaDb {
             for(int i = 0, j = 1; i < values.length; i++, j++) {
                 if (values[i] instanceof Integer)
                     stmt.setInt(j, ((Integer) values[i]));
+                else if(values[i] instanceof Date)
+                    stmt.setDate(j, (Date) values[i]);
                 else
                     stmt.setString(j, values[i].toString());
             }
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
-                System.out.println("A new element in table was inserted successfully!");
+                log.info("A new element in table was inserted successfully!");
                 return true;
             }
         } catch (SQLException e) {
@@ -45,7 +47,7 @@ public class JonaDb {
             PreparedStatement stmt = conn.prepareStatement(table.getDelete((Integer) table.getValues()[0]));
             int rowsDeleted = stmt.executeUpdate();
             if (rowsDeleted > 0) {
-                System.out.println("Element in table deleted successfully!");
+                log.info("Element in table deleted successfully!");
                 return true;
             }
         } catch (SQLException e) {
@@ -54,12 +56,17 @@ public class JonaDb {
         return false;
     }
 
-    public static <T extends Table> T selectSingle(String query, Function<ResultSet, T> rowMapper, String... queryMappings) {
+    public static <T extends Table> T selectSingle(String query, Function<ResultSet, T> rowMapper, Object... queryMappings) {
         try(Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(query);
             int index = 1;
-            for(String mapping : queryMappings) {
-                stmt.setString(index++, mapping.toString());
+            for(Object mapping : queryMappings) {
+                if (mapping instanceof Integer)
+                    stmt.setInt(index++, (Integer) mapping);
+                else if (mapping instanceof Date)
+                    stmt.setDate(index++, (Date) mapping);
+                else
+                    stmt.setString(index++, mapping.toString());
             }
             ResultSet rs = stmt.executeQuery();
             if (rs.next())
@@ -70,13 +77,18 @@ public class JonaDb {
         return null;
     }
 
-    public static <T extends Table> List<T> selectList(String query, Function<ResultSet, T> rowMapper, String ... queryMappings) {
+    public static <T extends Table> List<T> selectList(String query, Function<ResultSet, T> rowMapper, Object... queryMappings) {
         try(Connection conn = DriverManager.getConnection(url, user, password)) {
            PreparedStatement stmt = conn.prepareStatement(query);
            int index = 1;
-           for(String mapping : queryMappings) {
-               stmt.setString(index++, mapping.toString());
-           }
+            for(Object mapping : queryMappings) {
+                if (mapping instanceof Integer)
+                    stmt.setInt(index++, (Integer) mapping);
+                else if (mapping instanceof Date)
+                    stmt.setDate(index++, (Date) mapping);
+                else
+                    stmt.setString(index++, mapping.toString());
+            }
            ResultSet rs = stmt.executeQuery();
            List<T> list = new ArrayList<>();
            if(rs.next())
