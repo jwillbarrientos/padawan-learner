@@ -38,7 +38,7 @@ public class Video extends Table {
     public static Function<ResultSet, Video> getFullMapping() {
         return resulSet -> {
             try {
-                new Video(
+                return new Video(
                         resulSet.getInt(1),
                         resulSet.getString(2),
                         resulSet.getString(3),
@@ -49,8 +49,19 @@ public class Video extends Table {
                 );
             } catch (SQLException e) {
                 log.error("Exception in getFullMapping() " + e);
+                return null;
             }
-            return null;
         };
+    }
+
+    @Override
+    public String toString() {
+        return "Video id = " + id +
+                ", name = " + name +
+                ", link = " + link +
+                ", path = " + path +
+                ", duration_seconds = " + durationSeconds +
+                ", video_state = " + videoState +
+                ", client_id + " + clientId;
     }
 }

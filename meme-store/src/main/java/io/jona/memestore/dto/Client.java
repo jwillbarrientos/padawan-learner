@@ -31,18 +31,25 @@ public class Client extends Table {
         return "select id, email, password from client where id = " + id;
     }
 
-    public Function<ResultSet, Client> getFullMapping() {
+    public static Function<ResultSet, Client> getFullMapping() {
         return resulSet -> {
             try {
-                new Client(
+                return new Client(
                     resulSet.getInt(1),
                     resulSet.getString(2),
                     resulSet.getString(3)
                 );
             } catch (SQLException e) {
                 log.error("Exception in getFullMapping() " + e);
+                return null;
             }
-            return null;
         };
+    }
+
+    @Override
+    public String toString() {
+        return "Client id = " + id +
+                ", email = " + email +
+                ", password = " + password;
     }
 }

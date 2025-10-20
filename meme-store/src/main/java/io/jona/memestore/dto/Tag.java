@@ -34,15 +34,22 @@ public class Tag extends Table {
     public static Function<ResultSet, Tag> getFullMapping() {
         return resulSet -> {
             try {
-                new Tag(
+                return new Tag(
                         resulSet.getInt(1),
                         resulSet.getString(2),
                         resulSet.getInt(3)
                 );
             } catch (SQLException e) {
                 log.error("Exception in getFullMapping() " + e);
+                return null;
             }
-            return null;
         };
+    }
+
+    @Override
+    public String toString() {
+        return "Client id = " + id +
+                ", name = " + name +
+                ", client_id = " + clientId;
     }
 }

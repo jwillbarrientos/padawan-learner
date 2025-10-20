@@ -3,6 +3,7 @@ package io.jona.framework;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -30,7 +31,7 @@ public class JonaDb {
             }
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
-                System.out.println("A new client was inserted successfully!");
+                System.out.println("A new element in table was inserted successfully!");
                 return true;
             }
         } catch (SQLException e) {
@@ -44,7 +45,7 @@ public class JonaDb {
             PreparedStatement stmt = conn.prepareStatement(table.getDelete((Integer) table.getValues()[0]));
             int rowsDeleted = stmt.executeUpdate();
             if (rowsDeleted > 0) {
-                System.out.println("Client deleted successfully!");
+                System.out.println("Element in table deleted successfully!");
                 return true;
             }
         } catch (SQLException e) {
@@ -54,10 +55,36 @@ public class JonaDb {
     }
 
     public static <T extends Table> T selectSingle(String query, Function<ResultSet, T> rowMapper, String... queryMappings) {
-
+        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            int index = 1;
+            for(String mapping : queryMappings) {
+                stmt.setString(index++, mapping.toString());
+            }
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                return rowMapper.apply(rs);
+        } catch (SQLException e) {
+            log.error("Select single fail " + e);
+        }
+        return null;
     }
 
     public static <T extends Table> List<T> selectList(String query, Function<ResultSet, T> rowMapper, String ... queryMappings) {
-
+        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+           PreparedStatement stmt = conn.prepareStatement(query);
+           int index = 1;
+           for(String mapping : queryMappings) {
+               stmt.setString(index++, mapping.toString());
+           }
+           ResultSet rs = stmt.executeQuery();
+           List<T> list = new ArrayList<>();
+           if(rs.next())
+               list.add(rowMapper.apply(rs));
+           return list;
+        } catch (SQLException e) {
+            log.error("Select list fail " + e);
+        }
+        return null;
     }
 }
