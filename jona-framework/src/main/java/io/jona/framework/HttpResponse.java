@@ -40,6 +40,7 @@ public class HttpResponse {
     private byte[] body;
     private HashMap<String, String> cookies;
     private boolean deleteCookies;
+    @Getter
     private boolean isFinal;
 
     public void setContentType(MimeType mimeType, String charset) {
@@ -76,6 +77,14 @@ public class HttpResponse {
             file.readFully(buffer);
             this.body = buffer; // assign to the response body
         }
+    }
+
+    public void addCookie(String key, String value) {
+        cookies.put(key, value);
+    }
+
+    public void deleteCookies() {
+        this.deleteCookies = true;
     }
 
     public void setFinal() {

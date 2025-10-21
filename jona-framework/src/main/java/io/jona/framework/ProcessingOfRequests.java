@@ -5,12 +5,13 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 @Slf4j
 public class ProcessingOfRequests {
-    public static void processRequest(HttpRequest request, HttpResponse response, String location, Map<String, Function<HttpRequest, HttpResponse>> endPoints) throws IOException {
-        boolean welcomePageRequested = request.getPath().isEmpty() || request.getPath().equals("/") || endPoints.containsKey(request.getPath());
+    public static void processRequest(HttpRequest request, HttpResponse response, String location) throws IOException {
+        boolean welcomePageRequested = request.getPath().isEmpty() || request.getPath().equals("/");
         String relativePath = location + "/" + request.getPath(); // /index.html === ./web-root//index.html
         Path path = Paths.get(relativePath).toAbsolutePath();
         relativePath = relativePath.replaceAll("/{2,}", "/");

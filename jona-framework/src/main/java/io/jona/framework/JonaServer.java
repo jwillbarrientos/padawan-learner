@@ -16,8 +16,9 @@ import static io.jona.framework.ProcessingOfRequests.processRequest;
 public class JonaServer {
     private final int port;
     private volatile String staticContentLocation;
-    private final Map<String, Function<HttpRequest, HttpResponse>> endPoints = new LinkedHashMap<>();
-    private final Map<String, Function<HttpRequest, HttpResponse>> inboundFilters = new LinkedHashMap<>();
+    private final Map<String, BiConsumer<HttpRequest, HttpResponse>> endPoints = new LinkedHashMap<>();
+    private final Map<String, BiConsumer<HttpRequest, HttpResponse>> inboundFilters = new LinkedHashMap<>();
+    private final Map<String, BiConsumer<HttpRequest, HttpResponse>> outboundFilters = new LinkedHashMap<>();
 
     public JonaServer() {
         this(8080);
@@ -27,17 +28,16 @@ public class JonaServer {
         this.port = port;
     }
 
-    // todo en vez de fuinction, se tiene q usar un void biConsumer<request,response>
-    public void registerInboundFilter(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
-        inboundFilters.put(path, function);
+    public void registerEndPoint(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
+        endPoints.put(path, biConsumer);
+    }
+
+    public void registerInboundFilter(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
+        inboundFilters.put(path, biConsumer);
     }
 
     public void registerOutboundFilter(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
-
-    }
-
-    public void registerEndPoint(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
-        endPoints.put(path, function);
+        outboundFilters.put(path, biConsumer);
     }
 
     public void addStaticContent(String location) {
@@ -59,21 +59,33 @@ public class JonaServer {
                     Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                     if (matcher.matches()) {
                         notFiltered = false;
-                        Function<HttpRequest, HttpResponse> function = inboundFilters.get(regex);
-                        response = function.apply(request); //response = function.acceptg(request, response);
-//                        if (response.isFinal()) break
-                        break;// todo: se puede tener mas de un filtro
+                        BiConsumer<HttpRequest, HttpResponse> biConsumer = inboundFilters.get(regex);
+                        biConsumer.accept(request, response);
+                        if (response.isFinal()) break;
+                            // todo: se puede tener mas de un filtro
+                        break;
                     }
                 }
+                //for(String regex : outboundFilters.keySet()) {
+                //    Pattern pattern = Pattern.compile(regex);
+                //    Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
+                //    if (matcher.matches()) {
+                //        notFiltered = false;
+                //        BiConsumer<HttpRequest, HttpResponse> biConsumer = outboundFilters.get(regex);
+                //        biConsumer.accept(request, response);
+                //        if (response.isFinal()) break;
+                //        // todo: se puede tener mas de un filtro
+                //    }
+                //}
 
                 // todo si el response ya isFinal() enmtonces no se tiene que mas llamar a un endpoint ni a un outbound filter,
                 //  ni a el contenido estatico, se tiene  que retornar ya al cliente.
 
                 if (isDynamic && notFiltered) {
-                    Function<HttpRequest, HttpResponse> function = endPoints.get(("/" + request.getPath()).replaceAll("/{2,}", "/"));
-                    response = function.apply(request);
+                    BiConsumer<HttpRequest, HttpResponse> biConsumer = endPoints.get(("/" + request.getPath()).replaceAll("/{2,}", "/"));
+                    biConsumer.accept(request, response);
                 } else if (notFiltered) {
-                    processRequest(request, response, staticContentLocation, endPoints);
+                    processRequest(request, response, staticContentLocation);
                 }
 
                 // todo recorrer los outboundFilters para agregar cabeceras...
