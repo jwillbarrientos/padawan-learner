@@ -1,7 +1,6 @@
 package io.jona.framework;
 
 import lombok.extern.slf4j.Slf4j;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

@@ -38,8 +38,6 @@ public class HttpResponse {
     private long totalFileSize;
     @Getter
     private byte[] body;
-    private boolean login;
-    private boolean signUp;
     private HashMap<String, String> cookies;
     private boolean deleteCookies;
 

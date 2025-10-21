@@ -1,8 +1,5 @@
 package io.jona.framework;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public enum HttpCodes {
 
     OK_200(200, "Accepted"),

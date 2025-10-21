@@ -1,8 +1,5 @@
 package io.jona.framework;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public enum MimeType {
     TEXT_HTML("text/html", ".html", true),
     TEXT_CSS("text/css", ".css", true),
@@ -13,8 +10,6 @@ public enum MimeType {
     IMAGE_JPG("image/jpeg", ".jpg", false),
     VIDEO_MP4("video/mp4", ".mp4", false),
     UNKNOW("", "", false);
-
-    private static final Logger logger = LoggerFactory.getLogger(MimeType.class);
 
     public final String value;
     public final String extension;

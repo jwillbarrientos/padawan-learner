@@ -1,5 +1,6 @@
 package io.jona.framework;
 
+import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,10 +9,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import static io.jona.framework.ProcessingOfRequests.processRequest;
-import static java.util.Collections.replaceAll;
 
+@Slf4j
 public class JonaServer {
     private final int port;
     private volatile String staticContentLocation;
@@ -42,10 +42,10 @@ public class JonaServer {
         ServerSocket serverSocket = new ServerSocket(port);
         while(true) {
             try (Socket client = serverSocket.accept()) {
-                System.out.println("Server started");
+                //todo: print "Server started" only once
+                log.info("Server started");
                 HttpRequest request = new HttpRequest();
                 request.readFromSocket(client);
-                System.out.println(request.getPath());
                 HttpResponse response = new HttpResponse();
                 boolean isDynamic = endPoints.containsKey(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                 boolean isValid = true;
@@ -71,7 +71,7 @@ public class JonaServer {
                 client.getOutputStream().write(responseBytes);
                 client.getOutputStream().flush();
             } catch (IOException e) {
-                System.out.println("Fail in start method");
+                log.error("Fail in start method: " + e);
             }
         }
     }

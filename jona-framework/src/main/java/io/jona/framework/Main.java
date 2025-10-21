@@ -9,7 +9,6 @@ import static io.jona.framework.ProcessingOfRequests.processRequest;
 
 @Slf4j
 public class Main {
-//    static Path CONTENT_ROOT = Paths.get("C:\\Users\\barri\\IdeaProjects\\padawan-learner\\simple-http-server\\websites\\jona-portafolio");
     private static final int PORT = 8080;
     public static void main(String[] args) throws IOException {
         try(ServerSocket serverSocket = new ServerSocket(PORT)) {
