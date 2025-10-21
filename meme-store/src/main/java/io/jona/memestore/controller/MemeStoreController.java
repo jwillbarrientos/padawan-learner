@@ -14,7 +14,7 @@ public class MemeStoreController {
                 request.getQueryParams().get("email"),
                 request.getQueryParams().get("password")) != null;
         builder.setContentType(MimeType.TEXT_PLAIN);
-        if(userExist) {
+        if (userExist) {
             builder.setResponseCode(HttpCodes.OK_200);
             builder.login();
         } else {
@@ -30,17 +30,20 @@ public class MemeStoreController {
                 Client.getFullMapping(),
                 request.getQueryParams().get("email"),
                 request.getQueryParams().get("password")) != null;
+        System.out.println("user exist " + userExist);
         builder.setContentType(MimeType.TEXT_PLAIN);
-        if(!userExist) {
-            builder.setResponseCode(HttpCodes.OK_200);
+        if (!userExist) {
             builder.signUp();
             Client client = new Client(request.getQueryParams().get("email"), request.getQueryParams().get("password"));
-            JonaDb.insert(client);
-            builder.setBody("true");
-        } else {
-            builder.setResponseCode(HttpCodes.CONFLICT_409);
-            builder.setBody("false");
+            boolean insertSuccessful = JonaDb.insert(client);
+            if (insertSuccessful) {
+                builder.setResponseCode(HttpCodes.OK_200);
+                builder.setBody("true");
+                return builder.build();
+            }
         }
+        builder.setResponseCode(HttpCodes.CONFLICT_409);
+        builder.setBody("false");
         return builder.build();
     }
 }

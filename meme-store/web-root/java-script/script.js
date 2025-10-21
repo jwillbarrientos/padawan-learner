@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         params.append("password", document.getElementById("password").value)
         const response = await fetch(`/public/signup?${params}`);
         console.log("Request sent to: " + response);
-        if (response.ok) {
+        if (response.status === 200) {
             window.location.href = '/example.html';
         } else {
             alert('Sign up failed');

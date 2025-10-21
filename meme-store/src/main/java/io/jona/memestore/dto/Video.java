@@ -51,7 +51,7 @@ public class Video extends Table {
         return resulSet -> {
             try {
                 return new Video(
-                        resulSet.getInt(1),
+                        resulSet.getLong(1),
                         resulSet.getString(2),
                         resulSet.getString(3),
                         resulSet.getString(4),

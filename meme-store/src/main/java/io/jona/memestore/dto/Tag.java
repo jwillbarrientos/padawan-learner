@@ -41,7 +41,7 @@ public class Tag extends Table {
         return resulSet -> {
             try {
                 return new Tag(
-                        resulSet.getInt(1),
+                        resulSet.getLong(1),
                         resulSet.getString(2),
                         resulSet.getInt(3)
                 );

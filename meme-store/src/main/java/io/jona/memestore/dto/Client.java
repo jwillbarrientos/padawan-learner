@@ -40,7 +40,7 @@ public class Client extends Table {
         return resulSet -> {
             try {
                 return new Client(
-                    resulSet.getInt(1),
+                    resulSet.getLong(1),
                     resulSet.getString(2),
                     resulSet.getString(3)
                 );
