@@ -13,7 +13,7 @@ public class MemeStore {
         TestController testController = new TestController();
         MemeStoreController memeStoreController = new MemeStoreController();
         jonaServer.registerFilter(Methods.GET, "^/api/.*$", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.NOT_FOUND_404).setContentType(MimeType.TEXT_PLAIN).build()); //  /api/add-label
-        jonaServer.registerFilter(Methods.GET, "^/public/login(\\?.*)?$", memeStoreController::login);
+//        jonaServer.registerFilter(Methods.GET, "^/public/login(\\?.*)?$", memeStoreController::login);
 //        jonaServer.registerEndPoint(Methods.GET, "/public/signup", ...);
 //        jonaServer.registerEndPoint(Methods.GET, "/api/home", ...);
 //        jonaServer.registerEndPoint(Methods.GET, "/api/add-label", ...);

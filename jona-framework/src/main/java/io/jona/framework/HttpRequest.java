@@ -41,6 +41,7 @@ public class HttpRequest {
         String[] queryAndParamsTogether = new String[0];
         if (methodPathProtocol[1].contains("?")) {
             String[] pathQueryParams = methodPathProtocol[1].split("\\?", 2);
+            setPath(pathQueryParams[0]);
             queryAndParamsTogether = pathQueryParams[1].split("&");
             containsQueryParams = true;
         }

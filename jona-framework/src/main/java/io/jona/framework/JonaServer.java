@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static io.jona.framework.ProcessingOfRequests.processRequest;
+import static java.util.Collections.replaceAll;
 
 public class JonaServer {
     private final int port;
@@ -46,11 +47,11 @@ public class JonaServer {
                 request.readFromSocket(client);
                 System.out.println(request.getPath());
                 HttpResponse response = new HttpResponse();
-                boolean isDynamic = endPoints.containsKey("/" + request.getPath());
+                boolean isDynamic = endPoints.containsKey(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                 boolean isValid = true;
                 for(String regex : filters.keySet()) {
                     Pattern pattern = Pattern.compile(regex);
-                    Matcher matcher = pattern.matcher("/" + request.getPath());
+                    Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                     if (matcher.matches()) {
                         isValid = false;
                         Function<HttpRequest, HttpResponse> function = filters.get(regex);
@@ -59,7 +60,7 @@ public class JonaServer {
                     }
                 }
                 if (isDynamic && isValid) {
-                    Function<HttpRequest, HttpResponse> function = endPoints.get("/" + request.getPath());
+                    Function<HttpRequest, HttpResponse> function = endPoints.get(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                     response = function.apply(request);
                 } else if (isValid) {
                     processRequest(request, response, staticContentLocation, endPoints);
