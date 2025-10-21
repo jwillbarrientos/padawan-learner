@@ -72,3 +72,35 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const loginBtn = document.getElementById("loginBtn");
+    loginBtn.addEventListener("click", async () => {
+        const params = new URLSearchParams();
+        params.append("email", document.getElementById("email").value);
+        params.append("password", document.getElementById("password").value)
+        const response = await fetch(`/public/login?${params}`);
+        console.log("Request sent to: " + response);
+        if (response.status === 200) {
+            window.location.href = '/example.html';
+        } else {
+            alert('Login failed');
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const signUpBtn = document.getElementById("signUpBtn");
+    signUpBtn.addEventListener("click", async () => {
+        const params = new URLSearchParams();
+        params.append("email", document.getElementById("email").value);
+        params.append("password", document.getElementById("password").value)
+        const response = await fetch(`/public/signup?${params}`);
+        console.log("Request sent to: " + response);
+        if (response.ok) {
+            window.location.href = '/example.html';
+        } else {
+            alert('Sign up failed');
+        }
+    });
+});

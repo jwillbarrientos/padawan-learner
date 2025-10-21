@@ -11,6 +11,7 @@ insert into video (ID,
                   PATH,
                   DURATION_SECONDS,
                   VIDEO_STATE,
+                  DATE,
                   CLIENT_ID
 ) values (1,
           'tremendoProgramador',
@@ -18,6 +19,7 @@ insert into video (ID,
           'C:\Users\barri\IdeaProjects\padawan-learner\meme-store\downloads\EL REY DE LOS CURRÍCULUMS Gracias @desayunosinformales12 por invitarm....mp4',
           18,
           'downloaded',
+          '2025-10-20 19:42:17',
           1
 );
 

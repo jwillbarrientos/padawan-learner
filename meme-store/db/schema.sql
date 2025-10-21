@@ -17,6 +17,7 @@ create table video (
     path varchar,
     duration_seconds int,
     video_state varchar,
+    date datetime,
     client_id int not null,
     foreign key (client_id) references client(id) on delete cascade
 );

@@ -20,6 +20,8 @@ public class HttpResponseBuilder {
     public static final long CHUNK_SIZE_BYTES = 2561024;
     private long totalFileSize;
     private byte[] body;
+    private boolean login;
+    private boolean signUp;
     private HashMap<String, String> cookies = new HashMap<>();
     private boolean deleteCookies;
 
@@ -65,6 +67,16 @@ public class HttpResponseBuilder {
         return this;
     }
 
+    public HttpResponseBuilder login() {
+        this.login = true;
+        return this;
+    }
+
+    public HttpResponseBuilder signUp() {
+        this.signUp = true;
+        return this;
+    }
+
     public HttpResponseBuilder addCookie(String key, String value) {
         cookies.put(key, value);
         return this;
@@ -76,6 +88,6 @@ public class HttpResponseBuilder {
     }
 
     public HttpResponse build() {
-        return new HttpResponse(protocol, responseCode, serverName, contentType, range, startOfFile, enfOfFile, totalFileSize, body, cookies, deleteCookies);
+        return new HttpResponse(protocol, responseCode, serverName, contentType, range, startOfFile, enfOfFile, totalFileSize, body, login, signUp, cookies, deleteCookies);
     }
 }

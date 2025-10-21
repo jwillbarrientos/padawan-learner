@@ -2,7 +2,6 @@ package io.jona.memestore.dto;
 
 import io.jona.framework.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,9 +10,15 @@ import java.util.function.Function;
 @Slf4j
 @AllArgsConstructor
 public class Client extends Table {
-    private int id;
+    private long id;
     private String email;
     private String password;
+
+    public Client(String email, String password) {
+        this.id = super.getId().get();
+        this.email = email;
+        this.password = password;
+    }
 
     public String getDelete(int id) {
         return "delete from client where id = " + id;

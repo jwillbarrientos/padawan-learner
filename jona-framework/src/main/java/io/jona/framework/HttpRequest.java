@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,6 +21,7 @@ public class HttpRequest {
     private String path;
     @Setter
     private Protocols protocol;
+    @Getter
     private Map<String, String> queryParams = new LinkedHashMap<>();
     @Getter
     private Map<String, String> headers = new LinkedHashMap<>();
@@ -36,9 +39,8 @@ public class HttpRequest {
         setProtocol(methodPathProtocol[2].equals(Protocols.HTTP_1_1.desc)? Protocols.HTTP_1_1 : Protocols.UNSUPPORTED);
         boolean containsQueryParams = false;
         String[] queryAndParamsTogether = new String[0];
-        if (methodPathProtocol[1].contains("\\?")) {
+        if (methodPathProtocol[1].contains("?")) {
             String[] pathQueryParams = methodPathProtocol[1].split("\\?", 2);
-            setPath(pathQueryParams[0]);
             queryAndParamsTogether = pathQueryParams[1].split("&");
             containsQueryParams = true;
         }
@@ -62,7 +64,9 @@ public class HttpRequest {
             while (i < queryAndParamsTogether.length) { //initialize queryParams
                 log.debug(String.join(" ", queryAndParamsTogether));
                 String[] queryAndParamsSeparate = queryAndParamsTogether[i].split("=", 2);
-                queryParams.put(queryAndParamsSeparate[0], queryAndParamsSeparate[1]);
+                String key = URLDecoder.decode(queryAndParamsSeparate[0], StandardCharsets.UTF_8);
+                String value = URLDecoder.decode(queryAndParamsSeparate[1], StandardCharsets.UTF_8);
+                queryParams.put(key, value);
                 i++;
             }
         }

@@ -51,7 +51,7 @@ public class JonaServer {
                 for(String regex : filters.keySet()) {
                     Pattern pattern = Pattern.compile(regex);
                     Matcher matcher = pattern.matcher("/" + request.getPath());
-                    if ((matcher.matches())) {
+                    if (matcher.matches()) {
                         isValid = false;
                         Function<HttpRequest, HttpResponse> function = filters.get(regex);
                         response = function.apply(request);
@@ -61,7 +61,7 @@ public class JonaServer {
                 if (isDynamic && isValid) {
                     Function<HttpRequest, HttpResponse> function = endPoints.get("/" + request.getPath());
                     response = function.apply(request);
-                } else {
+                } else if (isValid) {
                     processRequest(request, response, staticContentLocation, endPoints);
                 }
 

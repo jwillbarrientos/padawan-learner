@@ -11,9 +11,15 @@ import java.util.function.Function;
 @Slf4j
 @AllArgsConstructor
 public class Tag extends Table {
-    private int id;
+    private long id;
     private String name;
     private int clientId;
+
+    public Tag(String name, int clientId) {
+        this.id = super.getId().get();
+        this.name = name;
+        this.clientId = clientId;
+    }
 
     public String getDelete(int id) {
         return "delete from CLIENT where id = " + id;
