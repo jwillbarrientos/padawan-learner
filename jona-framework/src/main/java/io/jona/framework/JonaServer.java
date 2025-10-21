@@ -16,7 +16,7 @@ public class JonaServer {
     private final int port;
     private volatile String staticContentLocation;
     private final Map<String, Function<HttpRequest, HttpResponse>> endPoints = new HashMap<>();
-    private final Map<String, Function<HttpRequest, HttpResponse>> filters = new HashMap<>();
+    private final Map<String, Function<HttpRequest, HttpResponse>> inboundFilters = new HashMap<>();
 
     public JonaServer() {
         this(8080);
@@ -26,9 +26,11 @@ public class JonaServer {
         this.port = port;
     }
 
-    public void registerFilter(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
-        filters.put(path, function);
+    // todo en vez de fuinction, se tiene q usar un void biConsumer<request,response>
+    public void registerInboundFilter(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
+        inboundFilters.put(path, function);
     }
+    // todo agregar el outboundfilter
 
     public void registerEndPoint(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
         endPoints.put(path, function);
@@ -40,31 +42,37 @@ public class JonaServer {
 
     public void start() throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
+        log.info("Server started");
         while(true) {
             try (Socket client = serverSocket.accept()) {
-                //todo: print "Server started" only once
-                log.info("Server started");
                 HttpRequest request = new HttpRequest();
                 request.readFromSocket(client);
                 HttpResponse response = new HttpResponse();
                 boolean isDynamic = endPoints.containsKey(("/" + request.getPath()).replaceAll("/{2,}", "/"));
-                boolean isValid = true;
-                for(String regex : filters.keySet()) {
+                boolean notFiltered = true;
+                for(String regex : inboundFilters.keySet()) {// todofiltros tienen q ejecutarse en el orden en el q se definieron.
                     Pattern pattern = Pattern.compile(regex);
                     Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                     if (matcher.matches()) {
-                        isValid = false;
-                        Function<HttpRequest, HttpResponse> function = filters.get(regex);
-                        response = function.apply(request);
-                        break;
+                        notFiltered = false;
+                        Function<HttpRequest, HttpResponse> function = inboundFilters.get(regex);
+                        response = function.apply(request); //response = function.acceptg(request, response);
+//                        if (response.isFinal()) break
+                        break;// todo: se puede tener mas de un filtro
                     }
                 }
-                if (isDynamic && isValid) {
+
+                // todo si el response ya isFinal() enmtonces no se tiene que mas llamar a un endpoint ni a un outbound filter,
+                //  ni a el contenido estatico, se tiene  que retornar ya al cliente.
+
+                if (isDynamic && notFiltered) {
                     Function<HttpRequest, HttpResponse> function = endPoints.get(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                     response = function.apply(request);
-                } else if (isValid) {
+                } else if (notFiltered) {
                     processRequest(request, response, staticContentLocation, endPoints);
                 }
+
+                // todo recorrer los outboundFilters para agregar cabeceras...
 
                 byte[] responseBytes = response.buildResponse();
 
