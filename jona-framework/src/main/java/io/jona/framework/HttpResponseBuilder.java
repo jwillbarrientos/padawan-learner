@@ -21,6 +21,7 @@ public class HttpResponseBuilder {
     private byte[] body;
     private HashMap<String, String> cookies = new HashMap<>();
     private boolean deleteCookies;
+    private boolean isFinal;
 
     public HttpResponseBuilder setResponseCode(HttpCodes responseCode) {
         this.responseCode = responseCode;
@@ -82,7 +83,12 @@ public class HttpResponseBuilder {
         return this;
     }
 
+    public HttpResponseBuilder setFinal() {
+        this.isFinal = true;
+        return this;
+    }
+
     public HttpResponse build() {
-        return new HttpResponse(protocol, responseCode, serverName, contentType, range, startOfFile, enfOfFile, totalFileSize, body, cookies, deleteCookies);
+        return new HttpResponse(protocol, responseCode, serverName, contentType, range, startOfFile, enfOfFile, totalFileSize, body, cookies, deleteCookies, isFinal);
     }
 }

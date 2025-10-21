@@ -4,8 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,8 +16,8 @@ import static io.jona.framework.ProcessingOfRequests.processRequest;
 public class JonaServer {
     private final int port;
     private volatile String staticContentLocation;
-    private final Map<String, Function<HttpRequest, HttpResponse>> endPoints = new HashMap<>();
-    private final Map<String, Function<HttpRequest, HttpResponse>> inboundFilters = new HashMap<>();
+    private final Map<String, Function<HttpRequest, HttpResponse>> endPoints = new LinkedHashMap<>();
+    private final Map<String, Function<HttpRequest, HttpResponse>> inboundFilters = new LinkedHashMap<>();
 
     public JonaServer() {
         this(8080);
@@ -30,7 +31,10 @@ public class JonaServer {
     public void registerInboundFilter(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
         inboundFilters.put(path, function);
     }
-    // todo agregar el outboundfilter
+
+    public void registerOutboundFilter(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
+
+    }
 
     public void registerEndPoint(Methods method, String path, Function<HttpRequest, HttpResponse> function) {
         endPoints.put(path, function);
@@ -50,7 +54,7 @@ public class JonaServer {
                 HttpResponse response = new HttpResponse();
                 boolean isDynamic = endPoints.containsKey(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                 boolean notFiltered = true;
-                for(String regex : inboundFilters.keySet()) {// todofiltros tienen q ejecutarse en el orden en el q se definieron.
+                for(String regex : inboundFilters.keySet()) {
                     Pattern pattern = Pattern.compile(regex);
                     Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                     if (matcher.matches()) {
