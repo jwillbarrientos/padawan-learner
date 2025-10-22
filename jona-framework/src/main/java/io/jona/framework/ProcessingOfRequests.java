@@ -51,19 +51,19 @@ public class ProcessingOfRequests {
 
 //      Setea el body
             try {
-                    if (mimeType == MimeType.VIDEO_MP4) {
-                        response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
-                        response.setRange(request.getRange());
-                        response.setStartOfFile(request.getRange());
-                        response.setTotalFileSize(resourceAsStream.readAllBytes().length);
+                if (mimeType == MimeType.VIDEO_MP4) {
+                    response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
+                    response.setRange(request.getRange());
+                    response.setStartOfFile(request.getRange());
+                    response.setTotalFileSize(resourceAsStream.readAllBytes().length);
 
-                        long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
-                        response.setEnfOfFile(end);
-                        response.setBody(path, response.getStartOfFile(), response.getEnfOfFile());
-                    } else {
-                        response.setResponseCode(HttpCodes.OK_200);
-                        response.setBody(resourceAsStream.readAllBytes());
-                    }
+                    long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
+                    response.setEnfOfFile(end);
+                    response.setBody(path, response.getStartOfFile(), response.getEnfOfFile());
+                } else {
+                    response.setResponseCode(HttpCodes.OK_200);
+                    response.setBody(resourceAsStream.readAllBytes());
+                }
             } catch (IOException e) {
                 log.error("Fallo seteando el body", e);
             }
