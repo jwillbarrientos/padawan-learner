@@ -28,14 +28,15 @@ public class MemeStore {
         TagController tagController = new TagController();
         AuthFilter authFilter = new AuthFilter();
         NoCacheFilter noCacheFilter = new NoCacheFilter();
-        jonaServer.registerOutboundFilter(Methods.GET, "^/public/.*$", noCacheFilter::addNoCache);
-        jonaServer.registerOutboundFilter(Methods.GET, "^/api/.*$", noCacheFilter::addNoCache);
+        jonaServer.registerInboundFilter(Methods.GET, "^/api/.*", authFilter::onlyAuthenticated);
+        jonaServer.registerInboundFilter(Methods.GET, "^/app/.*", authFilter::onlyAuthenticated);
         jonaServer.registerEndPoint(Methods.GET, "/public/login", authController::login);
         jonaServer.registerEndPoint(Methods.GET, "/public/signup", authController::signUp);
-        jonaServer.registerInboundFilter(Methods.GET, "^/api/.*", authFilter::onlyAuthenticated);
+        jonaServer.addStaticContent("./web-root");
+        jonaServer.registerOutboundFilter(Methods.GET, "^/public/.*$", noCacheFilter::addNoCache);
+        jonaServer.registerOutboundFilter(Methods.GET, "^/api/.*$", noCacheFilter::addNoCache);
         //jonaServer.registerEndPoint(Methods.GET, "/api/list-tags", tagController::listTags);
 
-        jonaServer.addStaticContent("./web-root");
         jonaServer.start();
     }
 }

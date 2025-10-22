@@ -53,45 +53,42 @@ public class JonaServer {
                 request.readFromSocket(client);
                 HttpResponse response = new HttpResponse();
                 boolean isDynamic = endPoints.containsKey(("/" + request.getPath()).replaceAll("/{2,}", "/"));
-                boolean notFiltered = true;
                 for(String regex : inboundFilters.keySet()) {
                     Pattern pattern = Pattern.compile(regex);
                     Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                     if (matcher.matches()) {
-                        notFiltered = false;
                         BiConsumer<HttpRequest, HttpResponse> biConsumer = inboundFilters.get(regex);
                         biConsumer.accept(request, response);
-                        //if (response.isFinal()) break;
-                            // todo: se puede tener mas de un filtro
-                        break;
+                        if (response.isFinal()) {
+                            break;
+                        }
                     }
                 }
-                //for(String regex : outboundFilters.keySet()) {
-                //    Pattern pattern = Pattern.compile(regex);
-                //    Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
-                //    if (matcher.matches()) {
-                //        notFiltered = false;
-                //        BiConsumer<HttpRequest, HttpResponse> biConsumer = outboundFilters.get(regex);
-                //        biConsumer.accept(request, response);
-                //        // todo: se puede tener mas de un filtro
-                //        break;
-                //    }
-                //}
 
-                // todo si el response ya isFinal() enmtonces no se tiene que mas llamar a un endpoint ni a un outbound filter,
-                //  ni a el contenido estatico, se tiene  que retornar ya al cliente.
+                if (response.isFinal()) {
+                    byte[] responseBytes = response.buildResponse();
+                    client.getOutputStream().write(responseBytes);
+                    client.getOutputStream().flush();
+                    continue;
+                }
 
-                if (isDynamic && notFiltered) {
+                if (isDynamic) {
                     BiConsumer<HttpRequest, HttpResponse> biConsumer = endPoints.get(("/" + request.getPath()).replaceAll("/{2,}", "/"));
                     biConsumer.accept(request, response);
-                } else if (notFiltered) {
+                } else {
                     processRequest(request, response, staticContentLocation);
                 }
 
-                // todo recorrer los outboundFilters para agregar cabeceras...
+                for(String regex : outboundFilters.keySet()) {
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
+                    if (matcher.matches()) {
+                        BiConsumer<HttpRequest, HttpResponse> biConsumer = outboundFilters.get(regex);
+                        biConsumer.accept(request, response);
+                    }
+                }
 
                 byte[] responseBytes = response.buildResponse();
-
                 client.getOutputStream().write(responseBytes);
                 client.getOutputStream().flush();
             } catch (IOException e) {

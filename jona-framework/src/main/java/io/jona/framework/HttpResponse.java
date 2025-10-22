@@ -22,7 +22,7 @@ public class HttpResponse {
     private static ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private final String date = now.format(formatter);
     public static final long CHUNK_SIZE_BYTES = 2561024;
-    private final HashMap<HttpResponseHeaders, String> responseHeaders = new HashMap<>();
+    private final Map<HttpResponseHeaders, String> responseHeaders = new HashMap<>();
 
     private String protocol = "HTTP/1.1";
     @Setter
@@ -37,7 +37,8 @@ public class HttpResponse {
     private long totalFileSize;
     @Getter
     private byte[] body;
-    private HashMap<String, String> cookies = new HashMap<>();
+    @Getter
+    private Map<String, String> cookies = new HashMap<>();
     private boolean deleteCookies;
     @Getter
     private boolean isFinal;
@@ -127,10 +128,10 @@ public class HttpResponse {
         if (cookies != null && !deleteCookies) {
             for (Map.Entry<String, String> cookie : cookies.entrySet()) {
                 String cookieString = cookie.getKey() + "=" + cookie.getValue();
-                headers.append(HttpResponseHeaders.SET_COOKIE.name()).append(cookieString).append("\r\n");
+                headers.append(HttpResponseHeaders.SET_COOKIE.headerKey).append(cookieString).append("; Path=/\r\n");
             }
         } else if (deleteCookies) {
-            headers.append(HttpResponseHeaders.CLEAR_SITE_DATA.name()).append("\"cookies\"\r\n");
+            headers.append(HttpResponseHeaders.CLEAR_SITE_DATA.headerKey).append("\"cookies\"\r\n");
         }
         headers.append(HttpResponseHeaders.DATE.headerKey).append(responseHeaders.get(HttpResponseHeaders.DATE));
         headers.append(HttpResponseHeaders.SERVER.headerKey).append(responseHeaders.get(HttpResponseHeaders.SERVER));

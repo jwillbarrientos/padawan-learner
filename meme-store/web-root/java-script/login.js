@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const response = await fetch(`/public/login?${params}`);
         console.log("Request sent to: " + response);
         if (response.status === 200) {
-            window.location.href = '/welcome-page.html';
+            window.location.href = '/app/welcome-page.html';
         } else {
             alert('Login failed');
         }

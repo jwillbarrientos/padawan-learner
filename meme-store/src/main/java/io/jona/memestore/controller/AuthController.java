@@ -11,6 +11,7 @@ public class AuthController {
                 request.getQueryParams().get("password")) != null;
         if (userExist) {
             response.setResponseCode(HttpCodes.OK_200);
+            response.addCookie("sessionCookie", "ok");
         } else {
             response.setResponseCode(HttpCodes.UNAUTHORIZED_401);
         }
@@ -26,6 +27,7 @@ public class AuthController {
             boolean insertSuccessful = JonaDb.insert(client);
             if (insertSuccessful) {
                 response.setResponseCode(HttpCodes.OK_200);
+                response.addCookie("sessionCookie", "ok");
             }
         }
         response.setResponseCode(HttpCodes.CONFLICT_409);

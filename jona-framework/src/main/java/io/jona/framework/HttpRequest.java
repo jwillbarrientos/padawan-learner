@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,9 +22,11 @@ public class HttpRequest {
     @Setter
     private Protocols protocol;
     @Getter
-    private Map<String, String> queryParams = new LinkedHashMap<>();
+    private Map<String, String> queryParams = new HashMap<>();
     @Getter
-    private Map<String, String> headers = new LinkedHashMap<>();
+    private Map<String, String> headers = new HashMap<>();
+    @Getter
+    private Map<String, String> cookies = new HashMap<>();
     @Setter @Getter
     private long range;
 
@@ -57,6 +60,15 @@ public class HttpRequest {
                 String startStr = bytesRange.split("-")[0];
                 long sof = Long.parseLong(startStr);
                 setRange(sof);
+            }
+            if (keyAndValue[0].equals("Cookie")) {
+                String[] cookiesHeader = keyAndValue[1].split("; ");
+                for (String cookie : cookiesHeader) {
+                    String[] cookieKeyAndValue = cookie.split("=", 2);
+                    String cookieKey = cookieKeyAndValue[0];
+                    String cookieValue = cookieKeyAndValue[1];
+                    cookies.put(cookieKey, cookieValue);
+                }
             }
         }
         if (containsQueryParams && queryAndParamsTogether.length > 1) {
