@@ -53,7 +53,6 @@ public class ProcessingOfRequests {
             try {
                 if (mimeType == MimeType.VIDEO_MP4) {
                     response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
-                    response.setRange(request.getRange());
                     response.setStartOfFile(request.getRange());
                     response.setTotalFileSize(resourceAsStream.readAllBytes().length);
 

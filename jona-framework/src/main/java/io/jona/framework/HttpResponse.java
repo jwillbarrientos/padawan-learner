@@ -22,14 +22,13 @@ public class HttpResponse {
     private static ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private final String date = now.format(formatter);
     public static final long CHUNK_SIZE_BYTES = 2561024;
+    private final HashMap<HttpResponseHeaders, String> headersResponse = new HashMap<>();
 
     private String protocol = "HTTP/1.1";
     @Setter
     private HttpCodes responseCode;
-    private String serverName = "jonatitoServer";
+    private String serverName = "JonaServer";
     private String contentType;
-    @Setter
-    private long range;
     @Setter @Getter
     private long startOfFile;
     @Setter @Getter
@@ -38,10 +37,11 @@ public class HttpResponse {
     private long totalFileSize;
     @Getter
     private byte[] body;
-    private HashMap<String, String> cookies;
+    private HashMap<String, String> cookies = new HashMap<>();
     private boolean deleteCookies;
     @Getter
     private boolean isFinal;
+    private boolean noCache;
 
     public void setContentType(MimeType mimeType, String charset) {
         this.contentType = mimeType.value + "; charset=" + charset;
@@ -91,62 +91,63 @@ public class HttpResponse {
         this.isFinal = true;
     }
 
+    public void noCache() {
+        this.noCache = true;
+    }
+
+    public void initHeaders() {
+        headersResponse.put(HttpResponseHeaders.DATE, date + "\r\n");
+        headersResponse.put(HttpResponseHeaders.SERVER, serverName + "\r\n");
+        if (body != null) {
+            headersResponse.put(HttpResponseHeaders.CONTENT_RANGE, body.length + "\r\n");
+        } else {
+            headersResponse.put(HttpResponseHeaders.CONTENT_RANGE, null);
+        }
+
+        if (contentType != null) {
+            headersResponse.put(HttpResponseHeaders.CONTENT_TYPE, contentType + "\r\n");
+            if (contentType.equals(MimeType.VIDEO_MP4.value)) {
+                headersResponse.put(HttpResponseHeaders.CONTENT_RANGE, "bytes " + startOfFile + "-" + enfOfFile + "/" + totalFileSize + "\r\n");
+                headersResponse.put(HttpResponseHeaders.ACCEPT_RANGES, "bytes" + "\r\n");
+            }
+        } else {
+            headersResponse.put(HttpResponseHeaders.CONTENT_TYPE, null);
+        }
+
+        if (noCache) {
+            headersResponse.put(HttpResponseHeaders.CACHE_CONTROL, "no-store" + "\r\n");
+        } else {
+            headersResponse.put(HttpResponseHeaders.CACHE_CONTROL, null);
+        }
+    }
+
     byte[] buildResponse() {
-        String headers = protocol + " " + responseCode.code + " " + responseCode.desc + "\n";
-        if(cookies != null && !deleteCookies) {
+        StringBuilder headers = new StringBuilder(protocol + " " + responseCode.code + " " + responseCode.desc + "\r\n");
+        initHeaders();
+        if (cookies != null && !deleteCookies) {
             for (Map.Entry<String, String> cookie : cookies.entrySet()) {
                 String cookieString = cookie.getKey() + "=" + cookie.getValue();
-                headers += "Set-Cookie: " + cookieString + "\n";
+                headers.append("Set-Cookie: " + cookieString + "\r\n");
             }
         } else if (deleteCookies) {
-            headers += "Clear-Site-Data: \"cookies\"\n";
+            headers.append("Clear-Site-Data: \"cookies\"\r\n");
         }
-
-        if (body != null && contentType != null && contentType.equals("video/mp4")) {
-            headers += """
-                    Date: %s
-                    Server: %s
-                    Content-Type: %s
-                    Content-Range: bytes %s-%d/%d
-                    Content-Length: %s
-                    Accept-Ranges: bytes
-                    
-                    """
-                    .formatted(
-                            date,
-                            serverName,
-                            contentType,
-                            startOfFile,
-                            enfOfFile,
-                            totalFileSize,
-                            this.body.length
-                    );
-        } else if (body != null){
-            headers += """
-                    Date: %s
-                    Server: %s
-                    Content-Type: %s
-                    Content-Length: %s
-                    
-                    """
-                    .formatted(
-                            date, serverName,
-                            contentType,
-                            body.length
-                    );
-        } else {
-            headers += """
-                    Date: %s
-                    Server: %s
-                    
-                    """
-                    .formatted(
-                            date, serverName
-                    );
+        headers.append(HttpResponseHeaders.DATE.headerKey).append(headersResponse.get(HttpResponseHeaders.DATE));
+        headers.append(HttpResponseHeaders.SERVER.headerKey).append(headersResponse.get(HttpResponseHeaders.SERVER));
+        if (headersResponse.get(HttpResponseHeaders.CONTENT_RANGE) != null)
+            headers.append(HttpResponseHeaders.CONTENT_RANGE.headerKey).append(headersResponse.get(HttpResponseHeaders.CONTENT_RANGE));
+        if (headersResponse.get(HttpResponseHeaders.CONTENT_TYPE) != null) {
+            headers.append(HttpResponseHeaders.CONTENT_TYPE.headerKey).append(headersResponse.get(HttpResponseHeaders.CONTENT_TYPE));
+            if (contentType.equals(MimeType.VIDEO_MP4.value)) {
+                headers.append(HttpResponseHeaders.CONTENT_RANGE.headerKey).append(headersResponse.get(HttpResponseHeaders.CONTENT_RANGE));
+                headers.append(HttpResponseHeaders.ACCEPT_RANGES.headerKey).append(headersResponse.get(HttpResponseHeaders.ACCEPT_RANGES));
+            }
         }
-        headers = headers.replace("\n", "\r\n");
+        if (headersResponse.get(HttpResponseHeaders.CACHE_CONTROL) != null)
+            headers.append(HttpResponseHeaders.CACHE_CONTROL.headerKey).append(headersResponse.get(HttpResponseHeaders.CACHE_CONTROL));
+        headers.append("\r\n");
 
-        byte[] headerBytes = headers.getBytes(StandardCharsets.US_ASCII);
+        byte[] headerBytes = headers.toString().getBytes(StandardCharsets.US_ASCII);
         log.debug("Status: {}", responseCode.code);
         log.trace("Response HEADERS: \n {}", headers);
         if(body == null)

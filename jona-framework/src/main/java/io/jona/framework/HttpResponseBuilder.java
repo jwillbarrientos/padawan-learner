@@ -13,7 +13,6 @@ public class HttpResponseBuilder {
     private HttpCodes responseCode;
     private String serverName = "jonatitoServer";
     private String contentType;
-    private long range;
     private long startOfFile;
     private long enfOfFile;
     public static final long CHUNK_SIZE_BYTES = 2561024;
@@ -22,6 +21,7 @@ public class HttpResponseBuilder {
     private HashMap<String, String> cookies = new HashMap<>();
     private boolean deleteCookies;
     private boolean isFinal;
+    private boolean noCache;
 
     public HttpResponseBuilder setResponseCode(HttpCodes responseCode) {
         this.responseCode = responseCode;
@@ -45,11 +45,6 @@ public class HttpResponseBuilder {
 
     public HttpResponseBuilder setEnfOfFile(long enfOfFile) {
         this.enfOfFile = enfOfFile;
-        return this;
-    }
-
-    public HttpResponseBuilder setRange(long range) {
-        this.range = range;
         return this;
     }
 
@@ -88,7 +83,12 @@ public class HttpResponseBuilder {
         return this;
     }
 
+    public HttpResponseBuilder noCache() {
+        this.noCache = true;
+        return this;
+    }
+
     public HttpResponse build() {
-        return new HttpResponse(protocol, responseCode, serverName, contentType, range, startOfFile, enfOfFile, totalFileSize, body, cookies, deleteCookies, isFinal);
+        return new HttpResponse(protocol, responseCode, serverName, contentType, startOfFile, enfOfFile, totalFileSize, body, cookies, deleteCookies, isFinal, noCache);
     }
 }
