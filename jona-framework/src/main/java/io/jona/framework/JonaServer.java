@@ -61,7 +61,7 @@ public class JonaServer {
                         notFiltered = false;
                         BiConsumer<HttpRequest, HttpResponse> biConsumer = inboundFilters.get(regex);
                         biConsumer.accept(request, response);
-//                        if (response.isFinal()) break;
+                        //if (response.isFinal()) break;
                             // todo: se puede tener mas de un filtro
                         break;
                     }
@@ -73,8 +73,8 @@ public class JonaServer {
                 //        notFiltered = false;
                 //        BiConsumer<HttpRequest, HttpResponse> biConsumer = outboundFilters.get(regex);
                 //        biConsumer.accept(request, response);
-                //        if (response.isFinal()) break;
                 //        // todo: se puede tener mas de un filtro
+                //        break;
                 //    }
                 //}
 

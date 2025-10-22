@@ -22,7 +22,7 @@ public class HttpResponse {
     private static ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private final String date = now.format(formatter);
     public static final long CHUNK_SIZE_BYTES = 2561024;
-    private final HashMap<HttpResponseHeaders, String> headersResponse = new HashMap<>();
+    private final HashMap<HttpResponseHeaders, String> responseHeaders = new HashMap<>();
 
     private String protocol = "HTTP/1.1";
     @Setter
@@ -96,57 +96,61 @@ public class HttpResponse {
     }
 
     public void initHeaders() {
-        headersResponse.put(HttpResponseHeaders.DATE, date + "\r\n");
-        headersResponse.put(HttpResponseHeaders.SERVER, serverName + "\r\n");
+        responseHeaders.put(HttpResponseHeaders.DATE, date + "\r\n");
+        responseHeaders.put(HttpResponseHeaders.SERVER, serverName + "\r\n");
         if (body != null) {
-            headersResponse.put(HttpResponseHeaders.CONTENT_RANGE, body.length + "\r\n");
+            responseHeaders.put(HttpResponseHeaders.CONTENT_RANGE, body.length + "\r\n");
         } else {
-            headersResponse.put(HttpResponseHeaders.CONTENT_RANGE, null);
+            responseHeaders.put(HttpResponseHeaders.CONTENT_RANGE, null);
         }
 
         if (contentType != null) {
-            headersResponse.put(HttpResponseHeaders.CONTENT_TYPE, contentType + "\r\n");
+            responseHeaders.put(HttpResponseHeaders.CONTENT_TYPE, contentType + "\r\n");
             if (contentType.equals(MimeType.VIDEO_MP4.value)) {
-                headersResponse.put(HttpResponseHeaders.CONTENT_RANGE, "bytes " + startOfFile + "-" + enfOfFile + "/" + totalFileSize + "\r\n");
-                headersResponse.put(HttpResponseHeaders.ACCEPT_RANGES, "bytes" + "\r\n");
+                responseHeaders.put(HttpResponseHeaders.CONTENT_RANGE, "bytes " + startOfFile + "-" + enfOfFile + "/" + totalFileSize + "\r\n");
+                responseHeaders.put(HttpResponseHeaders.ACCEPT_RANGES, "bytes" + "\r\n");
             }
         } else {
-            headersResponse.put(HttpResponseHeaders.CONTENT_TYPE, null);
+            responseHeaders.put(HttpResponseHeaders.CONTENT_TYPE, null);
         }
 
         if (noCache) {
-            headersResponse.put(HttpResponseHeaders.CACHE_CONTROL, "no-store" + "\r\n");
+            responseHeaders.put(HttpResponseHeaders.CACHE_CONTROL, "no-store" + "\r\n");
         } else {
-            headersResponse.put(HttpResponseHeaders.CACHE_CONTROL, null);
+            responseHeaders.put(HttpResponseHeaders.CACHE_CONTROL, null);
         }
     }
 
-    byte[] buildResponse() {
+    public StringBuilder setAndGetHeaders() {
         StringBuilder headers = new StringBuilder(protocol + " " + responseCode.code + " " + responseCode.desc + "\r\n");
         initHeaders();
         if (cookies != null && !deleteCookies) {
             for (Map.Entry<String, String> cookie : cookies.entrySet()) {
                 String cookieString = cookie.getKey() + "=" + cookie.getValue();
-                headers.append("Set-Cookie: " + cookieString + "\r\n");
+                headers.append(HttpResponseHeaders.SET_COOKIE.name()).append(cookieString).append("\r\n");
             }
         } else if (deleteCookies) {
-            headers.append("Clear-Site-Data: \"cookies\"\r\n");
+            headers.append(HttpResponseHeaders.CLEAR_SITE_DATA.name()).append("\"cookies\"\r\n");
         }
-        headers.append(HttpResponseHeaders.DATE.headerKey).append(headersResponse.get(HttpResponseHeaders.DATE));
-        headers.append(HttpResponseHeaders.SERVER.headerKey).append(headersResponse.get(HttpResponseHeaders.SERVER));
-        if (headersResponse.get(HttpResponseHeaders.CONTENT_RANGE) != null)
-            headers.append(HttpResponseHeaders.CONTENT_RANGE.headerKey).append(headersResponse.get(HttpResponseHeaders.CONTENT_RANGE));
-        if (headersResponse.get(HttpResponseHeaders.CONTENT_TYPE) != null) {
-            headers.append(HttpResponseHeaders.CONTENT_TYPE.headerKey).append(headersResponse.get(HttpResponseHeaders.CONTENT_TYPE));
+        headers.append(HttpResponseHeaders.DATE.headerKey).append(responseHeaders.get(HttpResponseHeaders.DATE));
+        headers.append(HttpResponseHeaders.SERVER.headerKey).append(responseHeaders.get(HttpResponseHeaders.SERVER));
+        if (responseHeaders.get(HttpResponseHeaders.CONTENT_RANGE) != null)
+            headers.append(HttpResponseHeaders.CONTENT_RANGE.headerKey).append(responseHeaders.get(HttpResponseHeaders.CONTENT_RANGE));
+        if (responseHeaders.get(HttpResponseHeaders.CONTENT_TYPE) != null) {
+            headers.append(HttpResponseHeaders.CONTENT_TYPE.headerKey).append(responseHeaders.get(HttpResponseHeaders.CONTENT_TYPE));
             if (contentType.equals(MimeType.VIDEO_MP4.value)) {
-                headers.append(HttpResponseHeaders.CONTENT_RANGE.headerKey).append(headersResponse.get(HttpResponseHeaders.CONTENT_RANGE));
-                headers.append(HttpResponseHeaders.ACCEPT_RANGES.headerKey).append(headersResponse.get(HttpResponseHeaders.ACCEPT_RANGES));
+                headers.append(HttpResponseHeaders.CONTENT_RANGE.headerKey).append(responseHeaders.get(HttpResponseHeaders.CONTENT_RANGE));
+                headers.append(HttpResponseHeaders.ACCEPT_RANGES.headerKey).append(responseHeaders.get(HttpResponseHeaders.ACCEPT_RANGES));
             }
         }
-        if (headersResponse.get(HttpResponseHeaders.CACHE_CONTROL) != null)
-            headers.append(HttpResponseHeaders.CACHE_CONTROL.headerKey).append(headersResponse.get(HttpResponseHeaders.CACHE_CONTROL));
+        if (responseHeaders.get(HttpResponseHeaders.CACHE_CONTROL) != null)
+            headers.append(HttpResponseHeaders.CACHE_CONTROL.headerKey).append(responseHeaders.get(HttpResponseHeaders.CACHE_CONTROL));
         headers.append("\r\n");
+        return headers;
+    }
 
+    byte[] buildResponse() {
+        StringBuilder headers = setAndGetHeaders();
         byte[] headerBytes = headers.toString().getBytes(StandardCharsets.US_ASCII);
         log.debug("Status: {}", responseCode.code);
         log.trace("Response HEADERS: \n {}", headers);

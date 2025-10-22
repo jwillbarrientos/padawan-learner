@@ -9,7 +9,6 @@ public class AuthController {
                 Client.getFullMapping(),
                 request.getQueryParams().get("email"),
                 request.getQueryParams().get("password")) != null;
-        response.setContentType(MimeType.TEXT_PLAIN);
         if (userExist) {
             response.setResponseCode(HttpCodes.OK_200);
         } else {
@@ -22,7 +21,6 @@ public class AuthController {
                 Client.getFullMapping(),
                 request.getQueryParams().get("email"),
                 request.getQueryParams().get("password")) != null;
-        response.setContentType(MimeType.TEXT_PLAIN);
         if (!userExist) {
             Client client = new Client(request.getQueryParams().get("email"), request.getQueryParams().get("password"));
             boolean insertSuccessful = JonaDb.insert(client);

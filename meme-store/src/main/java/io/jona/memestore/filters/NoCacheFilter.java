@@ -5,6 +5,6 @@ import io.jona.framework.HttpResponse;
 
 public class NoCacheFilter {
     public void addNoCache(HttpRequest request, HttpResponse response) {
-
+        response.noCache();
     }
 }
