@@ -3,20 +3,20 @@ package io.jona.memestore.filters;
 import io.jona.framework.HttpCodes;
 import io.jona.framework.HttpRequest;
 import io.jona.framework.HttpResponse;
+import io.jona.framework.JonaDb;
+import io.jona.memestore.dto.Client;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthFilter {
+    private final Map<String, Client> sessionCookies;
+
+    public AuthFilter(HashMap<String, Client> sessionCookies) {
+        this.sessionCookies = sessionCookies;
+    }
+
     public void onlyAuthenticated(HttpRequest request, HttpResponse response) {
-
-        /*
-        boolean sessionCookiePresentg = "ok".equals(request.getCookieValue("sessionCookie"));
-            getCookieValue(String cookieName)
-                for cookie in request.getHeaders("Cookie")\
-                    if cookie.name.equals(cookieName)
-                        return cookie;
-                return null;
-
-         */
-        boolean sessionCookiePresent = "ok".equals(request.getCookies().get("sessionCookie"));
+        boolean sessionCookiePresent = sessionCookies.containsKey(request.getCookies().get("sessionCookie"));
         if (sessionCookiePresent) {
             return;
         }

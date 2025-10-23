@@ -5,11 +5,14 @@ import io.jona.memestore.AppProps;
 import io.jona.memestore.controller.AuthController;
 import io.jona.memestore.controller.TagController;
 import io.jona.memestore.controller.TestController;
+import io.jona.memestore.dto.Client;
 import io.jona.memestore.filters.AuthFilter;
 import io.jona.memestore.filters.NoCacheFilter;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class MemeStore {
+    static HashMap<String, Client> sessionCookies = new HashMap<>();
     public static void main(String[] args) throws IOException {
         JonaDb.init(AppProps.getJdbcUrl(), AppProps.getDbUser(), AppProps.getDbPassword());
         JonaServer jonaServer = new JonaServer(8080);
@@ -24,9 +27,9 @@ public class MemeStore {
         jonaServer.registerEndPoint(Methods.GET, "/deletecookies", testController::deleteCookie);
 
         // app memestore
-        AuthController authController = new AuthController();
+        AuthController authController = new AuthController(sessionCookies);
         TagController tagController = new TagController();
-        AuthFilter authFilter = new AuthFilter();
+        AuthFilter authFilter = new AuthFilter(sessionCookies);
         NoCacheFilter noCacheFilter = new NoCacheFilter();
         jonaServer.registerInboundFilter(Methods.GET, "^/api/.*", authFilter::onlyAuthenticated);
         jonaServer.registerInboundFilter(Methods.GET, "^/app/.*", authFilter::onlyAuthenticated);

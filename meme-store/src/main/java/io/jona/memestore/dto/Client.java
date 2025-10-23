@@ -2,6 +2,7 @@ package io.jona.memestore.dto;
 
 import io.jona.framework.Table;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class Client extends Table {
     private long id;
+    @Getter
     private String email;
     private String password;
 
