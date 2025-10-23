@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const signOutBtn = document.getElementById("signOutBtn");
     signOutBtn.addEventListener("click", async () => {
         try {
-            const response = await fetch("/app/signout");
+            const response = await fetch("/api/signout");
             if (!response.ok) {
                 throw new Error("Failed to log out");
             } else {
