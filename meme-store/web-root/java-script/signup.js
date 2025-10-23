@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = '/app/welcome-page.html';
         } else {
             alert('Sign up failed');
+            console.log('Sign up failed');
         }
     });
 });

@@ -47,4 +47,19 @@ public class AuthController {
         }
         response.setResponseCode(HttpCodes.CONFLICT_409);
     }
+
+    public void signOut(HttpRequest request, HttpResponse response) {
+        response.deleteCookies();
+        response.setResponseCode(HttpCodes.OK_200);
+    }
+
+    public void getProfileName(HttpRequest request, HttpResponse response) {
+        Client client = sessionCookies.get(request.getCookies().get("sessionCookie"));
+        if (client.getEmail() != null) {
+            response.setBody(client.getEmail());
+            response.setResponseCode(HttpCodes.OK_200);
+        } else {
+            response.setResponseCode(HttpCodes.CONFLICT_409);
+        }
+    }
 }

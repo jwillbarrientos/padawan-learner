@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = '/app/welcome-page.html';
         } else {
             alert('Login failed');
+            console.log('Login failed');
         }
     });
 });

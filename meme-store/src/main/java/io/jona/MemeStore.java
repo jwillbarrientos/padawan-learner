@@ -35,6 +35,8 @@ public class MemeStore {
         jonaServer.registerInboundFilter(Methods.GET, "^/app/.*", authFilter::onlyAuthenticated);
         jonaServer.registerEndPoint(Methods.GET, "/public/login", authController::login);
         jonaServer.registerEndPoint(Methods.GET, "/public/signup", authController::signUp);
+        jonaServer.registerEndPoint(Methods.GET, "/public/signout", authController::signOut);
+        jonaServer.registerEndPoint(Methods.GET, "/public/getprofilename", authController::getProfileName);
         jonaServer.addStaticContent("./web-root");
         jonaServer.registerOutboundFilter(Methods.GET, "^/public/.*$", noCacheFilter::addNoCache);
         jonaServer.registerOutboundFilter(Methods.GET, "^/api/.*$", noCacheFilter::addNoCache);
