@@ -55,11 +55,8 @@ public class AuthController {
 
     public void getProfileName(HttpRequest request, HttpResponse response) {
         Client client = sessionCookies.get(request.getCookies().get("sessionCookie"));
-        if (client.getEmail() != null) {
-            response.setBody(client.getEmail());
-            response.setResponseCode(HttpCodes.OK_200);
-        } else {
-            response.setResponseCode(HttpCodes.CONFLICT_409);
-        }
+        response.setBody(client.getEmail());
+        response.setContentType(MimeType.TEXT_PLAIN);
+        response.setResponseCode(HttpCodes.OK_200);
     }
 }

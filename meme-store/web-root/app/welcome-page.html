@@ -13,12 +13,12 @@
 <script>
     document.addEventListener("DOMContentLoaded", async () => {
         try {
-            var response = await fetch("/public/getprofilename");
+            var response = await fetch("/app/getprofilename");
             if (!response.ok) {
                 throw new Error("Failed to get profile name");
             } else {
                 if (response.status === 200) {
-                    document.getElementById("userName").textContent = response;
+                    document.getElementById("userName").textContent = await response.text()
                 }
             }
         } catch (err) {
