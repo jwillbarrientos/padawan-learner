@@ -23,7 +23,9 @@ public class JonaDb {
             PreparedStatement stmt = conn.prepareStatement(table.getInsert());
             Object[] values = table.getValues();
             for(int i = 0, j = 1; i < values.length; i++, j++) {
-                if (values[i] instanceof Integer)
+                if (values[i] instanceof Long)
+                    stmt.setLong(j, ((Long) values[i]));
+                else if (values[i] instanceof Integer)
                     stmt.setInt(j, ((Integer) values[i]));
                 else if(values[i] instanceof Date)
                     stmt.setDate(j, (Date) values[i]);
@@ -80,17 +82,17 @@ public class JonaDb {
         try(Connection conn = DriverManager.getConnection(url, user, password)) {
            PreparedStatement stmt = conn.prepareStatement(query);
            int index = 1;
-            for(Object mapping : queryMappings) {
-                if (mapping instanceof Integer)
-                    stmt.setInt(index++, (Integer) mapping);
-                else if (mapping instanceof Date)
-                    stmt.setDate(index++, (Date) mapping);
-                else
-                    stmt.setString(index++, mapping.toString());
-            }
+           for(Object mapping : queryMappings) {
+               if (mapping instanceof Integer)
+                   stmt.setInt(index++, (Integer) mapping);
+               else if (mapping instanceof Date)
+                   stmt.setDate(index++, (Date) mapping);
+               else
+                   stmt.setString(index++, mapping.toString());
+           }
            ResultSet rs = stmt.executeQuery();
            List<T> list = new ArrayList<>();
-           if(rs.next())
+           while(rs.next())
                list.add(rowMapper.apply(rs));
            return list;
         } catch (SQLException e) {

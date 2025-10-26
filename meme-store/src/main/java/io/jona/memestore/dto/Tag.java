@@ -11,29 +11,31 @@ import java.util.function.Function;
 @Slf4j
 @AllArgsConstructor
 public class Tag extends Table {
+    @Getter
     private long id;
+    @Getter
     private String name;
-    private int clientId;
+    private long clientId;
 
-    public Tag(String name, int clientId) {
-        this.id = super.getId().get();
+    public Tag(String name, long clientId) {
+        this.id = super.getIdGenerator().get();
         this.name = name;
         this.clientId = clientId;
     }
 
-    public String getDelete(int id) {
-        return "delete from CLIENT where id = " + id;
+    public String getDelete(long id) {
+        return "delete from tag where id = " + id;
     }
 
     public String getInsert() {
-        return "insert into CLIENT (id, name, client_id) values(?,?,?)";
+        return "insert into tag (id, name, client_id) values(?,?,?)";
     }
 
     public Object[] getValues() {
         return new Object[] {id, name, clientId};
     }
 
-    public static String getById(int id) {
+    public static String getById(long id) {
         return "select id, name, client_id from tag where id = " + id;
     }
 
@@ -43,7 +45,7 @@ public class Tag extends Table {
                 return new Tag(
                         resulSet.getLong(1),
                         resulSet.getString(2),
-                        resulSet.getInt(3)
+                        resulSet.getLong(3)
                 );
             } catch (SQLException e) {
                 log.error("Exception in getFullMapping() " + e);
@@ -54,7 +56,7 @@ public class Tag extends Table {
 
     @Override
     public String toString() {
-        return "Client id = " + id +
+        return "tag id = " + id +
                 ", name = " + name +
                 ", client_id = " + clientId;
     }

@@ -23,12 +23,12 @@ public class ProcessingOfRequests {
         if (!requestedResourceExistsAsFile) {
             response.setResponseCode(HttpCodes.NOT_FOUND_404);
             response.setContentType(MimeType.TEXT_PLAIN);
-            response.setBody("Este recurso no existe");
+            response.setBody("This resource doesnt exist");
             log.info("Served File: NOT FOUND");
             return;
         }
 
-        try(InputStream resourceAsStream = new FileInputStream(relativePath)) {
+        try (InputStream resourceAsStream = new FileInputStream(relativePath)) {
             if (welcomePageRequested) {
                 response.setResponseCode(HttpCodes.OK_200);
                 response.setContentType(MimeType.TEXT_HTML, "UTF-8");
@@ -36,7 +36,7 @@ public class ProcessingOfRequests {
                     response.setBody(resourceAsStream.readAllBytes());
                     log.info("Served File: public/index.html (MIME: text/html, Size: {} bytes", response.getBody().length);
                 } catch (Exception e) {
-                    log.error("Fallo tratando de leer el archivo para el response del welcome page", e);
+                    log.error("Fail to trying read the file to the response of the welcome page", e);
                 }
                 return;
             }
@@ -64,7 +64,7 @@ public class ProcessingOfRequests {
                     response.setBody(resourceAsStream.readAllBytes());
                 }
             } catch (IOException e) {
-                log.error("Fallo seteando el body", e);
+                log.error("Fail to trying to set the body", e);
             }
         }
     }

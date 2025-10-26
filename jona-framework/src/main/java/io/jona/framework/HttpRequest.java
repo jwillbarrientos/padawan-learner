@@ -29,6 +29,8 @@ public class HttpRequest {
     private Map<String, String> cookies = new HashMap<>();
     @Setter @Getter
     private long range;
+    @Setter @Getter
+    private byte[] body;
 
     public void readFromSocket(Socket client) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream(), StandardCharsets.US_ASCII));
@@ -71,7 +73,7 @@ public class HttpRequest {
                 }
             }
         }
-        if (containsQueryParams && queryAndParamsTogether.length > 1) {
+        if (containsQueryParams && queryAndParamsTogether.length >= 1) {
             int i = 0;
             while (i < queryAndParamsTogether.length) { //initialize queryParams
                 log.debug(String.join(" ", queryAndParamsTogether));

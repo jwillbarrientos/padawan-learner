@@ -2,6 +2,7 @@ package io.jona.memestore.dto;
 
 import io.jona.framework.Table;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 @Slf4j
 @AllArgsConstructor
 public class Video extends Table {
+    @Getter
     private long id;
     private String name;
     private String link;
@@ -18,10 +20,16 @@ public class Video extends Table {
     private int durationSeconds;
     private String videoState;
     private Date date;
-    private int clientId;
+    private long clientId;
 
-    public Video(String name, String link, String path, int durationSeconds, String videoState, Date date, int clientId) {
-        this.id = super.getId().get();
+    public Video(String name,
+                 String link,
+                 String path,
+                 int durationSeconds,
+                 String videoState,
+                 Date date,
+                 long clientId) {
+        this.id = super.getIdGenerator().get();
         this.name = name;
         this.link = link;
         this.path = path;
@@ -31,7 +39,7 @@ public class Video extends Table {
         this.clientId = clientId;
     }
 
-    public String getDelete(int id) {
+    public String getDelete(long id) {
         return "delete from video where id = " + id;
     }
 
@@ -43,7 +51,7 @@ public class Video extends Table {
         return new Object[] {id, name, link, path, durationSeconds, videoState, date, clientId};
     }
 
-    public static String getById(int id) {
+    public static String getById(long id) {
         return "select id, name, link, path, duration_seconds, video_state, date, client_id from video where id = " + id;
     }
 
@@ -58,7 +66,7 @@ public class Video extends Table {
                         resulSet.getInt(5),
                         resulSet.getString(6),
                         resulSet.getDate(7),
-                        resulSet.getInt(8)
+                        resulSet.getLong(8)
                 );
             } catch (SQLException e) {
                 log.error("Exception in getFullMapping() " + e);

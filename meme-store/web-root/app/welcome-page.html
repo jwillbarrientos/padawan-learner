@@ -6,24 +6,17 @@
 </head>
 <body>
     Welcome <span id="userName"></span>
-<br>
-<button id="signOutBtn">Sign Out</button>
+    <br>
+    <button id="createTag">Create Tag</button>
+
+    <!-- Container where tags will appear -->
+    <div id="tagList"></div>
+    <br>
+    <button id="signOutBtn">Sign Out</button>
 </body>
+<script src="../java-script/getprofilename.js"></script>
+<script src="../java-script/loadtags.js"></script>
+<script src="../java-script/createtag.js"></script>
+<script src="../java-script/deletetag.js"></script>
 <script src="../java-script/signout.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", async () => {
-        try {
-            var response = await fetch("/api/getprofilename");
-            if (!response.ok) {
-                throw new Error("Failed to get profile name");
-            } else {
-                if (response.status === 200) {
-                    document.getElementById("userName").textContent = await response.text()
-                }
-            }
-        } catch (err) {
-            console.error("Error getting name:", err);
-        }
-    });
-</script>
 </html>

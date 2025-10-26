@@ -28,7 +28,7 @@ public class MemeStore {
 
         // app memestore
         AuthController authController = new AuthController(sessionCookies);
-        TagController tagController = new TagController();
+        TagController tagController = new TagController(sessionCookies);
         AuthFilter authFilter = new AuthFilter(sessionCookies);
         NoCacheFilter noCacheFilter = new NoCacheFilter();
         jonaServer.registerInboundFilter(Methods.GET, "^/api/.*", authFilter::onlyAuthenticated);
@@ -37,10 +37,13 @@ public class MemeStore {
         jonaServer.registerEndPoint(Methods.GET, "/public/signup", authController::signUp);
         jonaServer.registerEndPoint(Methods.GET, "/api/signout", authController::signOut);
         jonaServer.registerEndPoint(Methods.GET, "/api/getprofilename", authController::getProfileName);
+        jonaServer.registerEndPoint(Methods.GET, "/api/loadtags", tagController::listTags);
+        jonaServer.registerEndPoint(Methods.GET, "/api/addtag", tagController::addTag);
+        jonaServer.registerEndPoint(Methods.GET, "/api/edittag", tagController::editTag);
+        jonaServer.registerEndPoint(Methods.GET, "/api/deletetag", tagController::deleteTag);
         jonaServer.addStaticContent("./web-root");
         jonaServer.registerOutboundFilter(Methods.GET, "^/public/.*$", noCacheFilter::addNoCache);
         jonaServer.registerOutboundFilter(Methods.GET, "^/api/.*$", noCacheFilter::addNoCache);
-        //jonaServer.registerEndPoint(Methods.GET, "/api/list-tags", tagController::listTags);
 
         jonaServer.start();
     }

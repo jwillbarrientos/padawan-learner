@@ -9,6 +9,7 @@ public enum MimeType {
     IMAGE_PNG("image/png", ".png", false),
     IMAGE_JPG("image/jpeg", ".jpg", false),
     VIDEO_MP4("video/mp4", ".mp4", false),
+    APPLICATION_JSON("application/json", ".json", true),
     UNKNOW("", "", false);
 
     public final String value;

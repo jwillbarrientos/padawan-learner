@@ -11,18 +11,19 @@ import java.util.function.Function;
 @Slf4j
 @AllArgsConstructor
 public class Client extends Table {
+    @Getter
     private long id;
     @Getter
     private String email;
     private String password;
 
     public Client(String email, String password) {
-        this.id = super.getId().get();
+        this.id = super.getIdGenerator().get();
         this.email = email;
         this.password = password;
     }
 
-    public String getDelete(int id) {
+    public String getDelete(long id) {
         return "delete from client where id = " + id;
     }
 
@@ -34,7 +35,7 @@ public class Client extends Table {
         return new Object[] {id, email, password};
     }
 
-    public static String getById(int id) {
+    public static String getById(long id) {
         return "select id, email, password from client where id = " + id;
     }
 

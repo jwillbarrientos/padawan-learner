@@ -27,7 +27,7 @@ drop table if exists tag cascade;
 create table tag (
     id bigint primary key,
     name varchar not null,
-    client_id int not null,
+    client_id bigint not null,
     foreign key (client_id) references client(id) on delete cascade
 );
 

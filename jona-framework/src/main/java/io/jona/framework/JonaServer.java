@@ -1,5 +1,6 @@
 package io.jona.framework;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,6 +16,7 @@ import static io.jona.framework.ProcessingOfRequests.processRequest;
 @Slf4j
 public class JonaServer {
     private final int port;
+    @Getter
     private volatile String staticContentLocation;
     private final Map<String, BiConsumer<HttpRequest, HttpResponse>> endPoints = new LinkedHashMap<>();
     private final Map<String, BiConsumer<HttpRequest, HttpResponse>> inboundFilters = new LinkedHashMap<>();

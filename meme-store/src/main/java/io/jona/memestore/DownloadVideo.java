@@ -22,7 +22,7 @@ public class DownloadVideo {
         //https://www.youtube.com/watch?v=lWHYJOayAUg
         //https://youtu.be/lWHYJOayAUg?si=UgHR7MhnOECnnluj
         //https://www.facebook.com/reel/718363154596932
-        runDownloader("https://www.tiktok.com/@gertu0k/video/7258798530066713862");
+        runDownloader("https://www.youtube.com/watch?v=Q3GSKS5pRVI");
     }
 
     public static void runDownloader(String url) throws IOException, InterruptedException {
