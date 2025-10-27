@@ -45,7 +45,7 @@ public class JonaDb {
 
     public static boolean delete(Table table) {
         try(Connection conn = DriverManager.getConnection(url, user, password)) {
-            PreparedStatement stmt = conn.prepareStatement(table.getDelete((Integer) table.getValues()[0]));
+            PreparedStatement stmt = conn.prepareStatement(table.getDelete((Long) table.getValues()[0]));
             int rowsDeleted = stmt.executeUpdate();
             if (rowsDeleted > 0) {
                 log.info("Element in table deleted successfully!");
@@ -62,7 +62,9 @@ public class JonaDb {
             PreparedStatement stmt = conn.prepareStatement(query);
             int index = 1;
             for(Object mapping : queryMappings) {
-                if (mapping instanceof Integer)
+                if (mapping instanceof Long)
+                    stmt.setLong(index++, ((Long) mapping));
+                else if (mapping instanceof Integer)
                     stmt.setInt(index++, (Integer) mapping);
                 else if (mapping instanceof Date)
                     stmt.setDate(index++, (Date) mapping);
@@ -83,7 +85,9 @@ public class JonaDb {
            PreparedStatement stmt = conn.prepareStatement(query);
            int index = 1;
            for(Object mapping : queryMappings) {
-               if (mapping instanceof Integer)
+               if (mapping instanceof Long)
+                   stmt.setLong(index++, (Long) mapping);
+               else if (mapping instanceof Integer)
                    stmt.setInt(index++, (Integer) mapping);
                else if (mapping instanceof Date)
                    stmt.setDate(index++, (Date) mapping);

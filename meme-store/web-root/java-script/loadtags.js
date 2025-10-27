@@ -1,33 +1,37 @@
-document.addEventListener("DOMContentLoaded", async () => {
+import { createDeleteButton } from "./deletetag.js";
+async function loadTags() {
     try {
         var response = await fetch("/api/loadtags");
         if (!response.ok) {
             throw new Error("Failed to load tags");
-        } else {
-            const text = await response.text();
-            const tagNames = text.trim().split("\n"); // Convert response into array
-
-            const tagList = document.getElementById("tagList");
-            tagList.innerHTML = ""; // Clear existing items
-
-            tagNames.forEach(name => {
-                if (!name) return;
-                const tagItem = document.createElement("div");
-                tagItem.textContent = name + " ";
-
-                const editBtn = document.createElement("button");
-                editBtn.textContent = "Edit";
-
-                const deleteBtn = document.createElement("button");
-                deleteBtn.textContent = "Delete";
-
-                tagItem.appendChild(editBtn);
-                tagItem.appendChild(deleteBtn);
-
-                tagList.appendChild(tagItem);
-            });
         }
+        const tags = await response.json();
+
+        const tagList = document.getElementById("tagList");
+        tagList.innerHTML = "";
+
+        tags.forEach(tag => {
+            if (!tag) return;
+            const tagItem = document.createElement("div");
+
+            const nameSpan = document.createElement("span");
+            nameSpan.textContent = tag.name + " ";
+
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "Edit";
+            editBtn.dataset.tagId = tag.id;
+
+            const deleteBtn = createDeleteButton(tag.id, loadTags);
+
+            tagItem.appendChild(nameSpan);
+            tagItem.appendChild(editBtn);
+            tagItem.appendChild(deleteBtn);
+
+            tagList.appendChild(tagItem);
+        });
     } catch (err) {
         console.error("Error getting tags:", err);
     }
-});
+}
+
+document.addEventListener("DOMContentLoaded", loadTags);

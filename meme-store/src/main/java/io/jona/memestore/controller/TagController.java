@@ -1,10 +1,12 @@
 package io.jona.memestore.controller;
 
+import com.google.gson.Gson;
 import io.jona.framework.*;
 import io.jona.memestore.dto.Client;
 import io.jona.memestore.dto.Tag;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +35,8 @@ public class TagController {
     }
 
     public void deleteTag(HttpRequest request, HttpResponse response) {
-        String sessionCookie = request.getCookies().get("sessionCookie");
-        Client client = sessionCookies.get(sessionCookie);
-        //JonaDb.delete()
+        Tag tag = JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), request.getQueryParams().get("id"));
+        System.out.println(JonaDb.delete(tag));
         this.listTags(request, response);
     }
 
@@ -43,14 +44,12 @@ public class TagController {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
         List<Tag> tags = JonaDb.selectList("select id, name, client_id from tag where client_id = ?", Tag.getFullMapping(), client.getId());
-        StringBuilder sb = new StringBuilder();
         System.out.println(tags);
-        for (Tag tag : tags) {
-            sb.append(tag.getName()).append("\n");
-        }
-        System.out.println(sb);
-        response.setContentType(MimeType.TEXT_PLAIN);
+        Gson gson = new Gson();
+        String json = gson.toJson(tags);
+        System.out.println("HEREEEEE" + json);
+        response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
         response.setResponseCode(HttpCodes.OK_200);
-        response.setBody(sb.toString().getBytes());
+        response.setBody(json.getBytes());
     }
 }
