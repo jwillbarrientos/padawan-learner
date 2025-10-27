@@ -21,16 +21,16 @@ public class JonaDb {
     public static boolean insert(Table table) {
         try(Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(table.getInsert());
-            Object[] values = table.getValues();
-            for(int i = 0, j = 1; i < values.length; i++, j++) {
-                if (values[i] instanceof Long)
-                    stmt.setLong(j, ((Long) values[i]));
-                else if (values[i] instanceof Integer)
-                    stmt.setInt(j, ((Integer) values[i]));
-                else if(values[i] instanceof Date)
-                    stmt.setDate(j, (Date) values[i]);
+            int index = 1;
+            for(Object mapping : table.getValues()) {
+                if (mapping instanceof Long)
+                    stmt.setLong(index++, ((Long) mapping));
+                else if (mapping instanceof Integer)
+                    stmt.setInt(index++, (Integer) mapping);
+                else if (mapping instanceof Date)
+                    stmt.setDate(index++, (Date) mapping);
                 else
-                    stmt.setString(j, values[i].toString());
+                    stmt.setString(index++, mapping.toString());
             }
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
@@ -43,11 +43,11 @@ public class JonaDb {
         return false;
     }
 
-    public static boolean update(Table table, Object... queryMappings) {
+    public static boolean update(Table table) {
         try(Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(table.getUpdate());
             int index = 1;
-            for(Object mapping : queryMappings) {
+            for(Object mapping : table.getValues()) {
                 if (mapping instanceof Long)
                     stmt.setLong(index++, ((Long) mapping));
                 else if (mapping instanceof Integer)
@@ -70,7 +70,7 @@ public class JonaDb {
 
     public static boolean delete(Table table) {
         try(Connection conn = DriverManager.getConnection(url, user, password)) {
-            PreparedStatement stmt = conn.prepareStatement(table.getDelete((Long) table.getValues()[0]));
+            PreparedStatement stmt = conn.prepareStatement(table.getDelete());
             int rowsDeleted = stmt.executeUpdate();
             if (rowsDeleted > 0) {
                 log.info("Element in table deleted successfully!");

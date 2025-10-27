@@ -3,6 +3,7 @@ package io.jona.memestore.dto;
 import io.jona.framework.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +14,7 @@ import java.util.function.Function;
 public class Tag extends Table {
     @Getter
     private long id;
-    @Getter
+    @Getter @Setter
     private String name;
     private long clientId;
 
@@ -27,9 +28,11 @@ public class Tag extends Table {
         return "insert into tag (id, name, client_id) values(?,?,?)";
     }
 
-    public String getUpdate() { return "update tag set name = ? where id = ?"; }
+    public String getUpdate() {
+        return "update tag set id = ?, name = ?, client_id = ? where id = " + id;
+    }
 
-    public String getDelete(long id) {
+    public String getDelete() {
         return "delete from tag where id = " + id;
     }
 

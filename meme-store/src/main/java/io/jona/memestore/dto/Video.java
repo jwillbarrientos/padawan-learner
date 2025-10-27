@@ -47,7 +47,7 @@ public class Video extends Table {
         return "nothing yet";
     }
 
-    public String getDelete(long id) {
+    public String getDelete() {
         return "delete from video where id = " + id;
     }
 

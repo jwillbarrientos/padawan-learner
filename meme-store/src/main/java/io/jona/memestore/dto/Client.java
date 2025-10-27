@@ -31,7 +31,7 @@ public class Client extends Table {
         return "nothing yet";
     }
 
-    public String getDelete(long id) {
+    public String getDelete() {
         return "delete from client where id = " + id;
     }
 

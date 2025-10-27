@@ -8,6 +8,6 @@ public abstract class Table {
     private final AtomicLong idGenerator = new AtomicLong(System.currentTimeMillis() + 1);
     protected abstract String getInsert();
     protected abstract String getUpdate();
-    protected abstract String getDelete(long id);
+    protected abstract String getDelete();
     protected abstract Object[] getValues();
 }

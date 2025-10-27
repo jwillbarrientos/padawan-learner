@@ -26,20 +26,25 @@ public class TagController {
         Tag tag = new Tag(request.getQueryParams().get("tagName"), client.getId());
         Gson gson = new Gson();
         String json = gson.toJson(tag);
-        log.info("Tag creation was successful: " + JonaDb.insert(tag));
+        boolean insertSuccess = JonaDb.insert(tag);
+        log.info("Tag creation was successful: " + insertSuccess);
         response.setResponseCode(HttpCodes.OK_200);
         response.setBody(json.getBytes());
     }
 
     public void editTag(HttpRequest request, HttpResponse response) {
         Tag tag = JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), request.getQueryParams().get("id"));
-        JonaDb.update(tag, request.getQueryParams().get("name"), request.getQueryParams().get("id"));
+        tag.setName(request.getQueryParams().get("name"));
+//        JonaDb.update(tag, request.getQueryParams().get("name"), request.getQueryParams().get("id"));
+        boolean updateSuccess = JonaDb.update(tag);
+        log.info("Tag update was successful: " + updateSuccess);
         response.setResponseCode(HttpCodes.OK_200);
     }
 
     public void deleteTag(HttpRequest request, HttpResponse response) {
         Tag tag = JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), request.getQueryParams().get("id"));
-        JonaDb.delete(tag);
+        boolean deleteSuccess = JonaDb.delete(tag);
+        log.info("Tag deletion was successful: " + deleteSuccess);
         response.setResponseCode(HttpCodes.OK_200);
     }
 
