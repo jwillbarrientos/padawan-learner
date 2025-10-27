@@ -6,19 +6,19 @@ import io.jona.framework.HttpResponse;
 import io.jona.memestore.DownloadVideo;
 import io.jona.memestore.dto.Client;
 import lombok.extern.slf4j.Slf4j;
-import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class DownloadingController {
+public class VideoController {
     private final Map<String, Client> sessionCookies;
 
-    public DownloadingController(HashMap<String, Client> sessionCookies) {
+    public VideoController(HashMap<String, Client> sessionCookies) {
         this.sessionCookies = sessionCookies;
     }
 
-    public void downloadIndividualVideo(HttpRequest request, HttpResponse response) {
+    public void addVideoByLink(HttpRequest request, HttpResponse response) {
         DownloadVideo.downloadVideo(request.getQueryParams().get("link"));
         response.setResponseCode(HttpCodes.OK_200);
     }

@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`/api/downloadvideo?link=${encodeURIComponent(videoLink)}`);
+            const response = await fetch(`/api/addvideobylink?link=${encodeURIComponent(videoLink)}`);
             const result = await response.text(); // read server response message
 
             if (!response.ok) {

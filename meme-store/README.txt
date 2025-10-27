@@ -1,32 +1,9 @@
-simple-http-server < spring framework/libreria
+links
+youtubeDL:https://github.com/ytdl-org/youtube-dl
+ytDLP:https://github.com/yt-dlp/yt-dlp
+ffmpeg custom build to ytDLP:https://github.com/yt-dlp/FFmpeg-Builds
 
-meme-store < app final - endpoints, http endpoint, REST API, REST Interface,
-
-	JonaServer jonaServer = new JonaServer(8080);
-
-	public static class EtiquetaController {
-	    // para responder a requests del tipo:
-	    // http://localhost:8080/etiqueta?nombre=publico-general&otroValor=valor3
-		Response newEtiqueta(Request req) {
-			String nombreEtiqueta = req.getQueryParameter("nombre");
-			//publico-general == public-general
-			String body = req.getBody();
-			// jdbc insertar nombre en la BD
-			return new Response(200,"hjgfd")
-		}
-	}
-
-	EtiquetaController etiquetaController = new EtiquetaController();
-
-	- publicar endpoints
-		jonaServer.registerEndpoint(Method.POST, "/etiqueta", etiquetaController::newEtiqueta)
-		                                                        Function<Request, Response>
-	- servir contenido estatico
-		jonaServer.addStaticContent("/static"); /
-			/index.html -> /static/index.html
-			/favicon.ico -> /static/favicon.ico
-			/images/bg.jpg -> /static/images/bg.jpg
-			/js/main.js -> /static/js/main.js
-
-    jonaServer.start();
-
+youtubeDL servia para descargar los videos antes y se instalo con pip, dejo de funcionar en la ultima version a la hora de escribir
+este README, ytDLP instalado con pip igualmente, funciona a la hora de escribir este README, con el custom build de ffmpeg instalado
+utilizando los files de la carpeta bin in el mismo y poniendolos en el path, para descargar videos de tiktok, instagram, facebook y
+youtube
