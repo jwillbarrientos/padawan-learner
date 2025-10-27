@@ -1,5 +1,6 @@
 import { createDeleteButton } from "./deletetag.js";
-async function loadTags() {
+import { createEditButton } from "./edittag.js";
+export async function loadTags() {
     try {
         var response = await fetch("/api/loadtags");
         if (!response.ok) {
@@ -17,10 +18,7 @@ async function loadTags() {
             const nameSpan = document.createElement("span");
             nameSpan.textContent = tag.name + " ";
 
-            const editBtn = document.createElement("button");
-            editBtn.textContent = "Edit";
-            editBtn.dataset.tagId = tag.id;
-
+            const editBtn = createEditButton(tag.id, tag.name, loadTags);
             const deleteBtn = createDeleteButton(tag.id, loadTags);
 
             tagItem.appendChild(nameSpan);

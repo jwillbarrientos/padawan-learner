@@ -22,32 +22,33 @@ public class TagController {
     public void addTag(HttpRequest request, HttpResponse response) {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
-        response.setContentType(MimeType.TEXT_PLAIN);
+        response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
         Tag tag = new Tag(request.getQueryParams().get("tagName"), client.getId());
+        Gson gson = new Gson();
+        String json = gson.toJson(tag);
         log.info("Tag creation was successful: " + JonaDb.insert(tag));
         response.setResponseCode(HttpCodes.OK_200);
+        response.setBody(json.getBytes());
     }
 
     public void editTag(HttpRequest request, HttpResponse response) {
-        String sessionCookie = request.getCookies().get("sessionCookie");
-        Client client = sessionCookies.get(sessionCookie);
-        //JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), );
+        Tag tag = JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), request.getQueryParams().get("id"));
+        JonaDb.update(tag, request.getQueryParams().get("name"), request.getQueryParams().get("id"));
+        response.setResponseCode(HttpCodes.OK_200);
     }
 
     public void deleteTag(HttpRequest request, HttpResponse response) {
         Tag tag = JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), request.getQueryParams().get("id"));
-        System.out.println(JonaDb.delete(tag));
-        this.listTags(request, response);
+        JonaDb.delete(tag);
+        response.setResponseCode(HttpCodes.OK_200);
     }
 
     public void listTags(HttpRequest request, HttpResponse response) {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
         List<Tag> tags = JonaDb.selectList("select id, name, client_id from tag where client_id = ?", Tag.getFullMapping(), client.getId());
-        System.out.println(tags);
         Gson gson = new Gson();
         String json = gson.toJson(tags);
-        System.out.println("HEREEEEE" + json);
         response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
         response.setResponseCode(HttpCodes.OK_200);
         response.setBody(json.getBytes());

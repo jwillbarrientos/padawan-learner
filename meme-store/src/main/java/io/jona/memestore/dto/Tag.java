@@ -23,12 +23,14 @@ public class Tag extends Table {
         this.clientId = clientId;
     }
 
-    public String getDelete(long id) {
-        return "delete from tag where id = " + id;
-    }
-
     public String getInsert() {
         return "insert into tag (id, name, client_id) values(?,?,?)";
+    }
+
+    public String getUpdate() { return "update tag set name = ? where id = ?"; }
+
+    public String getDelete(long id) {
+        return "delete from tag where id = " + id;
     }
 
     public Object[] getValues() {

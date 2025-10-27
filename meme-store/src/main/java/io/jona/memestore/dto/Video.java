@@ -39,12 +39,16 @@ public class Video extends Table {
         this.clientId = clientId;
     }
 
-    public String getDelete(long id) {
-        return "delete from video where id = " + id;
-    }
-
     public String getInsert() {
         return "insert into video (id, name, link, path, duration_seconds, video_state, date, client_id) values(?,?,?,?,?,?,?)";
+    }
+
+    public String getUpdate() {
+        return "nothing yet";
+    }
+
+    public String getDelete(long id) {
+        return "delete from video where id = " + id;
     }
 
     public Object[] getValues() {

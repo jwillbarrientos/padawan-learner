@@ -43,6 +43,31 @@ public class JonaDb {
         return false;
     }
 
+    public static boolean update(Table table, Object... queryMappings) {
+        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+            PreparedStatement stmt = conn.prepareStatement(table.getUpdate());
+            int index = 1;
+            for(Object mapping : queryMappings) {
+                if (mapping instanceof Long)
+                    stmt.setLong(index++, ((Long) mapping));
+                else if (mapping instanceof Integer)
+                    stmt.setInt(index++, (Integer) mapping);
+                else if (mapping instanceof Date)
+                    stmt.setDate(index++, (Date) mapping);
+                else
+                    stmt.setString(index++, mapping.toString());
+            }
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                log.info("Element in table updated successfully");
+                return true;
+            }
+        } catch (SQLException e) {
+            log.error("Update fail " + e);
+        }
+        return false;
+    }
+
     public static boolean delete(Table table) {
         try(Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(table.getDelete((Long) table.getValues()[0]));

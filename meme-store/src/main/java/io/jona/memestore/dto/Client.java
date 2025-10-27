@@ -23,12 +23,16 @@ public class Client extends Table {
         this.password = password;
     }
 
-    public String getDelete(long id) {
-        return "delete from client where id = " + id;
-    }
-
     public String getInsert() {
         return "insert into client (id, email, password) values(?,?,?)";
+    }
+
+    public String getUpdate() {
+        return "nothing yet";
+    }
+
+    public String getDelete(long id) {
+        return "delete from client where id = " + id;
     }
 
     public Object[] getValues() {
