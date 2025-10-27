@@ -16,13 +16,17 @@ public class DownloadVideo {
     private static Executables exe;
     private static final Properties props = new Properties();
     private static Process process;
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void downloadVideo(String link) {
         //https://www.tiktok.com/@gertu0k/video/7258798530066713862
         //https://www.instagram.com/reel/DM2mUqnKUYS/?igsh=MWNuOG5leXRjajE0dg==
         //https://www.youtube.com/watch?v=lWHYJOayAUg
         //https://youtu.be/lWHYJOayAUg?si=UgHR7MhnOECnnluj
         //https://www.facebook.com/reel/718363154596932
-        runDownloader("https://www.youtube.com/watch?v=Q3GSKS5pRVI");
+        try {
+            runDownloader(link);
+        } catch (IOException | InterruptedException e) {
+            log.error("Error downloading video ", e);
+        }
     }
 
     public static void runDownloader(String url) throws IOException, InterruptedException {
@@ -41,7 +45,7 @@ public class DownloadVideo {
                 buildCommand(command, ytDl, destinyFolder, url);
                 break;
             case YOU_TUBE:
-                buildCommand(command, youtubeDl, destinyFolder, url);
+                buildCommand(command, ytDl, destinyFolder, url);
                 break;
             case INSTAGRAM:
                 buildCommand(command, ytDl, destinyFolder, url);

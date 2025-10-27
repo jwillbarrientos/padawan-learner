@@ -3,6 +3,7 @@ package io.jona;
 import io.jona.framework.*;
 import io.jona.memestore.AppProps;
 import io.jona.memestore.controller.AuthController;
+import io.jona.memestore.controller.DownloadingController;
 import io.jona.memestore.controller.TagController;
 import io.jona.memestore.controller.TestController;
 import io.jona.memestore.dto.Client;
@@ -29,6 +30,7 @@ public class MemeStore {
         // app memestore
         AuthController authController = new AuthController(sessionCookies);
         TagController tagController = new TagController(sessionCookies);
+        DownloadingController downloadingController = new DownloadingController(sessionCookies);
         AuthFilter authFilter = new AuthFilter(sessionCookies);
         NoCacheFilter noCacheFilter = new NoCacheFilter();
         jonaServer.registerInboundFilter(Methods.GET, "^/api/.*", authFilter::onlyAuthenticated);
@@ -41,6 +43,7 @@ public class MemeStore {
         jonaServer.registerEndPoint(Methods.GET, "/api/addtag", tagController::addTag);
         jonaServer.registerEndPoint(Methods.GET, "/api/edittag", tagController::editTag);
         jonaServer.registerEndPoint(Methods.GET, "/api/deletetag", tagController::deleteTag);
+        jonaServer.registerEndPoint(Methods.GET, "/api/downloadvideo", downloadingController::downloadIndividualVideo);
         jonaServer.addStaticContent("./web-root");
         jonaServer.registerOutboundFilter(Methods.GET, "^/public/.*$", noCacheFilter::addNoCache);
         jonaServer.registerOutboundFilter(Methods.GET, "^/api/.*$", noCacheFilter::addNoCache);

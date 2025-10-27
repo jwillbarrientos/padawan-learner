@@ -2,22 +2,159 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    Welcome <span id="userName"></span>
-    <br>
-    <button id="createTag">Create Tag</button>
+    <title>VideoDownloader</title>
 
-    <!-- Container where tags will appear -->
-    <div id="tagList"></div>
-    <br>
-    <button id="signOutBtn">Sign Out</button>
-</body>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f9fc;
+            color: #333;
+        }
+
+        /* Top Bar */
+        header {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .logo {
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .profile {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        #signOutBtn {
+            background: transparent;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 220px;
+            background: white;
+            padding: 20px;
+            height: calc(100vh - 60px);
+            border-right: 1px solid #ddd;
+        }
+        #createTag {
+            width: 28px;
+            height: 28px;
+            background: #007bff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        .tags-title {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #tagList div {
+            padding: 6px;
+            background: #eef3ff;
+            border-radius: 4px;
+            margin: 6px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Main */
+        main {
+            flex: 1;
+            padding: 30px;
+        }
+        .download-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 450px;
+        }
+        #videoUrl {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        #downloadBtn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            cursor: pointer;
+            background: #007bff;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!-- Top header -->
+<header>
+    <div class="logo">Meme-Store</div>
+
+    <div class="profile">
+        <span id="userName"></span>
+        <button id="signOutBtn">Sign Out</button>
+    </div>
+</header>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside>
+        <div class="tags-title">
+            My Tags
+            <button id="createTag">+</button>
+        </div>
+
+        <!-- Tags list -->
+        <div id="tagList"></div>
+    </aside>
+
+    <!-- Main content -->
+    <main>
+        <section class="download-box">
+            <h2>Download individual video</h2>
+
+            <input id="videoUrl" type="text" placeholder="Paste here your link...">
+
+            <button id="downloadBtn">Download</button>
+        </section>
+    </main>
+
+</div>
+
 <script type="module" src="../java-script/getprofilename.js"></script>
 <script type="module" src="../java-script/loadtags.js"></script>
 <script type="module" src="../java-script/createtag.js"></script>
 <script type="module" src="../java-script/edittag.js"></script>
 <script type="module" src="../java-script/deletetag.js"></script>
+<script type="module" src="../java-script/downloadvideo.js"></script>
 <script type="module" src="../java-script/signout.js"></script>
+
+</body>
 </html>
