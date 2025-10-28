@@ -12,13 +12,12 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class Client extends Table {
     @Getter
-    private long id;
+    private long id = nextId();
     @Getter
     private String email;
     private String password;
 
     public Client(String email, String password) {
-        this.id = super.getIdGenerator().get();
         this.email = email;
         this.password = password;
     }

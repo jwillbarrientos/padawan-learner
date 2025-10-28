@@ -3,33 +3,47 @@ package io.jona.memestore.dto;
 import io.jona.framework.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.function.Function;
 
 @Slf4j
+@NoArgsConstructor
 @AllArgsConstructor
 public class Video extends Table {
-    @Getter
-    private long id;
+    public enum State {
+        SUBMITTED, DOWNLOADED, ERROR_DOWNLOADING
+    }
+
+    @Setter @Getter
+    private long id = nextId();
+    @Setter
     private String name;
+    @Setter @Getter
     private String link;
+    @Setter @Getter
     private String path;
+    @Setter
     private int durationSeconds;
-    private String videoState;
-    private Date date;
+    @Setter
+    private State videoState;
+    @Setter
+    private Date date = new Date();
+    @Setter
     private long clientId;
 
     public Video(String name,
                  String link,
                  String path,
                  int durationSeconds,
-                 String videoState,
+                 State videoState,
                  Date date,
                  long clientId) {
-        this.id = super.getIdGenerator().get();
         this.name = name;
         this.link = link;
         this.path = path;
@@ -39,12 +53,26 @@ public class Video extends Table {
         this.clientId = clientId;
     }
 
+    public Video(String link,  State videoState, long clientId) {
+        this.name = "";
+        this.link = link;
+        this.path = "";
+        this.durationSeconds = 0;
+        this.videoState = videoState;
+        this.date = getDate();
+        this.clientId = clientId;
+    }
+
+    public Timestamp getDate() {
+        return new java.sql.Timestamp(date.getTime());
+    }
+
     public String getInsert() {
-        return "insert into video (id, name, link, path, duration_seconds, video_state, date, client_id) values(?,?,?,?,?,?,?)";
+        return "insert into video (id, name, link, path, duration_seconds, video_state, date, client_id) values(?,?,?,?,?,?,?,?)";
     }
 
     public String getUpdate() {
-        return "nothing yet";
+        return "update video set id = ?, name = ?, link = ?, path = ?, duration_seconds = ?, video_state = ?, date = ?, client_id = ? where id = " + id;
     }
 
     public String getDelete() {
@@ -52,7 +80,7 @@ public class Video extends Table {
     }
 
     public Object[] getValues() {
-        return new Object[] {id, name, link, path, durationSeconds, videoState, date, clientId};
+        return new Object[] {id, name, link, path, durationSeconds, videoState.name(), date, clientId};
     }
 
     public static String getById(long id) {
@@ -68,7 +96,7 @@ public class Video extends Table {
                         resulSet.getString(3),
                         resulSet.getString(4),
                         resulSet.getInt(5),
-                        resulSet.getString(6),
+                        State.valueOf(resulSet.getString(6)),
                         resulSet.getDate(7),
                         resulSet.getLong(8)
                 );

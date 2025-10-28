@@ -38,7 +38,7 @@ public class JonaDb {
                 return true;
             }
         } catch (SQLException e) {
-            log.error("Insert fail " + e);
+            log.error("Insert fail ", e);
         }
         return false;
     }
@@ -63,7 +63,7 @@ public class JonaDb {
                 return true;
             }
         } catch (SQLException e) {
-            log.error("Update fail " + e);
+            log.error("Update fail ", e);
         }
         return false;
     }
@@ -77,7 +77,7 @@ public class JonaDb {
                 return true;
             }
         } catch (SQLException e) {
-            log.error("Delete fail " + e);
+            log.error("Delete fail ", e);
         }
         return false;
     }
@@ -100,7 +100,7 @@ public class JonaDb {
             if (rs.next())
                 return rowMapper.apply(rs);
         } catch (SQLException e) {
-            log.error("Select single fail " + e);
+            log.error("Select single fail ", e);
         }
         return null;
     }
@@ -125,7 +125,7 @@ public class JonaDb {
                list.add(rowMapper.apply(rs));
            return list;
         } catch (SQLException e) {
-            log.error("Select list fail " + e);
+            log.error("Select list fail ", e);
         }
         return null;
     }

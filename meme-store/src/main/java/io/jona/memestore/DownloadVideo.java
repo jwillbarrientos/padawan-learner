@@ -1,12 +1,15 @@
 package io.jona.memestore;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -16,20 +19,21 @@ public class DownloadVideo {
     private static Executables exe;
     private static final Properties props = new Properties();
     private static Process process;
-    public static void downloadVideo(String link) {
+    public static String downloadVideo(String link) {
         //https://www.tiktok.com/@gertu0k/video/7258798530066713862
         //https://www.instagram.com/reel/DM2mUqnKUYS/?igsh=MWNuOG5leXRjajE0dg==
         //https://www.youtube.com/watch?v=lWHYJOayAUg
         //https://youtu.be/lWHYJOayAUg?si=UgHR7MhnOECnnluj
         //https://www.facebook.com/reel/718363154596932
         try {
-            runDownloader(link);
+            return runDownloader(link);
         } catch (IOException | InterruptedException e) {
             log.error("Error downloading video ", e);
+            return null;
         }
     }
 
-    public static void runDownloader(String url) throws IOException, InterruptedException {
+    public static String runDownloader(String url) throws IOException, InterruptedException {
         platform = Platforms.whatPlatformIs(url);
         if(platform == Platforms.YOU_TUBE)
             exe = Executables.YOUTUBE_DL;
@@ -39,29 +43,37 @@ public class DownloadVideo {
         log.info("user.dir: "+ System.getProperty("user.dir"));
         String ytDl = AppProps.getYtDlWin();
         String youtubeDl = AppProps.getYoutubeDlWin();
-        String destinyFolder = AppProps.getVideOutputPath();
+        String temporalFolder = AppProps.getTemporalPath();
+        String destinyFolder = AppProps.getVideoOutputPath();
         switch (platform) {
             case FACEBOOK:
-                buildCommand(command, ytDl, destinyFolder, url);
+                buildCommand(command, ytDl, temporalFolder, url);
                 break;
             case YOU_TUBE:
-                buildCommand(command, ytDl, destinyFolder, url);
+                buildCommand(command, ytDl, temporalFolder, url);
                 break;
             case INSTAGRAM:
-                buildCommand(command, ytDl, destinyFolder, url);
+                buildCommand(command, ytDl, temporalFolder, url);
                 break;
             case TIKTOK:
-                buildCommand(command, ytDl, destinyFolder, url);
+                buildCommand(command, ytDl, temporalFolder, url);
                 break;
             default:
                 log.debug("Invalid url");
-                return;
+                return null;
         }
         process = Runtime.getRuntime().exec(command);
         new Thread(DownloadVideo::printProcessOutput, "OutputThread").start();
         new Thread(DownloadVideo::printProcessErr, "ErrThread").start();
         process.waitFor();
         log.debug("Download finished");
+        File dir = new File(temporalFolder);
+        File[] files = dir.listFiles();
+        String fileName = files[0].getName();
+        Path source = Path.of(temporalFolder + "/" + fileName);
+        Path target = Path.of(destinyFolder + "/" + fileName);
+        Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+        return target.toString();
     }
 
     public static void printProcessOutput() {

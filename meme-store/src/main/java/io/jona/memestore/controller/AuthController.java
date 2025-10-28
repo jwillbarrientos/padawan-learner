@@ -44,8 +44,9 @@ public class AuthController {
                 response.addCookie("sessionCookie", sessionId);
                 sessionCookies.put(sessionId, client);
             }
+        } else {
+            response.setResponseCode(HttpCodes.CONFLICT_409);
         }
-        response.setResponseCode(HttpCodes.CONFLICT_409);
     }
 
     public void signOut(HttpRequest request, HttpResponse response) {

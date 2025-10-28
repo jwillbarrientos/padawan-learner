@@ -29,7 +29,7 @@ public class JbdcTest {
                 "https://www.tiktok.com/@gertu0k/video/7258798530066713862",
                 "C:/Users/barri/IdeaProjects/padawan-learner/meme-store/downloads/EL REY DE LOS CURRÍCULUMS Gracias @desayunosinformales12 por invitarm....mp4",
                 18,
-                "downloaded",
+                Video.State.DOWNLOADED,
                 date,
                 1);
         boolean successInsertVideo = JonaDb.insert(video);

@@ -19,10 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            alert("Video download started!");
+            alert("Video submitted!");
             linkInput.value = "";
         } catch (err) {
-            console.error("Download error:", err);
+            console.error("Submit error:", err);
             alert("Something went wrong!");
         }
     });

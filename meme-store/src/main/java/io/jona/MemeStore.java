@@ -2,21 +2,25 @@ package io.jona;
 
 import io.jona.framework.*;
 import io.jona.memestore.AppProps;
-import io.jona.memestore.controller.AuthController;
-import io.jona.memestore.controller.VideoController;
-import io.jona.memestore.controller.TagController;
-import io.jona.memestore.controller.TestController;
+import io.jona.memestore.VideoHelper;
+import io.jona.memestore.controller.*;
 import io.jona.memestore.dto.Client;
 import io.jona.memestore.filters.AuthFilter;
 import io.jona.memestore.filters.NoCacheFilter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class MemeStore {
     static HashMap<String, Client> sessionCookies = new HashMap<>();
     public static void main(String[] args) throws IOException {
         JonaDb.init(AppProps.getJdbcUrl(), AppProps.getDbUser(), AppProps.getDbPassword());
         JonaServer jonaServer = new JonaServer(8080);
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleWithFixedDelay(VideoHelper.setVideoWhenDownloaded(), 0,5, TimeUnit.SECONDS);
         TestController testController = new TestController();
 
         jonaServer.registerInboundFilter(Methods.GET, "^/testPath/.*$", (rq, rp) -> new HttpResponseBuilder().setResponseCode(HttpCodes.NOT_FOUND_404).setContentType(MimeType.TEXT_PLAIN).build()); //  /api/add-label
@@ -31,6 +35,7 @@ public class MemeStore {
         AuthController authController = new AuthController(sessionCookies);
         TagController tagController = new TagController(sessionCookies);
         VideoController videoController = new VideoController(sessionCookies);
+        StreamingController streamingController = new StreamingController(sessionCookies);
         AuthFilter authFilter = new AuthFilter(sessionCookies);
         NoCacheFilter noCacheFilter = new NoCacheFilter();
         jonaServer.registerInboundFilter(Methods.GET, "^/api/.*", authFilter::onlyAuthenticated);
@@ -44,6 +49,7 @@ public class MemeStore {
         jonaServer.registerEndPoint(Methods.GET, "/api/edittag", tagController::editTag);
         jonaServer.registerEndPoint(Methods.GET, "/api/deletetag", tagController::deleteTag);
         jonaServer.registerEndPoint(Methods.GET, "/api/addvideobylink", videoController::addVideoByLink);
+        jonaServer.registerEndPoint(Methods.GET, "/api/loadvideos", streamingController::loadVideos);
         jonaServer.addStaticContent("./web-root");
         jonaServer.registerOutboundFilter(Methods.GET, "^/public/.*$", noCacheFilter::addNoCache);
         jonaServer.registerOutboundFilter(Methods.GET, "^/api/.*$", noCacheFilter::addNoCache);

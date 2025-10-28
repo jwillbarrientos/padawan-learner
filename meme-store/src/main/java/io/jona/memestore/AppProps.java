@@ -25,8 +25,12 @@ public class AppProps {
         return props.getProperty("ytDl.win");
     }
 
-    public static String getVideOutputPath() {
-        return props.getProperty("videOutputPath");
+    public static String getTemporalPath() {
+        return props.getProperty("videoTemporalPath");
+    }
+
+    public static String getVideoOutputPath() {
+        return props.getProperty("videoOutputPath");
     }
 
     public static String getJdbcUrl() {

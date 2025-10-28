@@ -13,13 +13,12 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class Tag extends Table {
     @Getter
-    private long id;
+    private long id = nextId();
     @Getter @Setter
     private String name;
     private long clientId;
 
     public Tag(String name, long clientId) {
-        this.id = super.getIdGenerator().get();
         this.name = name;
         this.clientId = clientId;
     }

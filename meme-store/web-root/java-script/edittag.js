@@ -2,6 +2,8 @@ export function createEditButton(tagId, currentName, reloadCallback) {
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
 
+    editBtn.classList.add("tag-action-btn", "edit-btn");
+
     editBtn.addEventListener("click", async () => {
         const newName = prompt("Enter new tag name:", currentName);
         if (!newName) return;

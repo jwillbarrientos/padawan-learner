@@ -67,14 +67,51 @@
             font-weight: bold;
             margin-top: 20px;
         }
+        /* Tag Container */
         #tagList div {
-            padding: 6px;
-            background: #eef3ff;
-            border-radius: 4px;
+            background: #fff;
+            padding: 10px;
             margin: 6px 0;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 8px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Generic Tag Buttons */
+        .tag-action-btn {
+            border: none;
+            padding: 5px 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        /* Edit Button Style */
+        .edit-btn {
+            background-color: #4b7bff;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #2f5de0;
+        }
+
+        /* Delete Button Style */
+        .delete-btn {
+            background-color: #ff4b4b;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #e03a3a;
+        }
+
+        /* Hover grow effect */
+        .tag-action-btn:hover {
+            transform: scale(1.05);
         }
 
         /* Main */
@@ -130,7 +167,7 @@
             My Tags
             <button id="createTag">+</button>
         </div>
-
+        <br>
         <!-- Tags list -->
         <div id="tagList"></div>
     </aside>

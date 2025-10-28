@@ -3,6 +3,8 @@ export function createDeleteButton(tagId, reloadCallback) {
     deleteBtn.textContent = "Delete";
     deleteBtn.dataset.tagId = tagId;
 
+    deleteBtn.classList.add("tag-action-btn", "delete-btn");
+
     deleteBtn.addEventListener("click", async () => {
         try {
             const response = await fetch(`/api/deletetag?id=${tagId}`);
