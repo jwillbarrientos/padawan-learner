@@ -107,7 +107,7 @@ public class HttpResponse {
 
         if (contentType != null) {
             responseHeaders.put(HttpResponseHeaders.CONTENT_TYPE, contentType + "\r\n");
-            if (contentType.equals(MimeType.VIDEO_MP4.value)) {
+            if (contentType.equals(MimeType.VIDEO_MP4.value) || contentType.equals(MimeType.VIDEO_WEBM.value) || contentType.equals(MimeType.VIDEO_OGG.value)) {
                 responseHeaders.put(HttpResponseHeaders.CONTENT_RANGE, "bytes " + startOfFile + "-" + enfOfFile + "/" + totalFileSize + "\r\n");
                 responseHeaders.put(HttpResponseHeaders.ACCEPT_RANGES, "bytes" + "\r\n");
             }

@@ -9,6 +9,8 @@ public enum MimeType {
     IMAGE_PNG("image/png", ".png", false),
     IMAGE_JPG("image/jpeg", ".jpg", false),
     VIDEO_MP4("video/mp4", ".mp4", false),
+    VIDEO_WEBM("video/webm", ".webm", false),
+    VIDEO_OGG("video/ogg", ".ogv", false),
     APPLICATION_JSON("application/json", ".json", true),
     UNKNOW("", "", false);
 

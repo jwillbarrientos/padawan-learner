@@ -51,11 +51,12 @@ public class ProcessingOfRequests {
 
 //      Setea el body
             try {
-                if (mimeType == MimeType.VIDEO_MP4) {
+                if (mimeType == MimeType.VIDEO_MP4 || mimeType == MimeType.VIDEO_WEBM || mimeType == MimeType.VIDEO_OGG) {
                     response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
                     response.setStartOfFile(request.getRange());
                     response.setTotalFileSize(resourceAsStream.readAllBytes().length);
 
+                    //todo: tio dijo que esto hay que borrar, que el -1 no hay que usar, yo le dije que por algo puse
                     long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
                     response.setEnfOfFile(end);
                     response.setBody(path, response.getStartOfFile(), response.getEnfOfFile());

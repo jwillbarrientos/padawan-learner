@@ -50,6 +50,7 @@ public class MemeStore {
         jonaServer.registerEndPoint(Methods.GET, "/api/deletetag", tagController::deleteTag);
         jonaServer.registerEndPoint(Methods.GET, "/api/addvideobylink", videoController::addVideoByLink);
         jonaServer.registerEndPoint(Methods.GET, "/api/loadvideos", streamingController::loadVideos);
+        jonaServer.registerEndPoint(Methods.GET, "/api/streamingvideos", streamingController::streamVideos);
         jonaServer.addStaticContent("./web-root");
         jonaServer.registerOutboundFilter(Methods.GET, "^/public/.*$", noCacheFilter::addNoCache);
         jonaServer.registerOutboundFilter(Methods.GET, "^/api/.*$", noCacheFilter::addNoCache);
