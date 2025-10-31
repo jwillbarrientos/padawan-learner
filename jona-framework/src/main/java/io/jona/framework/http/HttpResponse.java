@@ -18,23 +18,20 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HttpResponse {
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-    private static ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
-    private final String date = now.format(formatter);
-    public static final long CHUNK_SIZE_BYTES = 2561024;
+    public static final long CHUNK_SIZE_BYTES = 1024 * 64L;
+    private static final String SERVER_NAME = "JonaServer";
+    private static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+
+    private final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
+    private final String date = now.format(ISO_DATE_FORMATTER);
     private final Map<HttpResponseHeader, String> responseHeaders = new HashMap<>();
 
-    private String protocol = "HTTP/1.1";
     @Setter
     private HttpCode responseCode;
-    private String serverName = "JonaServer";
     private String contentType;
-    @Setter @Getter
-    private long startOfFile;
-    @Setter @Getter
-    private long enfOfFile;
-    @Setter @Getter
-    private long totalFileSize;
+    private long headerRangeStart;
+    private long headerRangeEnd;
+    private long headerRangeTotal;
     @Getter
     private byte[] body;
     @Getter
@@ -61,20 +58,23 @@ public class HttpResponse {
         this.body = body;
     }
 
-    public void setBody(Path body, long starPositionOfReading, long endPositionOfReading) throws IOException {
+    public void setBodyWithRange(Path body, long headerRangeStart, long headerRangeEnd, long headerRangeTotal) throws IOException {
+        this.headerRangeStart = headerRangeStart;
+        this.headerRangeEnd = headerRangeEnd;
+        this.headerRangeTotal = headerRangeTotal;
         try (RandomAccessFile file = new RandomAccessFile(body.toFile(), "r")) {
             long fileLength = file.length();
-            if (endPositionOfReading > fileLength) {
-                endPositionOfReading = fileLength - 1;
+            if (headerRangeEnd > fileLength) {
+                headerRangeEnd = fileLength - 1;
             }
-            long chunkSize = endPositionOfReading - starPositionOfReading + 1;
+            long chunkSize = headerRangeEnd - headerRangeStart + 1;
 
             if (chunkSize < 0 || chunkSize > Integer.MAX_VALUE) {
                 throw new IllegalArgumentException("Invalid chunk size: " + chunkSize);
             }
 
             byte[] buffer = new byte[(int) chunkSize];
-            file.seek(starPositionOfReading);
+            file.seek(headerRangeStart);
             file.readFully(buffer);
             this.body = buffer; // assign to the response body
         }
@@ -98,7 +98,7 @@ public class HttpResponse {
 
     public void initHeaders() {
         responseHeaders.put(HttpResponseHeader.DATE, date + "\r\n");
-        responseHeaders.put(HttpResponseHeader.SERVER, serverName + "\r\n");
+        responseHeaders.put(HttpResponseHeader.SERVER, SERVER_NAME + "\r\n");
         if (body != null) {
             responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, body.length + "\r\n");
         } else {
@@ -108,7 +108,7 @@ public class HttpResponse {
         if (contentType != null) {
             responseHeaders.put(HttpResponseHeader.CONTENT_TYPE, contentType + "\r\n");
             if (contentType.equals(MimeType.VIDEO_MP4.value) || contentType.equals(MimeType.VIDEO_WEBM.value) || contentType.equals(MimeType.VIDEO_OGG.value)) {
-                responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, "bytes " + startOfFile + "-" + enfOfFile + "/" + totalFileSize + "\r\n");
+                responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, "bytes " + headerRangeStart + "-" + headerRangeEnd + "/" + headerRangeTotal + "\r\n");
                 responseHeaders.put(HttpResponseHeader.ACCEPT_RANGES, "bytes" + "\r\n");
             }
         } else {
@@ -123,6 +123,7 @@ public class HttpResponse {
     }
 
     public StringBuilder setAndGetHeaders() {
+        String protocol = "HTTP/1.1";
         StringBuilder headers = new StringBuilder(protocol + " " + responseCode.code + " " + responseCode.desc + "\r\n");
         initHeaders();
         if (cookies != null && !deleteCookies) {

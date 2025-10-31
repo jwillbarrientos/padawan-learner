@@ -50,12 +50,8 @@ public class ProcessingOfRequests {
             try {
                 if (mimeType == MimeType.VIDEO_MP4 || mimeType == MimeType.VIDEO_WEBM || mimeType == MimeType.VIDEO_OGG) {
                     response.setResponseCode(HttpCode.PARTIAL_CONTENT_206);
-                    response.setStartOfFile(request.getRangeStart());
-                    response.setTotalFileSize(path.toFile().length());
-
-                    long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
-                    response.setEnfOfFile(end);
-                    response.setBody(path, response.getStartOfFile(), response.getEnfOfFile());
+                    long end = Math.min(request.getRangeStart() + HttpResponse.CHUNK_SIZE_BYTES - 1, path.toFile().length() - 1);
+                    response.setBodyWithRange(path, request.getRangeStart(), end, path.toFile().length());
                 } else {
                     response.setResponseCode(HttpCode.OK_200);
                     response.setBody(resourceAsStream.readAllBytes());

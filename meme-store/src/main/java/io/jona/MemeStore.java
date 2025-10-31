@@ -2,7 +2,6 @@ package io.jona;
 
 import io.jona.framework.*;
 import io.jona.framework.http.HttpCode;
-import io.jona.framework.http.HttpResponseBuilder;
 import io.jona.framework.http.Method;
 import io.jona.framework.http.MimeType;
 import io.jona.memestore.AppProps;
@@ -26,8 +25,6 @@ public class MemeStore {
         service.scheduleWithFixedDelay(VideoHelper.setVideoWhenDownloaded(), 0,5, TimeUnit.SECONDS);
         TestController testController = new TestController();
 
-        jonaServer.registerInboundFilter(Method.GET, "^/testPath/.*$", (rq, rp) -> new HttpResponseBuilder().setResponseCode(HttpCode.NOT_FOUND_404).setContentType(MimeType.TEXT_PLAIN).build()); //  /api/add-label
-//        jonaServer.registerOutboundFilter(Methods.GET, "^/testPath/.*$", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.NOT_FOUND_404).setContentType(MimeType.TEXT_PLAIN).build()); //  /api/add-label
         jonaServer.registerEndPoint(Method.GET, "/testPath/getdate", testController::getDate);
 
         jonaServer.registerEndPoint(Method.GET, "/getdate", testController::getDateAndCookies);

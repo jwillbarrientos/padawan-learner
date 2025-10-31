@@ -43,14 +43,11 @@ public class StreamingController {
         Path path = Path.of(video.getPath());
         try {
             response.setResponseCode(HttpCode.PARTIAL_CONTENT_206);
-            response.setStartOfFile(request.getRangeStart());
-            response.setTotalFileSize(video.getFileSize());
-            long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
-            response.setEnfOfFile(end);
             String extension = video.getPath().substring(video.getPath().lastIndexOf("."));
             MimeType mimeType = MimeType.getMimeForExtension(extension);
             response.setContentType(mimeType);
-            response.setBody(path, response.getStartOfFile(), response.getEnfOfFile());
+            long end = Math.min(request.getRangeStart() + HttpResponse.CHUNK_SIZE_BYTES - 1, path.toFile().length() - 1);
+            response.setBodyWithRange(path, request.getRangeStart(), end, path.toFile().length());
         } catch (IOException e) {
             response.setResponseCode(HttpCode.CONFLICT_409);
             log.error("Error streaming the video ", e);
