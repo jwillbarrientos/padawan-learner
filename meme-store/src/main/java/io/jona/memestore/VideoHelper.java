@@ -21,7 +21,7 @@ public class VideoHelper {
                 } else {
                     video.setName(Paths.get(videoPath).getFileName().toString());
                     video.setPath(videoPath);
-                    //video.setDurationSeconds(getSeconds(video.getLink()));
+                    video.setDurationSeconds(getSeconds(video.getLink()));
                     video.setVideoState(Video.State.DOWNLOADED);
                 }
                 JonaDb.update(video);
@@ -29,18 +29,20 @@ public class VideoHelper {
         };
     }
 
-    //public static int getSeconds(String link) {
-    //    try {
-    //        Process process = Runtime.getRuntime().exec("yt-dlp -j \"" + link + "\" --skip-download --print \"%(duration)s\"");
-    //        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-    //        String line = reader.readLine();
-    //        process.waitFor();
-    //        if (line != null && !line.isEmpty()) {
-    //            return Integer.parseInt(line.trim());
-    //        }
-    //    } catch (IOException | InterruptedException e) {
-    //        log.error("Failed to parse duration: ", e);
-    //    }
-    //    return 0;
-    //}
+    public static int getSeconds(String link) {
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"./downloaders/yt-dlp.exe", "-j",  link, "--skip-download", "--print", "%(duration)s"});
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null && line.matches("^[0-9]+([0-9]\\.[0-9]+)?$")) {
+                process.destroyForcibly();
+                line = line.trim();
+                double d = Double.parseDouble(line);
+                return (int) Math.round(d);
+            }
+        } catch (IOException e) {
+            log.error("Failed to parse duration: ", e);
+        }
+        return 0;
+    }
 }

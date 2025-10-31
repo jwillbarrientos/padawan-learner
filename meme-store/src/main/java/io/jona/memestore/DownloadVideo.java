@@ -39,7 +39,7 @@ public class DownloadVideo {
             exe = Executables.YOUTUBE_DL;
         else
             exe = Executables.YT_DLP;
-        String[] command = new String[4];
+        String[] command;
         log.info("user.dir: "+ System.getProperty("user.dir"));
         String ytDl = AppProps.getYtDlWin();
         String youtubeDl = AppProps.getYoutubeDlWin();
@@ -47,16 +47,16 @@ public class DownloadVideo {
         String destinyFolder = AppProps.getVideoOutputPath();
         switch (platform) {
             case FACEBOOK:
-                buildCommand(command, ytDl, temporalFolder, url);
+                command = buildCommand(ytDl, temporalFolder, url);
                 break;
             case YOU_TUBE:
-                buildCommand(command, ytDl, temporalFolder, url);
+                command = buildCommand(ytDl, temporalFolder, url);
                 break;
             case INSTAGRAM:
-                buildCommand(command, ytDl, temporalFolder, url);
+                command = buildCommand(ytDl, temporalFolder, url);
                 break;
             case TIKTOK:
-                buildCommand(command, ytDl, temporalFolder, url);
+                command = buildCommand(ytDl, temporalFolder, url);
                 break;
             default:
                 log.debug("Invalid url");
@@ -104,8 +104,9 @@ public class DownloadVideo {
         log.debug("Printing ErrorStream of process without Exception");
     }
 
-    public static String[] buildCommand(String[] command, String downloader, String destinyFolder, String url) {
-        log.trace("Entering buildCommand() with params command={}, downloader={}, destinyFolder={}, url={}", command, downloader, destinyFolder, url);
+    public static String[] buildCommand(String downloader, String destinyFolder, String url) {
+        log.trace("Entering buildCommand() with params downloader={}, destinyFolder={}, url={}", downloader, destinyFolder, url);
+        String[] command = new String[4];
         command[0] = downloader;
         command[1] = "-o";
         command[2] = destinyFolder + "/%(title)s.%(ext)s";
