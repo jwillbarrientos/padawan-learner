@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 @Slf4j
 public class ProcessingOfRequests {
-    public static void processRequest(HttpRequest request, HttpResponse response, String location) throws IOException {
+    public static void processStaticPath(HttpRequest request, HttpResponse response, String location) throws IOException {
         boolean welcomePageRequested = request.getPath().isEmpty() || request.getPath().equals("/");
         String relativePath = location + "/" + request.getPath(); // /index.html === ./web-root//index.html
         Path path = Paths.get(relativePath).toAbsolutePath();
@@ -54,7 +54,7 @@ public class ProcessingOfRequests {
                 if (mimeType == MimeType.VIDEO_MP4 || mimeType == MimeType.VIDEO_WEBM || mimeType == MimeType.VIDEO_OGG) {
                     response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
                     response.setStartOfFile(request.getRange());
-                    response.setTotalFileSize(resourceAsStream.readAllBytes().length);
+                    response.setTotalFileSize(path.toFile().length());
 
                     long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
                     response.setEnfOfFile(end);

@@ -4,6 +4,7 @@ import io.jona.framework.JonaDb;
 import io.jona.memestore.dto.Video;
 import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
@@ -12,7 +13,7 @@ import java.nio.file.Paths;
 public class VideoHelper {
     public static Runnable setVideoWhenDownloaded() {
         return () -> {
-            Video video = JonaDb.selectSingle("select id, name, link, path, duration_seconds, video_state, date, client_id from video where video_state = ?",
+            Video video = JonaDb.selectSingle("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where video_state = ?",
                     Video.getFullMapping(), Video.State.SUBMITTED.name());
             if (video != null) {
                 String videoPath = DownloadVideo.downloadVideo(video.getLink());
@@ -22,6 +23,7 @@ public class VideoHelper {
                     video.setName(Paths.get(videoPath).getFileName().toString());
                     video.setPath(videoPath);
                     video.setDurationSeconds(getSeconds(video.getLink()));
+                    video.setFileSize((int) (new File(videoPath).length()));
                     video.setVideoState(Video.State.DOWNLOADED);
                 }
                 JonaDb.update(video);

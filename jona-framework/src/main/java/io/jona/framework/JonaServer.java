@@ -7,11 +7,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import static io.jona.framework.ProcessingOfRequests.processRequest;
+import static io.jona.framework.ProcessingOfRequests.processStaticPath;
 
 @Slf4j
 public class JonaServer {
@@ -30,72 +29,74 @@ public class JonaServer {
         this.port = port;
     }
 
-    public void registerEndPoint(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
-        endPoints.put(path, biConsumer);
-    }
-
     public void registerInboundFilter(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
         inboundFilters.put(path, biConsumer);
     }
 
-    public void registerOutboundFilter(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
-        outboundFilters.put(path, biConsumer);
+    public void registerEndPoint(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
+        endPoints.put(path, biConsumer);
     }
 
     public void addStaticContent(String location) {
         this.staticContentLocation = location;
     }
 
+    public void registerOutboundFilter(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
+        outboundFilters.put(path, biConsumer);
+    }
+
     public void start() throws IOException {
-        ServerSocket serverSocket = new ServerSocket(port);
-        log.info("Server started");
-        while(true) {
-            try (Socket client = serverSocket.accept()) {
-                HttpRequest request = new HttpRequest();
-                request.readFromSocket(client);
-                HttpResponse response = new HttpResponse();
-                boolean isDynamic = endPoints.containsKey(("/" + request.getPath()).replaceAll("/{2,}", "/"));
-                for(String regex : inboundFilters.keySet()) {
-                    Pattern pattern = Pattern.compile(regex);
-                    Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
-                    if (matcher.matches()) {
-                        BiConsumer<HttpRequest, HttpResponse> biConsumer = inboundFilters.get(regex);
-                        biConsumer.accept(request, response);
-                        if (response.isFinal()) {
-                            break;
-                        }
-                    }
-                }
+        try (ExecutorService requestExecutor = Executors.newCachedThreadPool();
+             ServerSocket serverSocket = new ServerSocket(port)) {
+            log.info("Server started");
+            while (true) {
+                requestExecutor.execute(() -> processRequest(serverSocket));
+            }
+        }
+    }
 
-                if (response.isFinal()) {
-                    byte[] responseBytes = response.buildResponse();
-                    client.getOutputStream().write(responseBytes);
-                    client.getOutputStream().flush();
-                    continue;
-                }
+    private void processRequest(ServerSocket serverSocket) {
+        HttpRequest request = null;
+        try (Socket client = serverSocket.accept()) {
+            request = new HttpRequest(client);
+            HttpResponse response = new HttpResponse();
 
-                if (isDynamic) {
-                    BiConsumer<HttpRequest, HttpResponse> biConsumer = endPoints.get(("/" + request.getPath()).replaceAll("/{2,}", "/"));
+            for(String regex : inboundFilters.keySet()) {
+                if (request.canonicalPath().matches(regex)) {
+                    BiConsumer<HttpRequest, HttpResponse> biConsumer = inboundFilters.get(regex);
                     biConsumer.accept(request, response);
-                } else {
-                    processRequest(request, response, staticContentLocation);
-                }
-
-                for(String regex : outboundFilters.keySet()) {
-                    Pattern pattern = Pattern.compile(regex);
-                    Matcher matcher = pattern.matcher(("/" + request.getPath()).replaceAll("/{2,}", "/"));
-                    if (matcher.matches()) {
-                        BiConsumer<HttpRequest, HttpResponse> biConsumer = outboundFilters.get(regex);
-                        biConsumer.accept(request, response);
+                    if (response.isFinal()) {
+                        break;
                     }
                 }
+            }
 
+            if (response.isFinal()) {
                 byte[] responseBytes = response.buildResponse();
                 client.getOutputStream().write(responseBytes);
                 client.getOutputStream().flush();
-            } catch (IOException e) {
-                log.error("Fail in start method: " + e);
+                return;
             }
+
+            boolean isDynamic = endPoints.containsKey(request.canonicalPath());
+            if (isDynamic) {
+                BiConsumer<HttpRequest, HttpResponse> biConsumer = endPoints.get(request.canonicalPath());
+                biConsumer.accept(request, response);
+            } else {
+                processStaticPath(request, response, staticContentLocation);
+            }
+
+            for(String regex : outboundFilters.keySet()) {
+                if (request.canonicalPath().matches(regex)) {
+                    BiConsumer<HttpRequest, HttpResponse> biConsumer = outboundFilters.get(regex);
+                    biConsumer.accept(request, response);
+                }
+            }
+
+            client.getOutputStream().write(response.buildResponse());
+            client.getOutputStream().flush();
+        } catch (IOException e) {
+            log.error("Exception while processing request: {}", request, e);
         }
     }
 }

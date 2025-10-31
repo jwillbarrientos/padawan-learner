@@ -16,6 +16,7 @@ create table video (
     link varchar,
     path varchar,
     duration_seconds int,
+    file_size int,
     video_state varchar,
     date timestamp,
     client_id bigint not null,

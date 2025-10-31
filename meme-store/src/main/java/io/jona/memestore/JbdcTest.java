@@ -27,11 +27,12 @@ public class JbdcTest {
                 "https://www.tiktok.com/@gertu0k/video/7258798530066713862",
                 "C:/Users/barri/IdeaProjects/padawan-learner/meme-store/downloads/EL REY DE LOS CURRÍCULUMS Gracias @desayunosinformales12 por invitarm....mp4",
                 18,
+                100,
                 Video.State.DOWNLOADED,
                 1);
         boolean successInsertVideo = JonaDb.insert(video);
         System.out.println(successInsertVideo);
-        List<Video> videos = JonaDb.selectList("select id, name, link, path, duration_seconds, video_state, date, client_id from video where client_id = ?",
+        List<Video> videos = JonaDb.selectList("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where client_id = ?",
                 Video.getFullMapping(), "1");
         System.out.println(videos);
         System.out.println(successInsert);

@@ -32,7 +32,15 @@ public class HttpRequest {
     @Setter @Getter
     private byte[] body;
 
-    public void readFromSocket(Socket client) throws IOException {
+    HttpRequest(Socket client) throws IOException {
+        this.readFromSocket(client);
+    }
+
+    public String canonicalPath() {
+        return ("/" + this.getPath()).replaceAll("/{2,}", "/");
+    }
+
+    private void readFromSocket(Socket client) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream(), StandardCharsets.US_ASCII));
         String line = bufferedReader.readLine();
         log.trace(line);

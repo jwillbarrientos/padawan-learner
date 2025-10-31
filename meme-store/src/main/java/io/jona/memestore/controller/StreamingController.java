@@ -6,6 +6,7 @@ import io.jona.memestore.dto.Client;
 import io.jona.memestore.dto.Video;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,7 @@ public class StreamingController {
     public void loadVideos(HttpRequest request, HttpResponse response) {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
-        List<Video> listVideos = JonaDb.selectList("select id, name, link, path, duration_seconds, video_state, date, client_id from video where client_id = ? order by 7 desc limit " + 10,
+        List<Video> listVideos = JonaDb.selectList("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where client_id = ? order by 7 desc limit " + 10,
                 Video.getFullMapping(), client.getId());
         Gson gson = new Gson();
         String json = gson.toJson(listVideos);
@@ -37,13 +38,13 @@ public class StreamingController {
 
     public void streamVideos(HttpRequest request, HttpResponse response) {
         String id = request.getQueryParams().get("id");
-        Video video = JonaDb.selectSingle("select id, name, link, path, duration_seconds, video_state, date, client_id from video where id = ?",
+        Video video = JonaDb.selectSingle("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where id = ?",
                 Video.getFullMapping(), id);
         Path path = Path.of(video.getPath());
         try {
             response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
             response.setStartOfFile(request.getRange());
-            response.setTotalFileSize(Files.readAllBytes(Path.of(video.getPath())).length);
+            response.setTotalFileSize(video.getFileSize());
             long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
             response.setEnfOfFile(end);
             String extension = video.getPath().substring(video.getPath().lastIndexOf("."));

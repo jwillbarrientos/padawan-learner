@@ -31,6 +31,8 @@ public class Video extends Table {
     private String path;
     @Setter
     private int durationSeconds;
+    @Setter @Getter
+    private int fileSize;
     @Setter
     private State videoState;
     @Setter
@@ -42,12 +44,14 @@ public class Video extends Table {
                  String link,
                  String path,
                  int durationSeconds,
+                 int fileSize,
                  State videoState,
                  long clientId) {
         this.name = name;
         this.link = link;
         this.path = path;
         this.durationSeconds = durationSeconds;
+        this.fileSize = fileSize;
         this.videoState = videoState;
         this.date = getDate();
         this.clientId = clientId;
@@ -58,6 +62,7 @@ public class Video extends Table {
         this.link = link;
         this.path = "";
         this.durationSeconds = 0;
+        this.fileSize = 0;
         this.videoState = videoState;
         this.date = getDate();
         this.clientId = clientId;
@@ -68,11 +73,11 @@ public class Video extends Table {
     }
 
     public String getInsert() {
-        return "insert into video (id, name, link, path, duration_seconds, video_state, date, client_id) values(?,?,?,?,?,?,?,?)";
+        return "insert into video (id, name, link, path, duration_seconds, file_size, video_state, date, client_id) values(?,?,?,?,?,?,?,?,?)";
     }
 
     public String getUpdate() {
-        return "update video set id = ?, name = ?, link = ?, path = ?, duration_seconds = ?, video_state = ?, date = ?, client_id = ? where id = " + id;
+        return "update video set id = ?, name = ?, link = ?, path = ?, duration_seconds = ?, file_size = ?, video_state = ?, date = ?, client_id = ? where id = " + id;
     }
 
     public String getDelete() {
@@ -80,11 +85,11 @@ public class Video extends Table {
     }
 
     public Object[] getValues() {
-        return new Object[] {id, name, link, path, durationSeconds, videoState.name(), date, clientId};
+        return new Object[] {id, name, link, path, durationSeconds, fileSize, videoState.name(), date, clientId};
     }
 
     public static String getById(long id) {
-        return "select id, name, link, path, duration_seconds, video_state, date, client_id from video where id = " + id;
+        return "select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where id = " + id;
     }
 
     public static Function<ResultSet, Video> getFullMapping() {
@@ -96,9 +101,10 @@ public class Video extends Table {
                         resulSet.getString(3),
                         resulSet.getString(4),
                         resulSet.getInt(5),
-                        State.valueOf(resulSet.getString(6)),
-                        resulSet.getTimestamp(7),
-                        resulSet.getLong(8)
+                        resulSet.getInt(6),
+                        State.valueOf(resulSet.getString(7)),
+                        resulSet.getTimestamp(8),
+                        resulSet.getLong( 9)
                 );
             } catch (SQLException e) {
                 log.error("Exception in getFullMapping() " + e);
@@ -114,6 +120,7 @@ public class Video extends Table {
                 ", link = " + link +
                 ", path = " + path +
                 ", duration_seconds = " + durationSeconds +
+                ", file_size = " + fileSize +
                 ", video_state = " + videoState +
                 ", date = " + date +
                 ", client_id + " + clientId;
