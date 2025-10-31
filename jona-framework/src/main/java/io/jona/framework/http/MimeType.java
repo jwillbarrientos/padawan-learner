@@ -1,4 +1,4 @@
-package io.jona.framework;
+package io.jona.framework.http;
 
 public enum MimeType {
     TEXT_HTML("text/html", ".html", true),

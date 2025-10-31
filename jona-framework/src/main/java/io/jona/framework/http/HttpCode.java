@@ -1,6 +1,6 @@
-package io.jona.framework;
+package io.jona.framework.http;
 
-public enum HttpCodes {
+public enum HttpCode {
 
     OK_200(200, "Accepted"),
     NO_CONTENT_204(204, "No Content"),
@@ -12,7 +12,7 @@ public enum HttpCodes {
     public final int code;
     public final String desc;
 
-    HttpCodes(int code, String desc) {
+    HttpCode(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }

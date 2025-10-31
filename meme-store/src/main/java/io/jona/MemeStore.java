@@ -1,6 +1,10 @@
 package io.jona;
 
 import io.jona.framework.*;
+import io.jona.framework.http.HttpCode;
+import io.jona.framework.http.HttpResponseBuilder;
+import io.jona.framework.http.Method;
+import io.jona.framework.http.MimeType;
 import io.jona.memestore.AppProps;
 import io.jona.memestore.VideoHelper;
 import io.jona.memestore.controller.*;
@@ -22,13 +26,13 @@ public class MemeStore {
         service.scheduleWithFixedDelay(VideoHelper.setVideoWhenDownloaded(), 0,5, TimeUnit.SECONDS);
         TestController testController = new TestController();
 
-        jonaServer.registerInboundFilter(Methods.GET, "^/testPath/.*$", (rq, rp) -> new HttpResponseBuilder().setResponseCode(HttpCodes.NOT_FOUND_404).setContentType(MimeType.TEXT_PLAIN).build()); //  /api/add-label
+        jonaServer.registerInboundFilter(Method.GET, "^/testPath/.*$", (rq, rp) -> new HttpResponseBuilder().setResponseCode(HttpCode.NOT_FOUND_404).setContentType(MimeType.TEXT_PLAIN).build()); //  /api/add-label
 //        jonaServer.registerOutboundFilter(Methods.GET, "^/testPath/.*$", r -> new HttpResponseBuilder().setResponseCode(HttpCodes.NOT_FOUND_404).setContentType(MimeType.TEXT_PLAIN).build()); //  /api/add-label
-        jonaServer.registerEndPoint(Methods.GET, "/testPath/getdate", testController::getDate);
+        jonaServer.registerEndPoint(Method.GET, "/testPath/getdate", testController::getDate);
 
-        jonaServer.registerEndPoint(Methods.GET, "/getdate", testController::getDateAndCookies);
-        jonaServer.registerEndPoint(Methods.GET, "/setcookie", testController::setCookie);
-        jonaServer.registerEndPoint(Methods.GET, "/deletecookies", testController::deleteCookie);
+        jonaServer.registerEndPoint(Method.GET, "/getdate", testController::getDateAndCookies);
+        jonaServer.registerEndPoint(Method.GET, "/setcookie", testController::setCookie);
+        jonaServer.registerEndPoint(Method.GET, "/deletecookies", testController::deleteCookie);
 
         // app memestore
         AuthController authController = new AuthController(sessionCookies);
@@ -37,22 +41,22 @@ public class MemeStore {
         StreamingController streamingController = new StreamingController(sessionCookies);
         AuthFilter authFilter = new AuthFilter(sessionCookies);
         NoCacheFilter noCacheFilter = new NoCacheFilter();
-        jonaServer.registerInboundFilter(Methods.GET, "^/api/.*", authFilter::onlyAuthenticated);
-        jonaServer.registerInboundFilter(Methods.GET, "^/app/.*", authFilter::onlyAuthenticated);
-        jonaServer.registerEndPoint(Methods.GET, "/public/login", authController::login);
-        jonaServer.registerEndPoint(Methods.GET, "/public/signup", authController::signUp);
-        jonaServer.registerEndPoint(Methods.GET, "/api/signout", authController::signOut);
-        jonaServer.registerEndPoint(Methods.GET, "/api/getprofilename", authController::getProfileName);
-        jonaServer.registerEndPoint(Methods.GET, "/api/loadtags", tagController::listTags);
-        jonaServer.registerEndPoint(Methods.GET, "/api/addtag", tagController::addTag);
-        jonaServer.registerEndPoint(Methods.GET, "/api/edittag", tagController::editTag);
-        jonaServer.registerEndPoint(Methods.GET, "/api/deletetag", tagController::deleteTag);
-        jonaServer.registerEndPoint(Methods.GET, "/api/addvideobylink", videoController::addVideoByLink);
-        jonaServer.registerEndPoint(Methods.GET, "/api/loadvideos", streamingController::loadVideos);
-        jonaServer.registerEndPoint(Methods.GET, "/api/streamingvideos", streamingController::streamVideos);
+        jonaServer.registerInboundFilter(Method.GET, "^/api/.*", authFilter::onlyAuthenticated);
+        jonaServer.registerInboundFilter(Method.GET, "^/app/.*", authFilter::onlyAuthenticated);
+        jonaServer.registerEndPoint(Method.GET, "/public/login", authController::login);
+        jonaServer.registerEndPoint(Method.GET, "/public/signup", authController::signUp);
+        jonaServer.registerEndPoint(Method.GET, "/api/signout", authController::signOut);
+        jonaServer.registerEndPoint(Method.GET, "/api/getprofilename", authController::getProfileName);
+        jonaServer.registerEndPoint(Method.GET, "/api/loadtags", tagController::listTags);
+        jonaServer.registerEndPoint(Method.GET, "/api/addtag", tagController::addTag);
+        jonaServer.registerEndPoint(Method.GET, "/api/edittag", tagController::editTag);
+        jonaServer.registerEndPoint(Method.GET, "/api/deletetag", tagController::deleteTag);
+        jonaServer.registerEndPoint(Method.GET, "/api/addvideobylink", videoController::addVideoByLink);
+        jonaServer.registerEndPoint(Method.GET, "/api/loadvideos", streamingController::loadVideos);
+        jonaServer.registerEndPoint(Method.GET, "/api/streamingvideos", streamingController::streamVideos);
         jonaServer.addStaticContent("./web-root");
-        jonaServer.registerOutboundFilter(Methods.GET, "^/public/.*$", noCacheFilter::addNoCache);
-        jonaServer.registerOutboundFilter(Methods.GET, "^/api/.*$", noCacheFilter::addNoCache);
+        jonaServer.registerOutboundFilter(Method.GET, "^/public/.*$", noCacheFilter::addNoCache);
+        jonaServer.registerOutboundFilter(Method.GET, "^/api/.*$", noCacheFilter::addNoCache);
 
         jonaServer.start();
     }

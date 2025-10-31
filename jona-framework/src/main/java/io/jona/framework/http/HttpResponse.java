@@ -1,4 +1,4 @@
-package io.jona.framework;
+package io.jona.framework.http;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +22,11 @@ public class HttpResponse {
     private static ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private final String date = now.format(formatter);
     public static final long CHUNK_SIZE_BYTES = 2561024;
-    private final Map<HttpResponseHeaders, String> responseHeaders = new HashMap<>();
+    private final Map<HttpResponseHeader, String> responseHeaders = new HashMap<>();
 
     private String protocol = "HTTP/1.1";
     @Setter
-    private HttpCodes responseCode;
+    private HttpCode responseCode;
     private String serverName = "JonaServer";
     private String contentType;
     @Setter @Getter
@@ -97,28 +97,28 @@ public class HttpResponse {
     }
 
     public void initHeaders() {
-        responseHeaders.put(HttpResponseHeaders.DATE, date + "\r\n");
-        responseHeaders.put(HttpResponseHeaders.SERVER, serverName + "\r\n");
+        responseHeaders.put(HttpResponseHeader.DATE, date + "\r\n");
+        responseHeaders.put(HttpResponseHeader.SERVER, serverName + "\r\n");
         if (body != null) {
-            responseHeaders.put(HttpResponseHeaders.CONTENT_RANGE, body.length + "\r\n");
+            responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, body.length + "\r\n");
         } else {
-            responseHeaders.put(HttpResponseHeaders.CONTENT_RANGE, null);
+            responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, null);
         }
 
         if (contentType != null) {
-            responseHeaders.put(HttpResponseHeaders.CONTENT_TYPE, contentType + "\r\n");
+            responseHeaders.put(HttpResponseHeader.CONTENT_TYPE, contentType + "\r\n");
             if (contentType.equals(MimeType.VIDEO_MP4.value) || contentType.equals(MimeType.VIDEO_WEBM.value) || contentType.equals(MimeType.VIDEO_OGG.value)) {
-                responseHeaders.put(HttpResponseHeaders.CONTENT_RANGE, "bytes " + startOfFile + "-" + enfOfFile + "/" + totalFileSize + "\r\n");
-                responseHeaders.put(HttpResponseHeaders.ACCEPT_RANGES, "bytes" + "\r\n");
+                responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, "bytes " + startOfFile + "-" + enfOfFile + "/" + totalFileSize + "\r\n");
+                responseHeaders.put(HttpResponseHeader.ACCEPT_RANGES, "bytes" + "\r\n");
             }
         } else {
-            responseHeaders.put(HttpResponseHeaders.CONTENT_TYPE, null);
+            responseHeaders.put(HttpResponseHeader.CONTENT_TYPE, null);
         }
 
         if (noCache) {
-            responseHeaders.put(HttpResponseHeaders.CACHE_CONTROL, "no-store" + "\r\n");
+            responseHeaders.put(HttpResponseHeader.CACHE_CONTROL, "no-store" + "\r\n");
         } else {
-            responseHeaders.put(HttpResponseHeaders.CACHE_CONTROL, null);
+            responseHeaders.put(HttpResponseHeader.CACHE_CONTROL, null);
         }
     }
 
@@ -128,29 +128,29 @@ public class HttpResponse {
         if (cookies != null && !deleteCookies) {
             for (Map.Entry<String, String> cookie : cookies.entrySet()) {
                 String cookieString = cookie.getKey() + "=" + cookie.getValue();
-                headers.append(HttpResponseHeaders.SET_COOKIE.headerKey).append(cookieString).append("; Path=/\r\n");
+                headers.append(HttpResponseHeader.SET_COOKIE.headerKey).append(cookieString).append("; Path=/\r\n");
             }
         } else if (deleteCookies) {
-            headers.append(HttpResponseHeaders.CLEAR_SITE_DATA.headerKey).append("\"cookies\"\r\n");
+            headers.append(HttpResponseHeader.CLEAR_SITE_DATA.headerKey).append("\"cookies\"\r\n");
         }
-        headers.append(HttpResponseHeaders.DATE.headerKey).append(responseHeaders.get(HttpResponseHeaders.DATE));
-        headers.append(HttpResponseHeaders.SERVER.headerKey).append(responseHeaders.get(HttpResponseHeaders.SERVER));
-        if (responseHeaders.get(HttpResponseHeaders.CONTENT_RANGE) != null)
-            headers.append(HttpResponseHeaders.CONTENT_RANGE.headerKey).append(responseHeaders.get(HttpResponseHeaders.CONTENT_RANGE));
-        if (responseHeaders.get(HttpResponseHeaders.CONTENT_TYPE) != null) {
-            headers.append(HttpResponseHeaders.CONTENT_TYPE.headerKey).append(responseHeaders.get(HttpResponseHeaders.CONTENT_TYPE));
+        headers.append(HttpResponseHeader.DATE.headerKey).append(responseHeaders.get(HttpResponseHeader.DATE));
+        headers.append(HttpResponseHeader.SERVER.headerKey).append(responseHeaders.get(HttpResponseHeader.SERVER));
+        if (responseHeaders.get(HttpResponseHeader.CONTENT_RANGE) != null)
+            headers.append(HttpResponseHeader.CONTENT_RANGE.headerKey).append(responseHeaders.get(HttpResponseHeader.CONTENT_RANGE));
+        if (responseHeaders.get(HttpResponseHeader.CONTENT_TYPE) != null) {
+            headers.append(HttpResponseHeader.CONTENT_TYPE.headerKey).append(responseHeaders.get(HttpResponseHeader.CONTENT_TYPE));
             if (contentType.equals(MimeType.VIDEO_MP4.value)) {
-                headers.append(HttpResponseHeaders.CONTENT_RANGE.headerKey).append(responseHeaders.get(HttpResponseHeaders.CONTENT_RANGE));
-                headers.append(HttpResponseHeaders.ACCEPT_RANGES.headerKey).append(responseHeaders.get(HttpResponseHeaders.ACCEPT_RANGES));
+                headers.append(HttpResponseHeader.CONTENT_RANGE.headerKey).append(responseHeaders.get(HttpResponseHeader.CONTENT_RANGE));
+                headers.append(HttpResponseHeader.ACCEPT_RANGES.headerKey).append(responseHeaders.get(HttpResponseHeader.ACCEPT_RANGES));
             }
         }
-        if (responseHeaders.get(HttpResponseHeaders.CACHE_CONTROL) != null)
-            headers.append(HttpResponseHeaders.CACHE_CONTROL.headerKey).append(responseHeaders.get(HttpResponseHeaders.CACHE_CONTROL));
+        if (responseHeaders.get(HttpResponseHeader.CACHE_CONTROL) != null)
+            headers.append(HttpResponseHeader.CACHE_CONTROL.headerKey).append(responseHeaders.get(HttpResponseHeader.CACHE_CONTROL));
         headers.append("\r\n");
         return headers;
     }
 
-    byte[] buildResponse() {
+    public byte[] buildResponse() {
         StringBuilder headers = setAndGetHeaders();
         byte[] headerBytes = headers.toString().getBytes(StandardCharsets.US_ASCII);
         log.debug("Status: {}", responseCode.code);

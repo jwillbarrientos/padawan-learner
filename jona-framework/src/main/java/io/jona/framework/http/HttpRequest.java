@@ -1,4 +1,4 @@
-package io.jona.framework;
+package io.jona.framework.http;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,17 +10,16 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Slf4j
 public class HttpRequest {
     @Setter
-    private Methods method;
+    private Method method;
     @Setter @Getter
     private String path;
     @Setter
-    private Protocols protocol;
+    private Protocol protocol;
     @Getter
     private Map<String, String> queryParams = new HashMap<>();
     @Getter
@@ -32,7 +31,7 @@ public class HttpRequest {
     @Setter @Getter
     private byte[] body;
 
-    HttpRequest(Socket client) throws IOException {
+    public HttpRequest(Socket client) throws IOException {
         this.readFromSocket(client);
     }
 
@@ -45,10 +44,10 @@ public class HttpRequest {
         String line = bufferedReader.readLine();
         log.trace(line);
         String[] methodPathProtocol = line.split(" ", 3);
-        setMethod(Methods.valueOf(methodPathProtocol[0]));
+        setMethod(Method.valueOf(methodPathProtocol[0]));
         path = methodPathProtocol[1];
         path = path.startsWith("/")? path.substring(1) : path;
-        setProtocol(methodPathProtocol[2].equals(Protocols.HTTP_1_1.desc)? Protocols.HTTP_1_1 : Protocols.UNSUPPORTED);
+        setProtocol(methodPathProtocol[2].equals(Protocol.HTTP_1_1.desc)? Protocol.HTTP_1_1 : Protocol.UNSUPPORTED);
         boolean containsQueryParams = false;
         String[] queryAndParamsTogether = new String[0];
         if (methodPathProtocol[1].contains("?")) {

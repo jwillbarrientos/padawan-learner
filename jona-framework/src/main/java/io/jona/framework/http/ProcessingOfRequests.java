@@ -1,12 +1,9 @@
-package io.jona.framework;
+package io.jona.framework.http;
 
 import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 @Slf4j
 public class ProcessingOfRequests {
@@ -21,7 +18,7 @@ public class ProcessingOfRequests {
 
         boolean requestedResourceExistsAsFile = path.toFile().exists();
         if (!requestedResourceExistsAsFile) {
-            response.setResponseCode(HttpCodes.NOT_FOUND_404);
+            response.setResponseCode(HttpCode.NOT_FOUND_404);
             response.setContentType(MimeType.TEXT_PLAIN);
             response.setBody("This resource doesnt exist");
             log.info("Served File: NOT FOUND");
@@ -30,7 +27,7 @@ public class ProcessingOfRequests {
 
         try (InputStream resourceAsStream = new FileInputStream(relativePath)) {
             if (welcomePageRequested) {
-                response.setResponseCode(HttpCodes.OK_200);
+                response.setResponseCode(HttpCode.OK_200);
                 response.setContentType(MimeType.TEXT_HTML, "UTF-8");
                 try {
                     response.setBody(resourceAsStream.readAllBytes());
@@ -52,7 +49,7 @@ public class ProcessingOfRequests {
 //      Setea el body
             try {
                 if (mimeType == MimeType.VIDEO_MP4 || mimeType == MimeType.VIDEO_WEBM || mimeType == MimeType.VIDEO_OGG) {
-                    response.setResponseCode(HttpCodes.PARTIAL_CONTENT_206);
+                    response.setResponseCode(HttpCode.PARTIAL_CONTENT_206);
                     response.setStartOfFile(request.getRange());
                     response.setTotalFileSize(path.toFile().length());
 
@@ -60,7 +57,7 @@ public class ProcessingOfRequests {
                     response.setEnfOfFile(end);
                     response.setBody(path, response.getStartOfFile(), response.getEnfOfFile());
                 } else {
-                    response.setResponseCode(HttpCodes.OK_200);
+                    response.setResponseCode(HttpCode.OK_200);
                     response.setBody(resourceAsStream.readAllBytes());
                 }
             } catch (IOException e) {

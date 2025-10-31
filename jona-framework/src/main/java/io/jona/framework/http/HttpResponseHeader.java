@@ -1,6 +1,6 @@
-package io.jona.framework;
+package io.jona.framework.http;
 
-public enum HttpResponseHeaders {
+public enum HttpResponseHeader {
     DATE("Date"),
     SERVER("Server"),
     CONTENT_TYPE("Content-Type"),
@@ -13,7 +13,7 @@ public enum HttpResponseHeaders {
 
     public final String headerKey;
 
-    HttpResponseHeaders(String headerKey) {
+    HttpResponseHeader(String headerKey) {
         this.headerKey = headerKey + ": ";
     }
 }

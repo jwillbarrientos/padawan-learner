@@ -1,16 +1,14 @@
-package io.jona.framework;
+package io.jona.framework.http;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.HashMap;
 
 @Slf4j
 public class HttpResponseBuilder {
     private String protocol = "HTTP/1.1";
-    private HttpCodes responseCode;
+    private HttpCode responseCode;
     private String serverName = "jonatitoServer";
     private String contentType;
     private long startOfFile;
@@ -23,7 +21,7 @@ public class HttpResponseBuilder {
     private boolean isFinal;
     private boolean noCache;
 
-    public HttpResponseBuilder setResponseCode(HttpCodes responseCode) {
+    public HttpResponseBuilder setResponseCode(HttpCode responseCode) {
         this.responseCode = responseCode;
         return this;
     }

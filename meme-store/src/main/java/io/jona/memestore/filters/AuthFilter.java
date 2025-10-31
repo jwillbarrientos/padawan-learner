@@ -1,9 +1,8 @@
 package io.jona.memestore.filters;
 
-import io.jona.framework.HttpCodes;
-import io.jona.framework.HttpRequest;
-import io.jona.framework.HttpResponse;
-import io.jona.framework.JonaDb;
+import io.jona.framework.http.HttpCode;
+import io.jona.framework.http.HttpRequest;
+import io.jona.framework.http.HttpResponse;
 import io.jona.memestore.dto.Client;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class AuthFilter {
         if (sessionCookiePresent) {
             return;
         }
-        response.setResponseCode(HttpCodes.NOT_FOUND_404);
+        response.setResponseCode(HttpCode.NOT_FOUND_404);
         response.setBody("Request blocked by AuthFilter");
         response.setFinal();
     }

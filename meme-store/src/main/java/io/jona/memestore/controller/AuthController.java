@@ -1,6 +1,10 @@
 package io.jona.memestore.controller;
 
 import io.jona.framework.*;
+import io.jona.framework.http.HttpCode;
+import io.jona.framework.http.HttpRequest;
+import io.jona.framework.http.HttpResponse;
+import io.jona.framework.http.MimeType;
 import io.jona.memestore.dto.Client;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,12 +24,12 @@ public class AuthController {
                 request.getQueryParams().get("password"));
         boolean clientExist = client != null;
         if (clientExist) {
-            response.setResponseCode(HttpCodes.OK_200);
+            response.setResponseCode(HttpCode.OK_200);
             String sessionId = UUID.randomUUID().toString();
             response.addCookie("sessionCookie", sessionId);
             sessionCookies.put(sessionId, client);
         } else {
-            response.setResponseCode(HttpCodes.UNAUTHORIZED_401);
+            response.setResponseCode(HttpCode.UNAUTHORIZED_401);
         }
     }
 
@@ -39,25 +43,25 @@ public class AuthController {
             client = new Client(request.getQueryParams().get("email"), request.getQueryParams().get("password"));
             boolean insertSuccessful = JonaDb.insert(client);
             if (insertSuccessful) {
-                response.setResponseCode(HttpCodes.OK_200);
+                response.setResponseCode(HttpCode.OK_200);
                 String sessionId = UUID.randomUUID().toString();
                 response.addCookie("sessionCookie", sessionId);
                 sessionCookies.put(sessionId, client);
             }
         } else {
-            response.setResponseCode(HttpCodes.CONFLICT_409);
+            response.setResponseCode(HttpCode.CONFLICT_409);
         }
     }
 
     public void signOut(HttpRequest request, HttpResponse response) {
         response.deleteCookies();
-        response.setResponseCode(HttpCodes.OK_200);
+        response.setResponseCode(HttpCode.OK_200);
     }
 
     public void getProfileName(HttpRequest request, HttpResponse response) {
         Client client = sessionCookies.get(request.getCookies().get("sessionCookie"));
         response.setBody(client.getEmail());
         response.setContentType(MimeType.TEXT_PLAIN);
-        response.setResponseCode(HttpCodes.OK_200);
+        response.setResponseCode(HttpCode.OK_200);
     }
 }

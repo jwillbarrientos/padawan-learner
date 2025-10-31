@@ -1,5 +1,8 @@
 package io.jona.framework;
 
+import io.jona.framework.http.HttpRequest;
+import io.jona.framework.http.HttpResponse;
+import io.jona.framework.http.Method;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
@@ -10,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
-import static io.jona.framework.ProcessingOfRequests.processStaticPath;
+import static io.jona.framework.http.ProcessingOfRequests.processStaticPath;
 
 @Slf4j
 public class JonaServer {
@@ -29,11 +32,11 @@ public class JonaServer {
         this.port = port;
     }
 
-    public void registerInboundFilter(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
+    public void registerInboundFilter(Method method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
         inboundFilters.put(path, biConsumer);
     }
 
-    public void registerEndPoint(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
+    public void registerEndPoint(Method method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
         endPoints.put(path, biConsumer);
     }
 
@@ -41,7 +44,7 @@ public class JonaServer {
         this.staticContentLocation = location;
     }
 
-    public void registerOutboundFilter(Methods method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
+    public void registerOutboundFilter(Method method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
         outboundFilters.put(path, biConsumer);
     }
 

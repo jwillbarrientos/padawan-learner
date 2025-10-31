@@ -2,11 +2,14 @@ package io.jona.memestore.controller;
 
 import com.google.gson.Gson;
 import io.jona.framework.*;
+import io.jona.framework.http.HttpCode;
+import io.jona.framework.http.HttpRequest;
+import io.jona.framework.http.HttpResponse;
+import io.jona.framework.http.MimeType;
 import io.jona.memestore.dto.Client;
 import io.jona.memestore.dto.Tag;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +31,7 @@ public class TagController {
         String json = gson.toJson(tag);
         boolean insertSuccess = JonaDb.insert(tag);
         log.info("Tag creation was successful: " + insertSuccess);
-        response.setResponseCode(HttpCodes.OK_200);
+        response.setResponseCode(HttpCode.OK_200);
         response.setBody(json.getBytes());
     }
 
@@ -38,14 +41,14 @@ public class TagController {
 //        JonaDb.update(tag, request.getQueryParams().get("name"), request.getQueryParams().get("id"));
         boolean updateSuccess = JonaDb.update(tag);
         log.info("Tag update was successful: " + updateSuccess);
-        response.setResponseCode(HttpCodes.OK_200);
+        response.setResponseCode(HttpCode.OK_200);
     }
 
     public void deleteTag(HttpRequest request, HttpResponse response) {
         Tag tag = JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), request.getQueryParams().get("id"));
         boolean deleteSuccess = JonaDb.delete(tag);
         log.info("Tag deletion was successful: " + deleteSuccess);
-        response.setResponseCode(HttpCodes.OK_200);
+        response.setResponseCode(HttpCode.OK_200);
     }
 
     public void listTags(HttpRequest request, HttpResponse response) {
@@ -55,7 +58,7 @@ public class TagController {
         Gson gson = new Gson();
         String json = gson.toJson(tags);
         response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
-        response.setResponseCode(HttpCodes.OK_200);
+        response.setResponseCode(HttpCode.OK_200);
         response.setBody(json.getBytes());
     }
 }
