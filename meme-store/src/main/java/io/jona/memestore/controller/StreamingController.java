@@ -43,7 +43,7 @@ public class StreamingController {
         Path path = Path.of(video.getPath());
         try {
             response.setResponseCode(HttpCode.PARTIAL_CONTENT_206);
-            response.setStartOfFile(request.getRange());
+            response.setStartOfFile(request.getRangeStart());
             response.setTotalFileSize(video.getFileSize());
             long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
             response.setEnfOfFile(end);
