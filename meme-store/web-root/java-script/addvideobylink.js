@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const downloadBtn = document.getElementById("downloadBtn");
+    const uploadBtn = document.getElementById("uploadBtn");
     const linkInput = document.getElementById("videoUrl");
 
-    downloadBtn.addEventListener("click", async () => {
+    uploadBtn.addEventListener("click", async () => {
         const videoLink = linkInput.value.trim();
         if (!videoLink) {
             alert("Please enter a video link.");

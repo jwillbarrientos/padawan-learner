@@ -13,13 +13,13 @@ export async function loadVideos() {
             if (!video) return;
 
             const videoItem = document.createElement("div");
+            videoItem.classList.add("video-item");
 
             const nameSpan = document.createElement("span");
             nameSpan.textContent = video.name + " ";
 
             const videoPlayer = document.createElement("video");
             videoPlayer.controls = true;
-            videoPlayer.width = 300;
 
             // The browser will request the video from this URL
             videoPlayer.src = "/api/streamingvideos?id=" + encodeURIComponent(video.id);

@@ -27,8 +27,8 @@ public class JonaDb {
                     stmt.setLong(index++, ((Long) mapping));
                 else if (mapping instanceof Integer)
                     stmt.setInt(index++, (Integer) mapping);
-                else if (mapping instanceof Date)
-                    stmt.setDate(index++, (Date) mapping);
+                else if (mapping instanceof Timestamp)
+                    stmt.setTimestamp(index++, (Timestamp) mapping);
                 else
                     stmt.setString(index++, mapping.toString());
             }
@@ -52,8 +52,8 @@ public class JonaDb {
                     stmt.setLong(index++, ((Long) mapping));
                 else if (mapping instanceof Integer)
                     stmt.setInt(index++, (Integer) mapping);
-                else if (mapping instanceof Date)
-                    stmt.setDate(index++, (Date) mapping);
+                else if (mapping instanceof Timestamp)
+                    stmt.setTimestamp(index++, (Timestamp) mapping);
                 else
                     stmt.setString(index++, mapping.toString());
             }
@@ -91,8 +91,8 @@ public class JonaDb {
                     stmt.setLong(index++, ((Long) mapping));
                 else if (mapping instanceof Integer)
                     stmt.setInt(index++, (Integer) mapping);
-                else if (mapping instanceof Date)
-                    stmt.setDate(index++, (Date) mapping);
+                else if (mapping instanceof Timestamp)
+                    stmt.setTimestamp(index++, (Timestamp) mapping);
                 else
                     stmt.setString(index++, mapping.toString());
             }
@@ -114,8 +114,8 @@ public class JonaDb {
                    stmt.setLong(index++, (Long) mapping);
                else if (mapping instanceof Integer)
                    stmt.setInt(index++, (Integer) mapping);
-               else if (mapping instanceof Date)
-                   stmt.setDate(index++, (Date) mapping);
+               else if (mapping instanceof Timestamp)
+                   stmt.setTimestamp(index++, (Timestamp) mapping);
                else
                    stmt.setString(index++, mapping.toString());
            }

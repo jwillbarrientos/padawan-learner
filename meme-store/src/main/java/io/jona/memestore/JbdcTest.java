@@ -23,14 +23,11 @@ public class JbdcTest {
         Client client1 = JonaDb.selectSingle("select  id, email, password from client where email = ?",
                 Client.getFullMapping(), "barrientosjonah@gmail.com");
         System.out.println(client1);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = sdf.parse("2025-10-20 19:42:17");
         Video video = new Video("tremendoProgramador",
                 "https://www.tiktok.com/@gertu0k/video/7258798530066713862",
                 "C:/Users/barri/IdeaProjects/padawan-learner/meme-store/downloads/EL REY DE LOS CURRÍCULUMS Gracias @desayunosinformales12 por invitarm....mp4",
                 18,
                 Video.State.DOWNLOADED,
-                date,
                 1);
         boolean successInsertVideo = JonaDb.insert(video);
         System.out.println(successInsertVideo);

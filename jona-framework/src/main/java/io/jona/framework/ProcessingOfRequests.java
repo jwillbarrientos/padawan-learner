@@ -56,7 +56,6 @@ public class ProcessingOfRequests {
                     response.setStartOfFile(request.getRange());
                     response.setTotalFileSize(resourceAsStream.readAllBytes().length);
 
-                    //todo: tio dijo que esto hay que borrar, que el -1 no hay que usar, yo le dije que por algo puse
                     long end = Math.min(response.getStartOfFile() + HttpResponse.CHUNK_SIZE_BYTES - 1, response.getTotalFileSize() - 1);
                     response.setEnfOfFile(end);
                     response.setBody(path, response.getStartOfFile(), response.getEnfOfFile());

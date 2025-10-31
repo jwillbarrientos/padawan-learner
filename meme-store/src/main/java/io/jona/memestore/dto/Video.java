@@ -19,6 +19,7 @@ public class Video extends Table {
     public enum State {
         SUBMITTED, DOWNLOADED, ERROR_DOWNLOADING
     }
+    private final Date dateSetter = new Date();
 
     @Setter @Getter
     private long id = nextId();
@@ -33,7 +34,7 @@ public class Video extends Table {
     @Setter
     private State videoState;
     @Setter
-    private Date date = new Date();
+    private Timestamp date;
     @Setter
     private long clientId;
 
@@ -42,14 +43,13 @@ public class Video extends Table {
                  String path,
                  int durationSeconds,
                  State videoState,
-                 Date date,
                  long clientId) {
         this.name = name;
         this.link = link;
         this.path = path;
         this.durationSeconds = durationSeconds;
         this.videoState = videoState;
-        this.date = date;
+        this.date = getDate();
         this.clientId = clientId;
     }
 
@@ -64,7 +64,7 @@ public class Video extends Table {
     }
 
     public Timestamp getDate() {
-        return new java.sql.Timestamp(date.getTime());
+        return new java.sql.Timestamp(dateSetter.getTime());
     }
 
     public String getInsert() {
@@ -97,7 +97,7 @@ public class Video extends Table {
                         resulSet.getString(4),
                         resulSet.getInt(5),
                         State.valueOf(resulSet.getString(6)),
-                        resulSet.getDate(7),
+                        resulSet.getTimestamp(7),
                         resulSet.getLong(8)
                 );
             } catch (SQLException e) {
