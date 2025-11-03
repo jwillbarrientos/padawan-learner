@@ -68,13 +68,13 @@ public class JonaServer {
                 if (request.canonicalPath().matches(regex)) {
                     BiConsumer<HttpRequest, HttpResponse> biConsumer = inboundFilters.get(regex);
                     biConsumer.accept(request, response);
-                    if (response.isFinal()) {
+                    if (response.blockedByInboundFilter()) {
                         break;
                     }
                 }
             }
 
-            if (response.isFinal()) {
+            if (response.blockedByInboundFilter()) {
                 byte[] responseBytes = response.buildResponse();
                 client.getOutputStream().write(responseBytes);
                 client.getOutputStream().flush();

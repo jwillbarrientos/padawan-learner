@@ -21,6 +21,6 @@ public class AuthFilter {
         }
         response.setResponseCode(HttpCode.NOT_FOUND_404);
         response.setBody("Request blocked by AuthFilter");
-        response.setFinal();
+        response.truncateProcessing();
     }
 }

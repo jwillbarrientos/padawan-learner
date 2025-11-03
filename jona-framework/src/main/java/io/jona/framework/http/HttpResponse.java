@@ -18,6 +18,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HttpResponse {
+    private static final String CRLF = "\r\n";
     public static final long CHUNK_SIZE_BYTES = 1024 * 64L;
     private static final String SERVER_NAME = "JonaServer";
     private static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
@@ -25,28 +26,30 @@ public class HttpResponse {
     private final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
     private final String date = now.format(ISO_DATE_FORMATTER);
     private final Map<HttpResponseHeader, String> responseHeaders = new HashMap<>();
+    @Getter
+    private final Map<String, String> cookies = new HashMap<>();
 
     @Setter
     private HttpCode responseCode;
     private String contentType;
+    private MimeType mimeType;
     private long headerRangeStart;
     private long headerRangeEnd;
     private long headerRangeTotal;
     @Getter
     private byte[] body;
-    @Getter
-    private Map<String, String> cookies = new HashMap<>();
     private boolean deleteCookies;
-    @Getter
-    private boolean isFinal;
+    private boolean blockedByInboundFilter;
     private boolean noCache;
 
     public void setContentType(MimeType mimeType, String charset) {
         this.contentType = mimeType.value + "; charset=" + charset;
+        this.mimeType = mimeType;
     }
 
     public void setContentType(MimeType mimeType) {
         this.contentType = mimeType.value;
+        this.mimeType = mimeType;
     }
 
     public void setBody(String body) {
@@ -58,17 +61,17 @@ public class HttpResponse {
         this.body = body;
     }
 
-    public void setBodyWithRange(Path body, long headerRangeStart, long headerRangeEnd, long headerRangeTotal) throws IOException {
-        this.headerRangeStart = headerRangeStart;
-        this.headerRangeEnd = headerRangeEnd;
-        this.headerRangeTotal = headerRangeTotal;
+    public void setBodyWithRange(Path body, long rangeStart, long rangeEnd, long rangeTotal) throws IOException {
+        headerRangeStart = rangeStart;
+        headerRangeEnd = rangeEnd;
+        headerRangeTotal = rangeTotal;
         try (RandomAccessFile file = new RandomAccessFile(body.toFile(), "r")) {
             long fileLength = file.length();
             if (headerRangeEnd > fileLength) {
                 headerRangeEnd = fileLength - 1;
             }
-            long chunkSize = headerRangeEnd - headerRangeStart + 1;
 
+            long chunkSize = headerRangeEnd - headerRangeStart + 1;
             if (chunkSize < 0 || chunkSize > Integer.MAX_VALUE) {
                 throw new IllegalArgumentException("Invalid chunk size: " + chunkSize);
             }
@@ -88,83 +91,68 @@ public class HttpResponse {
         this.deleteCookies = true;
     }
 
-    public void setFinal() {
-        this.isFinal = true;
+    public void truncateProcessing() {
+        this.blockedByInboundFilter = true;
+    }
+
+    public boolean blockedByInboundFilter() {
+        return blockedByInboundFilter;
     }
 
     public void noCache() {
         this.noCache = true;
     }
 
-    public void initHeaders() {
-        responseHeaders.put(HttpResponseHeader.DATE, date + "\r\n");
-        responseHeaders.put(HttpResponseHeader.SERVER, SERVER_NAME + "\r\n");
-        if (body != null) {
-            responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, body.length + "\r\n");
-        } else {
-            responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, null);
-        }
-
-        if (contentType != null) {
-            responseHeaders.put(HttpResponseHeader.CONTENT_TYPE, contentType + "\r\n");
-            if (contentType.equals(MimeType.VIDEO_MP4.value) || contentType.equals(MimeType.VIDEO_WEBM.value) || contentType.equals(MimeType.VIDEO_OGG.value)) {
-                responseHeaders.put(HttpResponseHeader.CONTENT_RANGE, "bytes " + headerRangeStart + "-" + headerRangeEnd + "/" + headerRangeTotal + "\r\n");
-                responseHeaders.put(HttpResponseHeader.ACCEPT_RANGES, "bytes" + "\r\n");
-            }
-        } else {
-            responseHeaders.put(HttpResponseHeader.CONTENT_TYPE, null);
-        }
-
-        if (noCache) {
-            responseHeaders.put(HttpResponseHeader.CACHE_CONTROL, "no-store" + "\r\n");
-        } else {
-            responseHeaders.put(HttpResponseHeader.CACHE_CONTROL, null);
-        }
-    }
-
-    public StringBuilder setAndGetHeaders() {
-        String protocol = "HTTP/1.1";
-        StringBuilder headers = new StringBuilder(protocol + " " + responseCode.code + " " + responseCode.desc + "\r\n");
-        initHeaders();
-        if (cookies != null && !deleteCookies) {
-            for (Map.Entry<String, String> cookie : cookies.entrySet()) {
-                String cookieString = cookie.getKey() + "=" + cookie.getValue();
-                headers.append(HttpResponseHeader.SET_COOKIE.headerKey).append(cookieString).append("; Path=/\r\n");
-            }
-        } else if (deleteCookies) {
-            headers.append(HttpResponseHeader.CLEAR_SITE_DATA.headerKey).append("\"cookies\"\r\n");
-        }
-        headers.append(HttpResponseHeader.DATE.headerKey).append(responseHeaders.get(HttpResponseHeader.DATE));
-        headers.append(HttpResponseHeader.SERVER.headerKey).append(responseHeaders.get(HttpResponseHeader.SERVER));
-        if (responseHeaders.get(HttpResponseHeader.CONTENT_RANGE) != null)
-            headers.append(HttpResponseHeader.CONTENT_RANGE.headerKey).append(responseHeaders.get(HttpResponseHeader.CONTENT_RANGE));
-        if (responseHeaders.get(HttpResponseHeader.CONTENT_TYPE) != null) {
-            headers.append(HttpResponseHeader.CONTENT_TYPE.headerKey).append(responseHeaders.get(HttpResponseHeader.CONTENT_TYPE));
-            if (contentType.equals(MimeType.VIDEO_MP4.value)) {
-                headers.append(HttpResponseHeader.CONTENT_RANGE.headerKey).append(responseHeaders.get(HttpResponseHeader.CONTENT_RANGE));
-                headers.append(HttpResponseHeader.ACCEPT_RANGES.headerKey).append(responseHeaders.get(HttpResponseHeader.ACCEPT_RANGES));
-            }
-        }
-        if (responseHeaders.get(HttpResponseHeader.CACHE_CONTROL) != null)
-            headers.append(HttpResponseHeader.CACHE_CONTROL.headerKey).append(responseHeaders.get(HttpResponseHeader.CACHE_CONTROL));
-        headers.append("\r\n");
-        return headers;
-    }
-
     public byte[] buildResponse() {
-        StringBuilder headers = setAndGetHeaders();
-        byte[] headerBytes = headers.toString().getBytes(StandardCharsets.US_ASCII);
+        if (!cookies.isEmpty() && deleteCookies) {
+            throw new IllegalStateException("Cannot send clear cookies and set cookies in the same request");
+        }
+
+        byte[] headerBytes = constructHeaders();
         log.debug("Status: {}", responseCode.code);
-        log.trace("Response HEADERS: \n {}", headers);
-        if(body == null)
+        if (body == null)
             return headerBytes;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             baos.write(headerBytes);
             baos.write(this.body);
-        } catch (IOException ignored) {
-            log.error("Fallo tratando de escribir el archivo");
-        }
+        } catch (IOException ignored) { }
+
         return baos.toByteArray();
+    }
+
+    private byte[] constructHeaders() {
+        StringBuilder headers = new StringBuilder("HTTP/1.1 ").append(responseCode.code).append(" ").append(responseCode.desc).append(CRLF);
+        headers.append(HttpResponseHeader.DATE.headerKey).append(date).append(CRLF);
+        headers.append(HttpResponseHeader.SERVER.headerKey).append(SERVER_NAME).append(CRLF);
+        if (body != null) {
+            headers.append(HttpResponseHeader.CONTENT_LENGTH.headerKey).append(body.length).append(CRLF);
+        }
+
+        if (contentType != null) {
+            headers.append(HttpResponseHeader.CONTENT_TYPE.headerKey).append(contentType).append(CRLF);
+            if (mimeType.isVideo()) {
+                headers.append(HttpResponseHeader.CONTENT_RANGE.headerKey)
+                        .append("bytes %s-%s/%s%s".formatted(headerRangeStart, headerRangeEnd, headerRangeTotal, CRLF));
+                headers.append(HttpResponseHeader.ACCEPT_RANGES.headerKey).append("bytes").append(CRLF);
+            }
+        }
+
+        if (noCache) {
+            headers.append(HttpResponseHeader.CACHE_CONTROL.headerKey).append("no-store").append(CRLF);
+        }
+
+        if (deleteCookies) {
+            headers.append(HttpResponseHeader.CLEAR_SITE_DATA.headerKey).append("\"cookies\"").append(CRLF);
+        }
+
+        for (Map.Entry<String, String> cookie : cookies.entrySet()) {
+            headers.append(HttpResponseHeader.SET_COOKIE.headerKey)
+                    .append("%s=%s; Path=/%s".formatted(cookie.getKey(), cookie.getValue(), CRLF));
+        }
+
+        headers.append(CRLF);
+        log.trace("Response HEADERS: \n {}", headers);
+        return headers.toString().getBytes(StandardCharsets.US_ASCII);
     }
 }

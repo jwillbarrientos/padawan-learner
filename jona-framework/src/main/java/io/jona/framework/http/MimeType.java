@@ -24,6 +24,10 @@ public enum MimeType {
         this.requiresEncoding = requiresEncoding;
     }
 
+    public boolean isVideo() {
+        return this == VIDEO_MP4 || this == VIDEO_WEBM || this == VIDEO_OGG;
+    }
+
     public static MimeType getMimeForExtension(String extension) {
         for (MimeType mimeType : MimeType.values()) {
             if (mimeType.extension.equals(extension)) {
