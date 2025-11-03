@@ -19,8 +19,15 @@ public class AuthFilter {
         if (sessionCookiePresent) {
             return;
         }
-        response.setResponseCode(HttpCode.NOT_FOUND_404);
-        response.setBody("Request blocked by AuthFilter");
+
         response.truncateProcessing();
+        if (request.canonicalPath().endsWith("/app/welcome-page.html")) {
+            response.setResponseCode(HttpCode.FOUND_302);
+            response.redirect("/");
+            return;
+        }
+
+        response.setResponseCode(HttpCode.UNAUTHORIZED_401);
+        response.setBody("Request blocked by AuthFilter");
     }
 }

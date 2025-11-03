@@ -11,10 +11,9 @@ import java.nio.file.Paths;
 
 @Slf4j
 public class VideoHelper {
-    public static Runnable setVideoWhenDownloaded() {
+    public static Runnable backgroundDownloader() {
         return () -> {
-            Video video = JonaDb.selectSingle("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where video_state = ?",
-                    Video.getFullMapping(), Video.State.SUBMITTED.name());
+            Video video = Video.nextVideoToDownload();
             if (video != null) {
                 String videoPath = DownloadVideo.downloadVideo(video.getLink());
                 if (videoPath == null) {

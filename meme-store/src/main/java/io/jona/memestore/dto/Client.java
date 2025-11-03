@@ -42,19 +42,12 @@ public class Client extends Table {
         return "select id, email, password from client where id = " + id;
     }
 
-    public static Function<ResultSet, Client> getFullMapping() {
-        return resulSet -> {
-            try {
-                return new Client(
-                    resulSet.getLong(1),
-                    resulSet.getString(2),
-                    resulSet.getString(3)
-                );
-            } catch (SQLException e) {
-                log.error("Exception in getFullMapping() " + e);
-                return null;
-            }
-        };
+    public static ThrowingFunction<ResultSet, Client, SQLException> getFullMapping() {
+        return rs -> new Client(
+                rs.getLong(1),
+                rs.getString(2),
+                rs.getString(3)
+        );
     }
 
     @Override

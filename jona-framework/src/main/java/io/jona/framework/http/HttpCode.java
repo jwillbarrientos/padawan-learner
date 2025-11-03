@@ -5,6 +5,7 @@ public enum HttpCode {
     OK_200(200, "Accepted"),
     NO_CONTENT_204(204, "No Content"),
     PARTIAL_CONTENT_206(206, "Partial Content"),
+    FOUND_302(302, "Found"),
     UNAUTHORIZED_401(401, "Unauthorized"),
     NOT_FOUND_404(404, "Not Found"),
     CONFLICT_409(409, "Conflict"),

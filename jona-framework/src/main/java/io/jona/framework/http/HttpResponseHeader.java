@@ -6,6 +6,7 @@ public enum HttpResponseHeader {
     CONTENT_TYPE("Content-Type"),
     CONTENT_RANGE("Content-Range"),
     CONTENT_LENGTH("Content-Length"),
+    LOCATION("Location"),
     ACCEPT_RANGES("Accept-Ranges"),
     SET_COOKIE("Set-Cookie"),
     CLEAR_SITE_DATA("Clear-Site-Data"),

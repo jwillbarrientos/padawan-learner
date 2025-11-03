@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+function attachLoginHandlers() {
     const loginBtn = document.getElementById("loginBtn");
     loginBtn.addEventListener("click", async () => {
         const params = new URLSearchParams();
@@ -13,4 +13,4 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log('Login failed');
         }
     });
-});
+}

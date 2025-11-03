@@ -1,7 +1,7 @@
 package io.jona.memestore.dto;
 
+import io.jona.framework.JonaDb;
 import io.jona.framework.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,15 +14,16 @@ import java.util.function.Function;
 
 @Slf4j
 @NoArgsConstructor
-@AllArgsConstructor
 public class Video extends Table {
+
     public enum State {
         SUBMITTED, DOWNLOADED, ERROR_DOWNLOADING
     }
-    private final Date dateSetter = new Date();
+
+    public static final String FULL_COLUMNS = "id, name, link, path, duration_seconds, file_size, video_state, date, client_id ";
 
     @Setter @Getter
-    private long id = nextId();
+    private long id;
     @Setter
     private String name;
     @Setter @Getter
@@ -36,44 +37,52 @@ public class Video extends Table {
     @Setter
     private State videoState;
     @Setter
-    private Timestamp date;
+    private Date date;
     @Setter
     private long clientId;
 
-    public Video(String name,
+    public Video(String link,  State videoState, long clientId) {
+        this(0, "", link, "", 0,0, videoState, new Date(), clientId);
+    }
+
+    public Video(long id,
+                 String name,
                  String link,
                  String path,
                  int durationSeconds,
                  int fileSize,
                  State videoState,
+                 Date date,
                  long clientId) {
+        this.id = id;
         this.name = name;
         this.link = link;
         this.path = path;
         this.durationSeconds = durationSeconds;
         this.fileSize = fileSize;
         this.videoState = videoState;
-        this.date = getDate();
+        this.date = date;
         this.clientId = clientId;
     }
 
-    public Video(String link,  State videoState, long clientId) {
-        this.name = "";
-        this.link = link;
-        this.path = "";
-        this.durationSeconds = 0;
-        this.fileSize = 0;
-        this.videoState = videoState;
-        this.date = getDate();
-        this.clientId = clientId;
-    }
-
-    public Timestamp getDate() {
-        return new java.sql.Timestamp(dateSetter.getTime());
+    public static ThrowingFunction<ResultSet, Video, SQLException> getFullMapping() {
+        return rs -> new Video(
+                rs.getLong(1), // id
+                rs.getString(2), // name
+                rs.getString(3), // link
+                rs.getString(4), // path
+                rs.getInt(5), // durationSeconds
+                rs.getInt(6), // fileSize
+                State.valueOf(rs.getString(7)), // videoState
+                rs.getTimestamp(8), // date
+                rs.getLong( 9) // clientId
+        );
     }
 
     public String getInsert() {
-        return "insert into video (id, name, link, path, duration_seconds, file_size, video_state, date, client_id) values(?,?,?,?,?,?,?,?,?)";
+        setId(nextId());
+        setDate(new Date());
+        return "insert into video (" + FULL_COLUMNS + ") values(?,?,?,?,?,?,?,?,?)";
     }
 
     public String getUpdate() {
@@ -85,33 +94,20 @@ public class Video extends Table {
     }
 
     public Object[] getValues() {
-        return new Object[] {id, name, link, path, durationSeconds, fileSize, videoState.name(), date, clientId};
+        return new Object[] {id, name, link, path, durationSeconds, fileSize, videoState.name(), new Timestamp(date.getTime()), clientId};
     }
 
-    public static String getById(long id) {
-        return "select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where id = " + id;
+    public static Video nextVideoToDownload() {
+        return JonaDb.selectSingle(
+                "select " + FULL_COLUMNS + " from video where video_state = ?",
+                getFullMapping(),
+                State.SUBMITTED.name()
+        );
     }
 
-    public static Function<ResultSet, Video> getFullMapping() {
-        return resulSet -> {
-            try {
-                return new Video(
-                        resulSet.getLong(1),
-                        resulSet.getString(2),
-                        resulSet.getString(3),
-                        resulSet.getString(4),
-                        resulSet.getInt(5),
-                        resulSet.getInt(6),
-                        State.valueOf(resulSet.getString(7)),
-                        resulSet.getTimestamp(8),
-                        resulSet.getLong( 9)
-                );
-            } catch (SQLException e) {
-                log.error("Exception in getFullMapping() " + e);
-                return null;
-            }
-        };
-    }
+//    public static Video findById(long id) {
+//        return "select " + FULL_COLUMNS + " from video where id = " + id;
+//    }
 
     @Override
     public String toString() {

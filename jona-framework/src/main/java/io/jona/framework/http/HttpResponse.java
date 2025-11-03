@@ -41,6 +41,7 @@ public class HttpResponse {
     private boolean deleteCookies;
     private boolean blockedByInboundFilter;
     private boolean noCache;
+    private String redirectUrl;
 
     public void setContentType(MimeType mimeType, String charset) {
         this.contentType = mimeType.value + "; charset=" + charset;
@@ -125,6 +126,11 @@ public class HttpResponse {
         StringBuilder headers = new StringBuilder("HTTP/1.1 ").append(responseCode.code).append(" ").append(responseCode.desc).append(CRLF);
         headers.append(HttpResponseHeader.DATE.headerKey).append(date).append(CRLF);
         headers.append(HttpResponseHeader.SERVER.headerKey).append(SERVER_NAME).append(CRLF);
+
+        if(redirectUrl != null) {
+            headers.append(HttpResponseHeader.LOCATION.headerKey).append(redirectUrl).append(CRLF);
+        }
+
         if (body != null) {
             headers.append(HttpResponseHeader.CONTENT_LENGTH.headerKey).append(body.length).append(CRLF);
         }
@@ -154,5 +160,9 @@ public class HttpResponse {
         headers.append(CRLF);
         log.trace("Response HEADERS: \n {}", headers);
         return headers.toString().getBytes(StandardCharsets.US_ASCII);
+    }
+
+    public void redirect(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
     }
 }

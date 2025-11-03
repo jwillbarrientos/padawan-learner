@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+function attachSignupHandlers(){
     const signUpBtn = document.getElementById("signUpBtn");
     signUpBtn.addEventListener("click", async () => {
         const params = new URLSearchParams();
@@ -13,4 +13,4 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log('Sign up failed');
         }
     });
-});
+}

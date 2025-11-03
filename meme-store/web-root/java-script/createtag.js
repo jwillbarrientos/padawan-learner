@@ -1,5 +1,4 @@
-import { createEditButton } from "./edittag.js";
-import { createDeleteButton } from "./deletetag.js";
+
 import { loadTags } from "./loadtags.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,19 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             await loadTags();
 
-            // const tagItem = document.createElement("div");
-            //
-            // const nameSpan = document.createElement("span");
-            // nameSpan.textContent = newTag.name + " ";
-            //
-            // const editBtn = createEditButton(newTag.id, newTag.name, loadTags);
-            // const deleteBtn = createDeleteButton(newTag.id, loadTags);
-            //
-            // tagItem.appendChild(nameSpan);
-            // tagItem.appendChild(editBtn);
-            // tagItem.appendChild(deleteBtn);
-            //
-            // tagList.appendChild(tagItem);
         } catch (err) {
             console.error("Error creating tag:", err);
         }

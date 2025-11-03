@@ -43,19 +43,12 @@ public class Tag extends Table {
         return "select id, name, client_id from tag where id = " + id;
     }
 
-    public static Function<ResultSet, Tag> getFullMapping() {
-        return resulSet -> {
-            try {
-                return new Tag(
-                        resulSet.getLong(1),
-                        resulSet.getString(2),
-                        resulSet.getLong(3)
-                );
-            } catch (SQLException e) {
-                log.error("Exception in getFullMapping() " + e);
-                return null;
-            }
-        };
+    public static ThrowingFunction<ResultSet, Tag, SQLException> getFullMapping() {
+        return rs -> new Tag(
+                rs.getLong(1),
+                rs.getString(2),
+                rs.getLong(3)
+        );
     }
 
     @Override

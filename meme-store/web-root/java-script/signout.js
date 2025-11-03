@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     console.log("Log out failed");
                 }
             }
-            alert("Log out successful");
+            // alert("Log out successful");
             console.log("Log out successful");
         } catch (err) {
             console.error("Error log out:", err);

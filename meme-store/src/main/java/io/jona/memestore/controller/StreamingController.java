@@ -27,7 +27,8 @@ public class StreamingController {
     public void loadVideos(HttpRequest request, HttpResponse response) {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
-        List<Video> listVideos = JonaDb.selectList("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where client_id = ? order by date desc limit " + 10,
+
+        List<Video> listVideos = JonaDb.selectList("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where client_id = ? and video_state = 'DOWNLOADED' order by date desc limit " + 10,
                 Video.getFullMapping(), client.getId());
         Gson gson = new Gson();
         String json = gson.toJson(listVideos);
