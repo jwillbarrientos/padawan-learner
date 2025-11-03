@@ -18,10 +18,7 @@ public class AuthController {
     }
 
     public void login(HttpRequest request, HttpResponse response) {
-        Client client = JonaDb.selectSingle("select  id, email, password from client where email = ? and password = ?",
-                Client.getFullMapping(),
-                request.getQueryParams().get("email"),
-                request.getQueryParams().get("password"));
+        Client client = Client.findClient(request.getQueryParams().get("email"), request.getQueryParams().get("password"));
         boolean clientExist = client != null;
         if (clientExist) {
             response.setResponseCode(HttpCode.OK_200);
@@ -34,10 +31,7 @@ public class AuthController {
     }
 
     public void signUp(HttpRequest request, HttpResponse response) {
-        Client client = JonaDb.selectSingle("select  id, email, password from client where email = ? and password = ?",
-                Client.getFullMapping(),
-                request.getQueryParams().get("email"),
-                request.getQueryParams().get("password"));
+        Client client = Client.findClient(request.getQueryParams().get("email"), request.getQueryParams().get("password"));
         boolean clientExist = client != null;
         if (!clientExist) {
             client = new Client(request.getQueryParams().get("email"), request.getQueryParams().get("password"));

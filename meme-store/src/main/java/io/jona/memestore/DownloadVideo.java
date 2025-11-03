@@ -40,7 +40,7 @@ public class DownloadVideo {
         else
             exe = Executables.YT_DLP;
         String[] command;
-        log.info("user.dir: "+ System.getProperty("user.dir"));
+        log.info("user.dir: {}", System.getProperty("user.dir"));
         String ytDl = AppProps.getYtDlWin();
         String youtubeDl = AppProps.getYoutubeDlWin();
         String temporalFolder = AppProps.getTemporalPath();
@@ -82,10 +82,10 @@ public class DownloadVideo {
                 new InputStreamReader(process.getInputStream()))) {
             String line;
             while((line = reader.readLine()) != null) {
-                log.debug(exe.name() + ": {}", line);
+                log.debug("{}: {}", exe.name(), line);
             }
         } catch (IOException e) {
-            log.error(exe.name() + ": IOException reading the InputStream of process", e);
+            log.error("{}: IOException reading the InputStream of process", exe.name(), e);
         }
         log.debug("Printing InputStream of process without exception");
     }
@@ -99,7 +99,7 @@ public class DownloadVideo {
                 log.error(exe.name() + ": {}", line);
             }
         } catch (IOException e) {
-            log.error(exe.name() + ": IOException reading the ErrorStream of process", e);
+            log.error("{}: IOException reading the ErrorStream of process", exe.name(), e);
         }
         log.debug("Printing ErrorStream of process without Exception");
     }

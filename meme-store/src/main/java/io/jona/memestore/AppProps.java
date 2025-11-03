@@ -12,7 +12,7 @@ public class AppProps {
         try (FileInputStream fis = new FileInputStream("C:/Users/barri/IdeaProjects/padawan-learner/meme-store/app.properties")) {
             props.load(fis);
         } catch (IOException e) {
-            log.error("while loading app.properties", e);
+            log.error("Error while loading app.properties: ", e);
             System.exit(-1 );
         }
     }

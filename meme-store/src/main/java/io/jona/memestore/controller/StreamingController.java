@@ -27,9 +27,7 @@ public class StreamingController {
     public void loadVideos(HttpRequest request, HttpResponse response) {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
-
-        List<Video> listVideos = JonaDb.selectList("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where client_id = ? and video_state = 'DOWNLOADED' order by date desc limit " + 10,
-                Video.getFullMapping(), client.getId());
+        List<Video> listVideos = Video.videosToDownload(client.getId());
         Gson gson = new Gson();
         String json = gson.toJson(listVideos);
         response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
@@ -39,8 +37,7 @@ public class StreamingController {
 
     public void streamVideos(HttpRequest request, HttpResponse response) {
         String id = request.getQueryParams().get("id");
-        Video video = JonaDb.selectSingle("select id, name, link, path, duration_seconds, file_size, video_state, date, client_id from video where id = ?",
-                Video.getFullMapping(), id);
+        Video video = Video.findById(Long.parseLong(id));
         Path path = Path.of(video.getPath());
         try {
             response.setResponseCode(HttpCode.PARTIAL_CONTENT_206);
@@ -51,7 +48,7 @@ public class StreamingController {
             response.setBodyWithRange(path, request.getRangeStart(), end, path.toFile().length());
         } catch (IOException e) {
             response.setResponseCode(HttpCode.CONFLICT_409);
-            log.error("Error streaming the video ", e);
+            log.error("Error streaming the video: ", e);
         }
     }
 }

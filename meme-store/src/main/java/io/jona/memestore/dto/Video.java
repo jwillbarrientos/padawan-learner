@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 
 @Slf4j
@@ -105,9 +106,17 @@ public class Video extends Table {
         );
     }
 
-//    public static Video findById(long id) {
-//        return "select " + FULL_COLUMNS + " from video where id = " + id;
-//    }
+    public static List<Video> videosToDownload(long clientId) {
+        return JonaDb.selectList(
+                "select " + FULL_COLUMNS + "from video where client_id = ? and video_state = 'DOWNLOADED' order by date desc limit " + 10,
+                Video.getFullMapping(),
+                clientId
+        );
+    }
+
+    public static Video findById(long id) {
+        return JonaDb.selectSingle("select " + FULL_COLUMNS + " from video where id = " + id, Video.getFullMapping());
+    }
 
     @Override
     public String toString() {

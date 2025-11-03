@@ -1,8 +1,10 @@
 package io.jona.memestore.dto;
 
+import io.jona.framework.JonaDb;
 import io.jona.framework.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,8 +13,9 @@ import java.util.function.Function;
 @Slf4j
 @AllArgsConstructor
 public class Client extends Table {
-    @Getter
-    private long id = nextId();
+    public static final String FULL_COLUMNS = "id, email, password ";
+    @Setter @Getter
+    private long id;
     @Getter
     private String email;
     private String password;
@@ -23,6 +26,7 @@ public class Client extends Table {
     }
 
     public String getInsert() {
+        setId(nextId());
         return "insert into client (id, email, password) values(?,?,?)";
     }
 
@@ -38,8 +42,11 @@ public class Client extends Table {
         return new Object[] {id, email, password};
     }
 
-    public static String getById(long id) {
-        return "select id, email, password from client where id = " + id;
+    public static Client findClient(String email, String password) {
+        return JonaDb.selectSingle("select " + FULL_COLUMNS + "from client where email = ? and password = ?",
+                Client.getFullMapping(),
+                email, password
+        );
     }
 
     public static ThrowingFunction<ResultSet, Client, SQLException> getFullMapping() {

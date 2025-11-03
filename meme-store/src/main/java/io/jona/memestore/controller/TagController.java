@@ -30,31 +30,30 @@ public class TagController {
         Gson gson = new Gson();
         String json = gson.toJson(tag);
         boolean insertSuccess = JonaDb.insert(tag);
-        log.info("Tag creation was successful: " + insertSuccess);
+        log.info("Tag creation was successful: {}", insertSuccess);
         response.setResponseCode(HttpCode.OK_200);
         response.setBody(json.getBytes());
     }
 
     public void editTag(HttpRequest request, HttpResponse response) {
-        Tag tag = JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), request.getQueryParams().get("id"));
+        Tag tag = Tag.findById(Long.parseLong(request.getQueryParams().get("id")));;
         tag.setName(request.getQueryParams().get("name"));
-//        JonaDb.update(tag, request.getQueryParams().get("name"), request.getQueryParams().get("id"));
         boolean updateSuccess = JonaDb.update(tag);
-        log.info("Tag update was successful: " + updateSuccess);
+        log.info("Tag update was successful: {}", updateSuccess);
         response.setResponseCode(HttpCode.OK_200);
     }
 
     public void deleteTag(HttpRequest request, HttpResponse response) {
-        Tag tag = JonaDb.selectSingle("select id, name, client_id from tag where id = ?", Tag.getFullMapping(), request.getQueryParams().get("id"));
+        Tag tag = Tag.findById(Long.parseLong(request.getQueryParams().get("id")));
         boolean deleteSuccess = JonaDb.delete(tag);
-        log.info("Tag deletion was successful: " + deleteSuccess);
+        log.info("Tag deletion was successful: {}", deleteSuccess);
         response.setResponseCode(HttpCode.OK_200);
     }
 
     public void listTags(HttpRequest request, HttpResponse response) {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
-        List<Tag> tags = JonaDb.selectList("select id, name, client_id from tag where client_id = ?", Tag.getFullMapping(), client.getId());
+        List<Tag> tags = Tag.getTagsByClient(client);
         Gson gson = new Gson();
         String json = gson.toJson(tags);
         response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
