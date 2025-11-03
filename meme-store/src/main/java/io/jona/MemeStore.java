@@ -51,6 +51,7 @@ public class MemeStore {
         jonaServer.registerEndPoint(Method.GET, "/api/addvideobylink", videoController::addVideoByLink);
         jonaServer.registerEndPoint(Method.GET, "/api/loadvideos", streamingController::loadVideos);
         jonaServer.registerEndPoint(Method.GET, "/api/streamingvideos", streamingController::streamVideos);
+        jonaServer.registerEndPoint(Method.POST, "/api/processwhatsappchat", videoController::addVideoByFile);
         jonaServer.addStaticContent("./web-root");
         jonaServer.registerOutboundFilter(Method.GET, "^/public/.*$", noCacheFilter::addNoCache);
         jonaServer.registerOutboundFilter(Method.GET, "^/api/.*$", noCacheFilter::addNoCache);

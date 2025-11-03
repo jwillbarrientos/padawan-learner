@@ -186,6 +186,19 @@
         #videoUrl {
             box-sizing: border-box;
         }
+
+        .upload-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap; /* makes it responsive on smaller screens */
+            align-items: flex-start;
+        }
+
+        .upload-section .upload-box {
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+        }
     </style>
 
 </head>
@@ -217,15 +230,31 @@
 
     <!-- Main content -->
     <main>
-        <section class="upload-box">
-            <h2>Upload individual video</h2>
+        <div class="upload-section">
+            <!-- Single Video Upload -->
+            <section class="upload-box">
+                <h2>Upload individual video</h2>
+                <input id="videoUrl" type="text" placeholder="Paste here your link...">
+                <button id="uploadBtn">Upload</button>
+            </section>
 
-            <input id="videoUrl" type="text" placeholder="Paste here your link...">
+            <!-- WhatsApp Chat Upload -->
+            <section class="upload-box">
+                <h2>WhatsApp Chat</h2>
 
-            <button id="uploadBtn">Upload</button>
-        </section>
+                <div id="whatsappUploadArea" style="border: 2px dashed #ccc; border-radius: 10px; text-align: center; padding: 25px;">
+                    <p>📄 Drag or select the exported chat file</p>
+                    <input type="file" id="whatsappFile" accept=".txt" style="display:none;">
+                    <label for="whatsappFile" style="color:#007bff; cursor:pointer; text-decoration:underline;">Select File</label>
+                </div>
+
+                <button id="processChatBtn" style="width:100%; margin-top:15px; padding:10px; background:#28a745; border:none; color:white; font-weight:bold; border-radius:6px; cursor:pointer;">
+                    Process Chat
+                </button>
+            </section>
+        </div>
         <!-- Videos will appear here -->
-        <div id="videoContainer" style="margin-top: 20px;"></div>
+        <div id="videoContainer" style="margin-top: 30px;"></div>
     </main>
 
 </div>
@@ -237,6 +266,7 @@
 <script type="module" src="../java-script/deletetag.js"></script>
 <script type="module" src="../java-script/addvideobylink.js"></script>
 <script type="module" src="../java-script/addsinglevideotolibrary.js"></script>
+<script type="module" src="../java-script/processwhatsappchat.js"></script>
 <script type="module" src="../java-script/signout.js"></script>
 
 </body>

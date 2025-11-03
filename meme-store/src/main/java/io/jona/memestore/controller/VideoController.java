@@ -9,6 +9,7 @@ import io.jona.memestore.dto.Video;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,5 +26,10 @@ public class VideoController {
         Video video = new Video(request.getQueryParams().get("link"), Video.State.SUBMITTED, client.getId());
         JonaDb.insert(video);
         response.setResponseCode(HttpCode.OK_200);
+    }
+
+    public void addVideoByFile(HttpRequest request, HttpResponse response) {
+        String sessionCookie = request.getCookies().get("sessionCookie");
+        Client client = sessionCookies.get(sessionCookie);
     }
 }
