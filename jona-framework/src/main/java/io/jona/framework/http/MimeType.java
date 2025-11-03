@@ -12,7 +12,7 @@ public enum MimeType {
     VIDEO_WEBM("video/webm", ".webm", false),
     VIDEO_OGG("video/ogg", ".ogv", false),
     APPLICATION_JSON("application/json", ".json", true),
-    UNKNOW("", "", false);
+    UNKNOWN("", "", false);
 
     public final String value;
     public final String extension;
@@ -34,6 +34,6 @@ public enum MimeType {
                 return mimeType;
             }
         }
-        return UNKNOW;
+        return UNKNOWN;
     }
 }

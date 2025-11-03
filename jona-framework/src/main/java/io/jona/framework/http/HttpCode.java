@@ -7,7 +7,8 @@ public enum HttpCode {
     PARTIAL_CONTENT_206(206, "Partial Content"),
     UNAUTHORIZED_401(401, "Unauthorized"),
     NOT_FOUND_404(404, "Not Found"),
-    CONFLICT_409(409, "Conflict");
+    CONFLICT_409(409, "Conflict"),
+    SERVER_ERROR_500(500, "Server Error");
 
     public final int code;
     public final String desc;

@@ -98,6 +98,10 @@ public class HttpRequest {
         }
     }
 
+    public boolean welcomeRequested() {
+        return this.getPath().isEmpty() || this.getPath().equals("/");
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("HttpRequest {\n");

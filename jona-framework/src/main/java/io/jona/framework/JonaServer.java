@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
-import static io.jona.framework.http.ProcessingOfRequests.processStaticPath;
+import static io.jona.framework.http.StaticPathController.processStaticPath;
 
 @Slf4j
 public class JonaServer {
