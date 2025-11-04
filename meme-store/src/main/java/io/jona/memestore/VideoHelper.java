@@ -13,19 +13,29 @@ import java.nio.file.Paths;
 public class VideoHelper {
     public static Runnable backgroundDownloader() {
         return () -> {
-            Video video = Video.nextVideoToDownload();
-            if (video != null) {
-                String videoPath = DownloadVideo.downloadVideo(video.getLink());
-                if (videoPath == null) {
-                    video.setVideoState(Video.State.ERROR_DOWNLOADING);
-                } else {
-                    video.setName(Paths.get(videoPath).getFileName().toString());
-                    video.setPath(videoPath);
-                    video.setDurationSeconds(getSeconds(video.getLink()));
-                    video.setFileSize((int) (new File(videoPath).length()));
-                    video.setVideoState(Video.State.DOWNLOADED);
+            while(true) {
+                Video video = Video.nextVideoToDownload();
+                if (video != null) {
+                    String videoPath = DownloadVideo.downloadVideo(video.getLink());
+                    int durationSecondsVideo = getSeconds(video.getLink());
+                    if (videoPath == null) {
+                        video.setVideoState(Video.State.ERROR_DOWNLOADING);
+                    } else {
+                        video.setName(Paths.get(videoPath).getFileName().toString());
+                        video.setPath(videoPath);
+                        video.setDurationSeconds(durationSecondsVideo);
+                        video.setFileSize((int) (new File(videoPath).length()));
+                        video.setVideoState(Video.State.DOWNLOADED);
+                    }
+                    JonaDb.update(video);
+                    try {
+                        log.info("Waiting {} time to download next video", durationSecondsVideo);
+                        Thread.sleep(durationSecondsVideo);
+                    } catch (InterruptedException e) {
+                        log.error("Error waiting the next video to download: ", e);
+                    }
+                    break;
                 }
-                JonaDb.update(video);
             }
         };
     }

@@ -9,14 +9,13 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Properties;
 
 @Slf4j
 public class DownloadVideo {
-    private static Platforms platform;
-    private static Executables exe;
+    private static Platform platform;
+    private static Executable exe;
     private static final Properties props = new Properties();
     private static Process process;
     public static String downloadVideo(String link) {
@@ -34,11 +33,11 @@ public class DownloadVideo {
     }
 
     public static String runDownloader(String url) throws IOException, InterruptedException {
-        platform = Platforms.whatPlatformIs(url);
-        if(platform == Platforms.YOU_TUBE)
-            exe = Executables.YOUTUBE_DL;
+        platform = Platform.whatPlatformIs(url);
+        if(platform == Platform.YOU_TUBE)
+            exe = Executable.YOUTUBE_DL;
         else
-            exe = Executables.YT_DLP;
+            exe = Executable.YT_DLP;
         String[] command;
         log.info("user.dir: {}", System.getProperty("user.dir"));
         String ytDl = AppProps.getYtDlWin();
@@ -69,6 +68,8 @@ public class DownloadVideo {
         log.debug("Download finished");
         File dir = new File(temporalFolder);
         File[] files = dir.listFiles();
+        if (files.length == 0)
+            return null;
         String fileName = files[0].getName();
         Path source = Path.of(temporalFolder + "/" + fileName);
         Path target = Path.of(destinyFolder + "/" + fileName);

@@ -108,7 +108,7 @@ public class Video extends Table {
 
     public static List<Video> videosToDownload(long clientId) {
         return JonaDb.selectList(
-                "select " + FULL_COLUMNS + "from video where client_id = ? and video_state = 'DOWNLOADED' order by date desc limit " + 10,
+                "select " + FULL_COLUMNS + "from video where client_id = ? and video_state = 'DOWNLOADED' order by date desc limit " + 50,
                 Video.getFullMapping(),
                 clientId
         );

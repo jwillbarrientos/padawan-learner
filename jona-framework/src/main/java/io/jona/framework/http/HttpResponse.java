@@ -124,6 +124,7 @@ public class HttpResponse {
 
     private byte[] constructHeaders() {
         StringBuilder headers = new StringBuilder("HTTP/1.1 ").append(responseCode.code).append(" ").append(responseCode.desc).append(CRLF);
+        headers.append("Connection: close").append(CRLF);
         headers.append(HttpResponseHeader.DATE.headerKey).append(date).append(CRLF);
         headers.append(HttpResponseHeader.SERVER.headerKey).append(SERVER_NAME).append(CRLF);
 

@@ -18,11 +18,13 @@ import static io.jona.framework.http.StaticPathController.processStaticPath;
 @Slf4j
 public class JonaServer {
     private final int port;
-    @Getter
-    private volatile String staticContentLocation;
+    private final ExecutorService requestExecutor = Executors.newCachedThreadPool();
     private final Map<String, BiConsumer<HttpRequest, HttpResponse>> endPoints = new LinkedHashMap<>();
     private final Map<String, BiConsumer<HttpRequest, HttpResponse>> inboundFilters = new LinkedHashMap<>();
     private final Map<String, BiConsumer<HttpRequest, HttpResponse>> outboundFilters = new LinkedHashMap<>();
+    @Getter
+    private volatile String staticContentLocation;
+
 
     public JonaServer() {
         this(8080);
@@ -47,9 +49,8 @@ public class JonaServer {
     public void registerOutboundFilter(Method method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
         outboundFilters.put(path, biConsumer);
     }
-
     public void start() throws IOException {
-        try (ExecutorService requestExecutor = Executors.newCachedThreadPool();
+        try (
              ServerSocket serverSocket = new ServerSocket(port)) {
             log.info("Server started");
             while (true) {
@@ -101,5 +102,9 @@ public class JonaServer {
         } catch (IOException e) {
             log.error("Exception while processing request: {}", request, e);
         }
+    }
+
+    public void shutdown() {
+        requestExecutor.shutdownNow();
     }
 }

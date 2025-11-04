@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VideoDownloader</title>
+    <title>Media-Store</title>
 
     <style>
         body {
@@ -114,6 +114,41 @@
             transform: scale(1.05);
         }
 
+        /* Sidebar action buttons */
+        .sidebar-actions {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            color: white;
+        }
+
+        #showAllBtn {
+            background: #007bff;
+        }
+
+        #showAllBtn:hover {
+            background: #0056cc;
+        }
+
+        #videosWithoutTagsBtn {
+            background: #6c757d;
+        }
+
+        #videosWithoutTagsBtn:hover {
+            background: #545b62;
+        }
+
         /* Main */
         main {
             flex: 1;
@@ -207,7 +242,7 @@
 
 <!-- Top header -->
 <header>
-    <div class="logo">Meme-Store</div>
+    <div class="logo">Media-Store</div>
 
     <div class="profile">
         <span id="userName"></span>
@@ -226,6 +261,10 @@
         <br>
         <!-- Tags list -->
         <div id="tagList"></div>
+        <div class="sidebar-actions">
+            <button id="showAllBtn" class="sidebar-btn">Show all videos</button>
+            <button id="videosWithoutTagsBtn" class="sidebar-btn">Videos without tags</button>
+        </div>
     </aside>
 
     <!-- Main content -->
@@ -253,7 +292,11 @@
                 </button>
             </section>
         </div>
-        <!-- Videos will appear here -->
+
+        <!-- Videos section -->
+        <div class="video-header">
+            <h3>Last 10 videos uploaded</h3>
+        </div>
         <div id="videoContainer" style="margin-top: 30px;"></div>
     </main>
 
@@ -268,6 +311,24 @@
 <script type="module" src="../java-script/addsinglevideotolibrary.js"></script>
 <script type="module" src="../java-script/processwhatsappchat.js"></script>
 <script type="module" src="../java-script/signout.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const fileInput = document.getElementById("whatsappFile");
+        const uploadArea = document.getElementById("whatsappUploadArea");
+        const uploadText = document.getElementById("uploadText");
+
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+
+                // Change style and text
+                uploadArea.style.borderColor = "#28a745";
+                uploadArea.style.backgroundColor = "#e8fbe8";
+                uploadText.textContent = `✅ File selected: ${file.name}`;
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

@@ -2,14 +2,17 @@ package io.jona.framework.http;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class HttpRequest {
@@ -26,7 +29,7 @@ public class HttpRequest {
     @Getter
     private long rangeStart;
     @Getter
-    private byte[] body;
+    private String body;
 
     public HttpRequest(Socket client) throws IOException {
         this.readFromSocket(client);
@@ -39,11 +42,16 @@ public class HttpRequest {
     private void readFromSocket(Socket client) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream(), StandardCharsets.US_ASCII));
         String line = bufferedReader.readLine();
-        log.trace(line);
+        log.trace("REQ: {}", line);
 
         String[] methodPathProtocol = extractPath(line);
         extractQueryParams(methodPathProtocol);
         extractHeaders(bufferedReader);
+
+        boolean isPost = line.contains("POST");
+        if (isPost) {
+            bodyAsString(client.getInputStream());
+        }
     }
 
     private String[] extractPath(String line) {
@@ -60,10 +68,11 @@ public class HttpRequest {
         log.debug("Received {} request for: {}", method, path);
         while (true) { //initialize headers
             line = bufferedReader.readLine();
-            log.trace(line);
+            log.trace("REQ: {}", line);
             String[] keyAndValue = line.split(": ", 2);
-            if (line.isEmpty())
+            if (line.isEmpty()) {
                 break;
+            }
             headers.put(keyAndValue[0], keyAndValue[1]);
             if (keyAndValue[0].equals("Range")) {
                 String bytesRange = keyAndValue[1].substring("bytes=".length());
@@ -89,12 +98,23 @@ public class HttpRequest {
             String[] pathQueryParams = methodPathProtocol[1].split("\\?", 2);
             path = pathQueryParams[0];
             String[] queryAndParamsTogether = pathQueryParams[1].split("&");
-            for (String kvPair : queryAndParamsTogether) { //initialize queryParams
+            for (String kvPair : queryAndParamsTogether) {
                 String[] queryAndParamsSeparate = kvPair.split("=", 2);
                 String key = URLDecoder.decode(queryAndParamsSeparate[0], StandardCharsets.UTF_8);
                 String value = URLDecoder.decode(queryAndParamsSeparate[1], StandardCharsets.UTF_8);
                 queryParams.put(key, value);
             }
+        }
+    }
+
+    private void bodyAsString(InputStream inputStream) {
+        try {
+            int contentLength = Integer.parseInt(headers.get("Content-Length"));
+            byte[] content = new byte[contentLength];
+            inputStream.read(content);
+            body = new String(content, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.error("Fail trying to read the body: ", e);
         }
     }
 

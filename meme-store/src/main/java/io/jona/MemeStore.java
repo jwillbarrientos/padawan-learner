@@ -10,9 +10,8 @@ import io.jona.memestore.filters.AuthFilter;
 import io.jona.memestore.filters.NoCacheFilter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class MemeStore {
     static HashMap<String, Client> sessionCookies = new HashMap<>();
@@ -20,8 +19,8 @@ public class MemeStore {
 
         JonaDb.init(AppProps.getJdbcUrl(), AppProps.getDbUser(), AppProps.getDbPassword());
 
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleWithFixedDelay(VideoHelper.backgroundDownloader(), 0,5, TimeUnit.SECONDS);
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.submit(VideoHelper.backgroundDownloader());
 
         // app memestore
         AuthFilter authFilter = new AuthFilter(sessionCookies);
@@ -46,9 +45,9 @@ public class MemeStore {
         jonaServer.registerEndPoint(Method.GET, "/api/addtag", tagController::addTag);
         jonaServer.registerEndPoint(Method.GET, "/api/edittag", tagController::editTag);
         jonaServer.registerEndPoint(Method.GET, "/api/deletetag", tagController::deleteTag);
-        jonaServer.registerEndPoint(Method.GET, "/api/addvideobylink", videoController::addVideoByLink);
         jonaServer.registerEndPoint(Method.GET, "/api/loadvideos", streamingController::loadVideos);
         jonaServer.registerEndPoint(Method.GET, "/api/streamingvideos", streamingController::streamVideos);
+        jonaServer.registerEndPoint(Method.GET, "/api/addvideobylink", videoController::addVideoByLink);
         jonaServer.registerEndPoint(Method.POST, "/api/processwhatsappchat", videoController::addVideoByFile);
 
         jonaServer.addStaticContent("./web-root");
@@ -58,6 +57,10 @@ public class MemeStore {
 
         jonaServer.start();
 
-        // todo setup graceful shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            service.shutdownNow();
+            jonaServer.shutdown();
+            System.exit(0);
+        }));
     }
 }
