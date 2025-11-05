@@ -34,7 +34,7 @@ public class VideoHelper {
                     } catch (InterruptedException e) {
                         log.error("Error waiting the next video to download: ", e);
                     }
-                    break;
+                    //break;
                 }
             }
         };

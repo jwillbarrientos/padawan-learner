@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Reels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .reel-container {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .controls {
+            position: absolute;
+            right: 20px;
+            bottom: 50%;
+            transform: translateY(50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .control-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background 0.3s;
+        }
+
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="reel-container">
+    <video id="video-player" autoplay muted playsinline></video>
+    <div class="controls">
+        <button id="download-btn" class="control-button">⬇️</button>
+        <button id="action-btn" class="control-button">⭐</button>
+    </div>
+</div>
+
+<script>
+    const videoEl = document.getElementById("video-player");
+    const downloadBtn = document.getElementById("download-btn");
+    const actionBtn = document.getElementById("action-btn");
+
+    let videos = [];
+    let currentIndex = 0;
+    let isTransitioning = false;
+
+    async function loadVideos() {
+        const res = await fetch('/getvideosforreel');
+        videos = await res.json();
+        if (videos.length > 0) {
+            loadVideo(currentIndex);
+        }
+    }
+
+    function loadVideo(index) {
+        if (!videos[index]) return;
+        const videoId = videos[index];
+        videoEl.src = `/streamvideo?id=${videoId}`;
+        videoEl.play();
+    }
+
+    function showNextVideo() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        currentIndex = (currentIndex + 1) % videos.length;
+        fadeToVideo(currentIndex);
+    }
+
+    function showPrevVideo() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        currentIndex = (currentIndex - 1 + videos.length) % videos.length;
+        fadeToVideo(currentIndex);
+    }
+
+    function fadeToVideo(index) {
+        videoEl.style.transition = "opacity 0.3s";
+        videoEl.style.opacity = 0;
+        setTimeout(() => {
+            loadVideo(index);
+            videoEl.style.opacity = 1;
+            setTimeout(() => (isTransitioning = false), 300);
+        }, 300);
+    }
+
+    // Swipe detection
+    let startY = 0;
+    window.addEventListener('touchstart', e => {
+        startY = e.touches[0].clientY;
+    });
+    window.addEventListener('touchend', e => {
+        const endY = e.changedTouches[0].clientY;
+        const diffY = startY - endY;
+        if (Math.abs(diffY) > 50) {
+            diffY > 0 ? showNextVideo() : showPrevVideo();
+        }
+    });
+
+    // Keyboard controls
+    window.addEventListener('keydown', e => {
+        if (e.key === 'ArrowUp') showPrevVideo();
+        if (e.key === 'ArrowDown') showNextVideo();
+    });
+
+    // Download button
+    downloadBtn.addEventListener('click', () => {
+        const videoId = videos[currentIndex];
+        const link = document.createElement('a');
+        link.href = `/streamvideo?id=${videoId}`;
+        link.download = `video_${videoId}.mp4`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    });
+
+    // Placeholder for your custom action
+    actionBtn.addEventListener('click', () => {
+        const videoId = videos[currentIndex];
+        alert(`Custom action for video: ${videoId}`);
+        // Later: replace this with your new feature (like "like", "save", etc.)
+    });
+
+    // Start app
+    loadVideos();
+</script>
+
+</body>
+</html>

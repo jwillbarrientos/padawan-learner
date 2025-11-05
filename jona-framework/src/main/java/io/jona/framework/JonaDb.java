@@ -1,10 +1,11 @@
 package io.jona.framework;
 
 import lombok.extern.slf4j.Slf4j;
+import org.h2.tools.Server;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 @Slf4j
 public class JonaDb {
@@ -12,10 +13,18 @@ public class JonaDb {
     private static String user;
     private static String password;
 
-    public static void init(String url, String user, String password) {
+    public static void init(String url, String user, String password, boolean startH2Server) {
+
+        try {
+            Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers").start();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         JonaDb.url = url;
         JonaDb.user = user;
         JonaDb.password = password;
+
     }
 
     public static boolean insert(Table table) {
@@ -79,13 +88,26 @@ public class JonaDb {
            setMapping(stmt, queryMappings);
            ResultSet rs = stmt.executeQuery();
            List<T> list = new ArrayList<>();
-           while(rs.next())
+           while (rs.next())
                list.add(rowMapper.apply(rs));
            return list;
         } catch (SQLException e) {
             log.error("Select list fail: ", e);
         }
         return null;
+    }
+
+    public static int findCount(String query, Object... queryMappings) {
+        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            setMapping(stmt, queryMappings);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            log.error("Error checking if element in table exists: ", e);
+        }
+        return 0;
     }
 
     private static void setMapping(PreparedStatement ps, Object... queryMappings) throws SQLException {

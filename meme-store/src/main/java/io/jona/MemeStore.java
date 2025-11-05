@@ -8,6 +8,8 @@ import io.jona.memestore.controller.*;
 import io.jona.memestore.dto.Client;
 import io.jona.memestore.filters.AuthFilter;
 import io.jona.memestore.filters.NoCacheFilter;
+import org.h2.tools.Server;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +19,7 @@ public class MemeStore {
     static HashMap<String, Client> sessionCookies = new HashMap<>();
     public static void main(String[] args) throws IOException {
 
-        JonaDb.init(AppProps.getJdbcUrl(), AppProps.getDbUser(), AppProps.getDbPassword());
+        JonaDb.init(AppProps.getJdbcUrl(), AppProps.getDbUser(), AppProps.getDbPassword(), true);
 
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.submit(VideoHelper.backgroundDownloader());

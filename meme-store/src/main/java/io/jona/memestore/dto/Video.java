@@ -6,12 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Function;
 
 @Slf4j
 @NoArgsConstructor
@@ -100,7 +100,7 @@ public class Video extends Table {
 
     public static Video nextVideoToDownload() {
         return JonaDb.selectSingle(
-                "select " + FULL_COLUMNS + " from video where video_state = ?",
+                "select " + FULL_COLUMNS + "from video where video_state = ?",
                 getFullMapping(),
                 State.SUBMITTED.name()
         );
@@ -114,8 +114,16 @@ public class Video extends Table {
         );
     }
 
+    public static boolean notYetInserted(Video video) {
+        return JonaDb.findCount(
+               "select count(id) from video where link = ? and client_id = ?",
+               video.link,
+               video.clientId
+        ) < 1;
+    }
+
     public static Video findById(long id) {
-        return JonaDb.selectSingle("select " + FULL_COLUMNS + " from video where id = " + id, Video.getFullMapping());
+        return JonaDb.selectSingle("select " + FULL_COLUMNS + "from video where id = " + id, Video.getFullMapping());
     }
 
     @Override
