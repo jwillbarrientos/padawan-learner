@@ -21,31 +21,42 @@
             position: relative;
             height: 100vh;
             width: 100vw;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000;
         }
 
-        /* The magic change — enforce vertical reel ratio */
-        video {
+        .video-wrapper {
             position: relative;
             width: 100%;
             height: 100%;
+            overflow: hidden;
+        }
+
+        .video-wrapper video {
+            position: absolute;
+            top: 5vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
             max-height: 90vh;
-            max-width: 50vh; /* Keeps vertical 9:16 style */
+            max-width: 50vh;
             object-fit: cover;
             border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            transition: top 0.45s ease-in-out;
+            will-change: top;
         }
+
 
         .controls {
             position: absolute;
-            bottom: 30px;         /* distance from bottom of video */
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            flex-direction: row;  /* horizontal layout */
+            flex-direction: row;
             gap: 20px;
             z-index: 10;
         }
@@ -89,7 +100,9 @@
 <button id="home-btn" class="home-button">🏠 Home</button>
 
 <div class="reel-container">
-    <video id="video-player" autoplay muted playsinline></video>
+    <div id="video-wrapper" class="video-wrapper">
+        <video id="video-player" autoplay muted playsinline></video>
+    </div>
     <div class="controls">
         <button id="download-btn" class="control-button">⬇️</button>
         <button id="sound-btn" class="control-button">🔇</button>
@@ -98,14 +111,20 @@
 </div>
 
 <script>
-    const videoEl = document.getElementById("video-player");
+    // ---- Global elements ----
+    let videoEl = document.getElementById("video-player");
+    const wrapper = document.getElementById("video-wrapper");
     const downloadBtn = document.getElementById("download-btn");
     const actionBtn = document.getElementById("action-btn");
+    const soundBtn = document.getElementById("sound-btn");
+    const homeBtn = document.getElementById("home-btn");
 
+    // ---- State ----
     let videos = [];
     let currentIndex = 0;
     let isTransitioning = false;
 
+    // ---- Load videos from API/localStorage ----
     async function loadVideos() {
         try {
             const savedTag = localStorage.getItem('selectedTag') || 'all';
@@ -133,8 +152,7 @@
     }
 
     function getVideoId(video) {
-        if (typeof video === 'object' && video.id) return video.id;
-        return video; // fallback if list ever contains plain IDs
+        return typeof video === 'object' && video.id ? video.id : video;
     }
 
     function loadVideo(index) {
@@ -144,36 +162,84 @@
         videoEl.play();
     }
 
+    // ---- Create and slide video ----
+    function createVideoElement(id, inheritMuted = true) {
+        const v = document.createElement("video");
+        v.src = `/api/streamingvideos?id=${id}`;
+        v.autoplay = true;
+        v.playsInline = true;
+        v.muted = !!inheritMuted;
+        v.style.position = "absolute";
+        v.style.top = "5vh";
+        v.style.left = "50%";
+        v.style.transform = "translateX(-50%)";
+        v.style.width = "100%";
+        v.style.height = "100%";
+        v.style.objectFit = "cover";
+        v.style.borderRadius = "12px";
+        v.style.transition = "top 0.45s ease-in-out";
+        v.addEventListener("click", () => {
+            if (v.paused) v.play();
+            else v.pause();
+        });
+        return v;
+    }
+
+    function slideToVideo(index, direction = "next") {
+        if (isTransitioning) return;
+        if (!videos[index]) return;
+        isTransitioning = true;
+
+        try { videoEl.pause(); } catch (e) {}
+
+        const nextId = getVideoId(videos[index]);
+        const newVideo = createVideoElement(nextId, videoEl.muted);
+
+        // Position off-screen
+        newVideo.style.top = direction === "next" ? "100%" : "-100%";
+        wrapper.appendChild(newVideo);
+
+        // Trigger layout reflow
+        void newVideo.offsetHeight;
+
+        // Animate both
+        videoEl.style.top = direction === "next" ? "-100%" : "100%";
+        newVideo.style.top = "5vh";
+
+        const onTransitionEnd = (ev) => {
+            if (ev.propertyName !== "top") return;
+
+            try { videoEl.remove(); } catch (e) {}
+            newVideo.id = "video-player";
+            videoEl = newVideo;
+
+            try { videoEl.play().catch(()=>{}); } catch(e){}
+
+            newVideo.removeEventListener("transitionend", onTransitionEnd);
+            isTransitioning = false;
+        };
+
+        newVideo.addEventListener("transitionend", onTransitionEnd);
+    }
+
     function showNextVideo() {
         if (isTransitioning) return;
-        isTransitioning = true;
         currentIndex = (currentIndex + 1) % videos.length;
-        fadeToVideo(currentIndex);
+        slideToVideo(currentIndex, "next");
     }
 
     function showPrevVideo() {
         if (isTransitioning) return;
-        isTransitioning = true;
         currentIndex = (currentIndex - 1 + videos.length) % videos.length;
-        fadeToVideo(currentIndex);
+        slideToVideo(currentIndex, "prev");
     }
 
-    function fadeToVideo(index) {
-        videoEl.style.transition = "opacity 0.3s";
-        videoEl.style.opacity = 0;
-        setTimeout(() => {
-            loadVideo(index);
-            videoEl.style.opacity = 1;
-            setTimeout(() => (isTransitioning = false), 300);
-        }, 300);
-    }
-
-    // Swipe detection
+    // ---- Swipe detection ----
     let startY = 0;
-    window.addEventListener('touchstart', e => {
+    window.addEventListener("touchstart", e => {
         startY = e.touches[0].clientY;
     });
-    window.addEventListener('touchend', e => {
+    window.addEventListener("touchend", e => {
         const endY = e.changedTouches[0].clientY;
         const diffY = startY - endY;
         if (Math.abs(diffY) > 50) {
@@ -181,53 +247,52 @@
         }
     });
 
-    // Keyboard controls
-    window.addEventListener('keydown', e => {
-        if (e.key === 'ArrowUp') showPrevVideo();
-        if (e.key === 'ArrowDown') showNextVideo();
+    // ---- Keyboard and wheel controls ----
+    window.addEventListener("keydown", e => {
+        if (e.key === "ArrowUp") showPrevVideo();
+        if (e.key === "ArrowDown") showNextVideo();
     });
 
-    // Download button
-    downloadBtn.addEventListener('click', () => {
-        const videoId = videos[currentIndex];
-        const link = document.createElement('a');
-        link.href = `/api/streamingvideos?id=${videoId}`;
-        link.download = `video_${videoId}.mp4`;
+    window.addEventListener("wheel", e => {
+        if (isTransitioning) return;
+        if (e.deltaY > 0) showNextVideo();
+        else if (e.deltaY < 0) showPrevVideo();
+    });
+
+    // ---- Control buttons ----
+    downloadBtn.addEventListener("click", () => {
+        const id = getVideoId(videos[currentIndex]);
+        const link = document.createElement("a");
+        link.href = `/api/streamingvideos?id=${id}`;
+        link.download = `video_${id}.mp4`;
         document.body.appendChild(link);
         link.click();
         link.remove();
     });
 
-    // Placeholder for your custom action
-    actionBtn.addEventListener('click', () => {
-        const videoId = videos[currentIndex];
-        alert(`Custom action for video: ${videoId}`);
-        // Later: replace this with your new feature (like "like", "save", etc.)
+    actionBtn.addEventListener("click", () => {
+        const id = getVideoId(videos[currentIndex]);
+        alert(`Custom action for video: ${id}`);
     });
 
-    window.addEventListener('wheel', (e) => {
-        if (isTransitioning) return;
-        if (e.deltaY > 0) {
-            showNextVideo();
-        } else if (e.deltaY < 0) {
-            showPrevVideo();
-        }
-    });
-
-    const homeBtn = document.getElementById("home-btn");
-    homeBtn.addEventListener("click", () => {
-        window.location.href = "/app/welcome-page.html"; // change this to your actual welcome page path
-    });
-
-    const soundBtn = document.getElementById("sound-btn");
     soundBtn.addEventListener("click", () => {
+        if (!videoEl) return;
         videoEl.muted = !videoEl.muted;
         soundBtn.textContent = videoEl.muted ? "🔇" : "🔊";
     });
 
-    // Start app
+    homeBtn.addEventListener("click", () => {
+        window.location.href = "/app/welcome-page.html"; // Change to your real path
+    });
+
+    // ---- Click to pause/play ----
+    videoEl.addEventListener("click", () => {
+        if (videoEl.paused) videoEl.play();
+        else videoEl.pause();
+    });
+
+    // ---- Start ----
     loadVideos();
 </script>
-
 </body>
 </html>
