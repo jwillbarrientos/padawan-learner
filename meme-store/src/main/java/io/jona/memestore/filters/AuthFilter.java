@@ -21,7 +21,7 @@ public class AuthFilter {
         }
 
         response.truncateProcessing();
-        if (request.canonicalPath().endsWith("/app/welcome-page.html")) {
+        if (request.canonicalPath().startsWith("/app/")) {
             response.setResponseCode(HttpCode.FOUND_302);
             response.redirect("/");
             return;

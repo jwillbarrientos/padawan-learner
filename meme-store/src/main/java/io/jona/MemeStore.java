@@ -46,7 +46,7 @@ public class MemeStore {
         jonaServer.registerEndPoint(Method.GET, "/api/addtag", tagController::addTag);
         jonaServer.registerEndPoint(Method.GET, "/api/edittag", tagController::editTag);
         jonaServer.registerEndPoint(Method.GET, "/api/deletetag", tagController::deleteTag);
-        jonaServer.registerEndPoint(Method.GET, "/api/loadvideos", streamingController::downloadVideosInTheServerAndLoad);
+        jonaServer.registerEndPoint(Method.GET, "/api/loadvideos", streamingController::loadVideos);
         jonaServer.registerEndPoint(Method.GET, "/api/streamingvideos", streamingController::streamVideos);
         jonaServer.registerEndPoint(Method.GET, "/api/addvideobylink", videoController::addVideoByLink);
         jonaServer.registerEndPoint(Method.POST, "/api/processwhatsappchat", videoController::addVideoByFile);

@@ -10,6 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body, html {
             height: 100%;
             overflow: hidden;
@@ -23,25 +24,29 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background: #000;
         }
 
+        /* The magic change — enforce vertical reel ratio */
         video {
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: relative;
             width: 100%;
             height: 100%;
+            max-height: 90vh;
+            max-width: 50vh; /* Keeps vertical 9:16 style */
             object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
         }
 
         .controls {
             position: absolute;
-            right: 20px;
-            bottom: 50%;
-            transform: translateY(50%);
+            bottom: 30px;         /* distance from bottom of video */
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            flex-direction: row;  /* horizontal layout */
+            gap: 20px;
             z-index: 10;
         }
 
@@ -49,8 +54,8 @@
             background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
-            padding: 12px;
-            border-radius: 50%;
+            padding: 14px 18px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 20px;
             transition: background 0.3s;
@@ -59,14 +64,35 @@
         .control-button:hover {
             background: rgba(255, 255, 255, 0.5);
         }
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 20;
+            transition: background 0.3s;
+        }
+
+        .home-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>
+<button id="home-btn" class="home-button">🏠 Home</button>
 
 <div class="reel-container">
     <video id="video-player" autoplay muted playsinline></video>
     <div class="controls">
         <button id="download-btn" class="control-button">⬇️</button>
+        <button id="sound-btn" class="control-button">🔇</button>
         <button id="action-btn" class="control-button">⭐</button>
     </div>
 </div>
@@ -81,16 +107,39 @@
     let isTransitioning = false;
 
     async function loadVideos() {
-        const res = await fetch(`/api/getvideosforreel?tag=${}`);
-        videos = await res.json();
-        if (videos.length > 0) {
-            loadVideo(currentIndex);
+        try {
+            const savedTag = localStorage.getItem('selectedTag') || 'all';
+            const savedList = localStorage.getItem('videoList');
+
+            if (savedList) {
+                videos = JSON.parse(savedList);
+                console.log(`Loaded ${videos.length} videos from localStorage (tag: ${savedTag})`);
+            } else {
+                const res = await fetch(`/api/getvideosforreel?tag=${savedTag}`);
+                if (!res.ok) throw new Error(`Failed to fetch videos (${res.status})`);
+                videos = await res.json();
+                console.log(`Fetched ${videos.length} videos for tag "${savedTag}"`);
+            }
+
+            if (videos.length > 0) {
+                loadVideo(currentIndex);
+            } else {
+                alert("No videos found for this category.");
+            }
+        } catch (err) {
+            console.error("Error loading videos:", err);
+            alert("Error loading videos. Check console for details.");
         }
+    }
+
+    function getVideoId(video) {
+        if (typeof video === 'object' && video.id) return video.id;
+        return video; // fallback if list ever contains plain IDs
     }
 
     function loadVideo(index) {
         if (!videos[index]) return;
-        const videoId = videos[index];
+        const videoId = getVideoId(videos[index]);
         videoEl.src = `/api/streamingvideos?id=${videoId}`;
         videoEl.play();
     }
@@ -154,6 +203,26 @@
         const videoId = videos[currentIndex];
         alert(`Custom action for video: ${videoId}`);
         // Later: replace this with your new feature (like "like", "save", etc.)
+    });
+
+    window.addEventListener('wheel', (e) => {
+        if (isTransitioning) return;
+        if (e.deltaY > 0) {
+            showNextVideo();
+        } else if (e.deltaY < 0) {
+            showPrevVideo();
+        }
+    });
+
+    const homeBtn = document.getElementById("home-btn");
+    homeBtn.addEventListener("click", () => {
+        window.location.href = "/app/welcome-page.html"; // change this to your actual welcome page path
+    });
+
+    const soundBtn = document.getElementById("sound-btn");
+    soundBtn.addEventListener("click", () => {
+        videoEl.muted = !videoEl.muted;
+        soundBtn.textContent = videoEl.muted ? "🔇" : "🔊";
     });
 
     // Start app

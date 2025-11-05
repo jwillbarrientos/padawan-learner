@@ -98,15 +98,39 @@ public class Video extends Table {
         return new Object[] {id, name, link, path, durationSeconds, fileSize, videoState.name(), new Timestamp(date.getTime()), clientId};
     }
 
+    public static List<Video> getAllVideosByClient(Client client) {
+        return JonaDb.selectList(
+                "select " + FULL_COLUMNS + "from video where video_state = 'DOWNLOADED' and client_id = ? order by date desc",
+                Video.getFullMapping(),
+                client.getId()
+        );
+    }
+
+    public static List<Video> getShortVideosByClient(Client client) {
+        return JonaDb.selectList(
+                "select " + FULL_COLUMNS + "from video where video_state = 'DOWNLOADED' and duration_seconds <= 60 and client_id = ? order by date desc",
+                Video.getFullMapping(),
+                client.getId()
+        );
+    }
+
+    public static List<Video> getLongVideosByClient(Client client) {
+        return JonaDb.selectList(
+                "select " + FULL_COLUMNS + "from video where video_state = 'DOWNLOADED' and duration_seconds > 60 and client_id = ? order by date desc",
+                Video.getFullMapping(),
+                client.getId()
+        );
+    }
+
     public static Video nextVideoToDownload() {
         return JonaDb.selectSingle(
                 "select " + FULL_COLUMNS + "from video where video_state = ?",
-                getFullMapping(),
+                Video.getFullMapping(),
                 State.SUBMITTED.name()
         );
     }
 
-    public static List<Video> videosToDownload(long clientId) {
+    public static List<Video> getVideosDownloaded(long clientId) {
         return JonaDb.selectList(
                 "select " + FULL_COLUMNS + "from video where client_id = ? and video_state = 'DOWNLOADED' order by date desc limit " + 50,
                 Video.getFullMapping(),

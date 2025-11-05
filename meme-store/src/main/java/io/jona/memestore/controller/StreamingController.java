@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +24,10 @@ public class StreamingController {
         this.sessionCookies = sessionCookies;
     }
 
-    public void downloadVideosInTheServerAndLoad(HttpRequest request, HttpResponse response) {
+    public void loadVideos(HttpRequest request, HttpResponse response) {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
-        List<Video> listVideos = Video.videosToDownload(client.getId());
+        List<Video> listVideos = Video.getVideosDownloaded(client.getId());
         Gson gson = new Gson();
         String json = gson.toJson(listVideos);
         response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
@@ -52,7 +53,20 @@ public class StreamingController {
     }
 
     public void getVideosForReel(HttpRequest request, HttpResponse response) {
+        String sessionCookie = request.getCookies().get("sessionCookie");
+        Client client = sessionCookies.get(sessionCookie);
         String tag = request.getQueryParams().get("tag");
-
+        List<Video> listVideos = new ArrayList<>();
+        if (tag.equals("all"))
+            listVideos = Video.getAllVideosByClient(client);
+        else if (tag.equals("lte60"))
+            listVideos = Video.getShortVideosByClient(client);
+        else if (tag.equals("bt60"))
+            listVideos = Video.getLongVideosByClient(client);
+        Gson gson = new Gson();
+        String json = gson.toJson(listVideos);
+        response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
+        response.setResponseCode(HttpCode.OK_200);
+        response.setBody(json.getBytes());
     }
 }
