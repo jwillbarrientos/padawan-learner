@@ -134,10 +134,34 @@
         }
 
         #showAllBtn {
-            background: #007bff;
+            background: #4f46e5;
         }
 
         #showAllBtn:hover {
+            background: #4338ca;
+        }
+
+        #videosShortBtn {
+            background: #4f46e5;
+        }
+
+        #videosShortBtn:hover {
+            background: #4338ca;
+        }
+
+        #videosLongBtn {
+            background: #4f46e5;
+        }
+
+        #videosLongBtn:hover {
+            background: #4338ca;
+        }
+
+        #videosWithTagsBtn {
+            background: #007bff;
+        }
+
+        #videosWithTagsBtn:hover {
             background: #0056cc;
         }
 
@@ -262,8 +286,11 @@
         <!-- Tags list -->
         <div id="tagList"></div>
         <div class="sidebar-actions">
-            <button id="showAllBtn" class="sidebar-btn">Show all videos</button>
-            <button id="videosWithoutTagsBtn" class="sidebar-btn">Videos without tags</button>
+            <button id="showAllBtn" class="sidebar-btn">Show All Videos</button>
+            <button id="videosShortBtn" class="sidebar-btn">Short Videos (60s or less)</button>
+            <button id="videosLongBtn" class="sidebar-btn">Long Videos (over 60s)</button>
+            <button id="videosWithTagsBtn" class="sidebar-btn">Videos With Tags</button>
+            <button id="videosWithoutTagsBtn" class="sidebar-btn">Videos Without Tags</button>
         </div>
     </aside>
 

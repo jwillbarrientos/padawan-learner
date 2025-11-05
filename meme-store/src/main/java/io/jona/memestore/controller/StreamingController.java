@@ -1,7 +1,6 @@
 package io.jona.memestore.controller;
 
 import com.google.gson.Gson;
-import io.jona.framework.*;
 import io.jona.framework.http.HttpCode;
 import io.jona.framework.http.HttpRequest;
 import io.jona.framework.http.HttpResponse;
@@ -24,7 +23,7 @@ public class StreamingController {
         this.sessionCookies = sessionCookies;
     }
 
-    public void loadVideos(HttpRequest request, HttpResponse response) {
+    public void downloadVideosInTheServerAndLoad(HttpRequest request, HttpResponse response) {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
         List<Video> listVideos = Video.videosToDownload(client.getId());
@@ -50,5 +49,10 @@ public class StreamingController {
             response.setResponseCode(HttpCode.CONFLICT_409);
             log.error("Error streaming the video: ", e);
         }
+    }
+
+    public void getVideosForReel(HttpRequest request, HttpResponse response) {
+        String tag = request.getQueryParams().get("tag");
+
     }
 }

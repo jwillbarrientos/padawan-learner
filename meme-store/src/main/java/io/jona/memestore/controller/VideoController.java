@@ -48,7 +48,7 @@ public class VideoController {
         response.setResponseCode(HttpCode.OK_200);
     }
 
-    public String parseBody(String body) {
+    private String parseBody(String body) {
         Pattern urlPattern = Pattern.compile("(https?://[\\w./?=&%-]+)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = urlPattern.matcher(body);
         List<String> links = new ArrayList<>();
