@@ -48,6 +48,13 @@ public class VideoController {
         response.setResponseCode(HttpCode.OK_200);
     }
 
+    public void deleteVideo(HttpRequest request, HttpResponse response) {
+        Video video = Video.findById(Long.parseLong(request.getQueryParams().get("id")));
+        boolean deleteSuccess = JonaDb.delete(video);
+        log.info("Video deletion was successful: {}", deleteSuccess);
+        response.setResponseCode(HttpCode.OK_200);
+    }
+
     private String parseBody(String body) {
         Pattern urlPattern = Pattern.compile("(https?://[\\w./?=&%-]+)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = urlPattern.matcher(body);

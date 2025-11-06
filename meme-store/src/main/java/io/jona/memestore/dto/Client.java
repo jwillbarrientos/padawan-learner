@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Function;
 
-@Slf4j
 @AllArgsConstructor
 public class Client extends Table {
     public static final String FULL_COLUMNS = "id, email, password ";
@@ -19,6 +18,14 @@ public class Client extends Table {
     @Getter
     private String email;
     private String password;
+
+    public static ThrowingFunction<ResultSet, Client, SQLException> getFullMapping() {
+        return rs -> new Client(
+                rs.getLong(1),
+                rs.getString(2),
+                rs.getString(3)
+        );
+    }
 
     public Client(String email, String password) {
         this.email = email;
@@ -46,14 +53,6 @@ public class Client extends Table {
         return JonaDb.selectSingle("select " + FULL_COLUMNS + "from client where email = ? and password = ?",
                 Client.getFullMapping(),
                 email, password
-        );
-    }
-
-    public static ThrowingFunction<ResultSet, Client, SQLException> getFullMapping() {
-        return rs -> new Client(
-                rs.getLong(1),
-                rs.getString(2),
-                rs.getString(3)
         );
     }
 

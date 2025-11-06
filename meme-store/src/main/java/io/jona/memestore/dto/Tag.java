@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Slf4j
 @AllArgsConstructor
 public class Tag extends Table {
     public static final String FULL_COLUMNS = "id, name, client_id ";
@@ -25,9 +24,24 @@ public class Tag extends Table {
         this.clientId = clientId;
     }
 
+    public static ThrowingFunction<ResultSet, Tag, SQLException> getFullMapping() {
+        return rs -> new Tag(
+                rs.getLong(1),
+                rs.getString(2),
+                rs.getLong(3)
+        );
+    }
+
     public String getInsert() {
         setId(nextId());
         return "insert into tag (id, name, client_id) values(?,?,?)";
+    }
+
+    public static List<Tag> getTagsByClient(Client client) {
+        return JonaDb.selectList("select " + FULL_COLUMNS + "from tag where client_id = ?",
+                Tag.getFullMapping(),
+                client.getId()
+        );
     }
 
     public String getUpdate() {
@@ -45,21 +59,6 @@ public class Tag extends Table {
     public static Tag findById(long id) {
         return JonaDb.selectSingle("select " + FULL_COLUMNS + "from tag where id = " + id,
                 Tag.getFullMapping()
-        );
-    }
-
-    public static List<Tag> getTagsByClient(Client client) {
-        return JonaDb.selectList("select " + FULL_COLUMNS + "from tag where client_id = ?",
-                Tag.getFullMapping(),
-                client.getId()
-        );
-    }
-
-    public static ThrowingFunction<ResultSet, Tag, SQLException> getFullMapping() {
-        return rs -> new Tag(
-                rs.getLong(1),
-                rs.getString(2),
-                rs.getLong(3)
         );
     }
 

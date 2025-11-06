@@ -56,13 +56,19 @@ public class StreamingController {
         String sessionCookie = request.getCookies().get("sessionCookie");
         Client client = sessionCookies.get(sessionCookie);
         String tag = request.getQueryParams().get("tag");
-        List<Video> listVideos = new ArrayList<>();
+        List<Video> listVideos;
         if (tag.equals("all"))
             listVideos = Video.getAllVideosByClient(client);
         else if (tag.equals("lte60"))
             listVideos = Video.getShortVideosByClient(client);
         else if (tag.equals("bt60"))
             listVideos = Video.getLongVideosByClient(client);
+        else if (tag.equals("with"))
+            listVideos = Video.getVideosWithTags(client);
+        else if (tag.equals("without"))
+            listVideos = Video.getVideosWithoutTags(client);
+        else
+            listVideos = Video.getVideosWithSpecificTag(tag);
         Gson gson = new Gson();
         String json = gson.toJson(listVideos);
         response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");

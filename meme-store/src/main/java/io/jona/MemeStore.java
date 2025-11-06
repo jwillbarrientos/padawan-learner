@@ -31,6 +31,7 @@ public class MemeStore {
         TagController tagController = new TagController(sessionCookies);
         VideoController videoController = new VideoController(sessionCookies);
         StreamingController streamingController = new StreamingController(sessionCookies);
+        VideoTagController videoTagController = new VideoTagController(sessionCookies);
 
         JonaServer jonaServer = new JonaServer(8080);
 
@@ -51,6 +52,11 @@ public class MemeStore {
         jonaServer.registerEndPoint(Method.GET, "/api/addvideobylink", videoController::addVideoByLink);
         jonaServer.registerEndPoint(Method.POST, "/api/processwhatsappchat", videoController::addVideoByFile);
         jonaServer.registerEndPoint(Method.GET, "/api/getvideosforreel", streamingController::getVideosForReel);
+        jonaServer.registerEndPoint(Method.GET, "/api/deletevideo", videoController::deleteVideo);
+        jonaServer.registerEndPoint(Method.GET, "/api/loadtagsinreelspage", tagController::listTags);
+        jonaServer.registerEndPoint(Method.GET, "/api/gettagsforvideo", videoTagController::getTagsForVideo);
+        jonaServer.registerEndPoint(Method.GET, "/api/addtagtovideo", videoTagController::addTagToVideo);
+        jonaServer.registerEndPoint(Method.GET, "/api/deletetagvideo", videoTagController::deleteTagVideo);
 
         jonaServer.addStaticContent("./web-root");
 

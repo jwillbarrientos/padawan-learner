@@ -20,9 +20,25 @@ export async function loadTags() {
             const nameSpan = document.createElement("span");
             nameSpan.textContent = tag.name;
             nameSpan.style.cursor = "pointer";
-            nameSpan.addEventListener("click", () => {
-                // Redirect when user clicks the tag name
-                window.location.href = `/app/tag-page.html?tag=${encodeURIComponent(tag.name)}`;
+
+            nameSpan.addEventListener("click", async () => {
+                try {
+                    const response = await fetch(`/api/getvideosforreel?tag=${encodeURIComponent(tag.id)}`);
+                    if (!response.ok) {
+                        console.error(`Failed to fetch videos for tag: ${tag.name}`);
+                        return;
+                    }
+
+                    const videos = await response.json();
+                    console.log(`Fetched ${videos.length} videos for tag "${tag.name}"`);
+
+                    localStorage.setItem("selectedTag", tag.id);
+                    localStorage.setItem("videoList", JSON.stringify(videos));
+
+                    window.location.href = `/app/reels.html`;
+                } catch (err) {
+                    console.error("Error fetching videos by tag: ", err);
+                }
             });
 
             const editBtn = createEditButton(tag.id, tag.name, loadTags);

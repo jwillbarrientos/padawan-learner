@@ -10,10 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Slf4j
 @NoArgsConstructor
 public class Video extends Table {
 
@@ -80,24 +80,6 @@ public class Video extends Table {
         );
     }
 
-    public String getInsert() {
-        setId(nextId());
-        setDate(new Date());
-        return "insert into video (" + FULL_COLUMNS + ") values(?,?,?,?,?,?,?,?,?)";
-    }
-
-    public String getUpdate() {
-        return "update video set id = ?, name = ?, link = ?, path = ?, duration_seconds = ?, file_size = ?, video_state = ?, date = ?, client_id = ? where id = " + id;
-    }
-
-    public String getDelete() {
-        return "delete from video where id = " + id;
-    }
-
-    public Object[] getValues() {
-        return new Object[] {id, name, link, path, durationSeconds, fileSize, videoState.name(), new Timestamp(date.getTime()), clientId};
-    }
-
     public static List<Video> getAllVideosByClient(Client client) {
         return JonaDb.selectList(
                 "select " + FULL_COLUMNS + "from video where video_state = 'DOWNLOADED' and client_id = ? order by date desc",
@@ -122,6 +104,47 @@ public class Video extends Table {
         );
     }
 
+    public static List<Video> getVideosWithTags(Client client) {
+        List<Video> clientVideos = getAllVideosByClient(client);
+        List<Video> videosWithTags = new ArrayList<>();
+        for (Video video : clientVideos) {
+            boolean videoHaveTag = JonaDb.findCount(
+                    "select count(video_id) from video_tag where video_id = ?",
+                    video.getId()) > 0;
+            if (videoHaveTag)
+                videosWithTags.add(video);
+        }
+        return videosWithTags;
+    }
+
+    public static List<Video> getVideosWithoutTags(Client client) {
+        List<Video> clientVideos = getAllVideosByClient(client);
+        List<Video> videosWithoutTags = new ArrayList<>();
+        for (Video video : clientVideos) {
+            boolean videoDontHaveTag = JonaDb.findCount(
+                    "select count(video_id) from video_tag where video_id = ?",
+                    video.getId()) == 0;
+            if (videoDontHaveTag)
+                videosWithoutTags.add(video);
+        }
+        return videosWithoutTags;
+    }
+
+    public static List<Video> getVideosWithSpecificTag(String tag) {
+        List<Video> videosWithSpecificTag = new ArrayList<>();
+        List<VideoTag> videosIdWithSpecificTag = JonaDb.selectList(
+                "select video_id, tag_id from video_tag where tag_id = ?",
+                VideoTag.getFullMapping(),
+                tag
+        );
+        if (videosIdWithSpecificTag != null) {
+            for (VideoTag videoTag : videosIdWithSpecificTag) {
+                videosWithSpecificTag.add(findById(videoTag.getVideoId()));
+            }
+        }
+        return videosWithSpecificTag;
+    }
+
     public static Video nextVideoToDownload() {
         return JonaDb.selectSingle(
                 "select " + FULL_COLUMNS + "from video where video_state = ?",
@@ -132,7 +155,7 @@ public class Video extends Table {
 
     public static List<Video> getVideosDownloaded(long clientId) {
         return JonaDb.selectList(
-                "select " + FULL_COLUMNS + "from video where client_id = ? and video_state = 'DOWNLOADED' order by date desc limit " + 50,
+                "select " + FULL_COLUMNS + "from video where client_id = ? and video_state = 'DOWNLOADED' order by date desc limit " + 10,
                 Video.getFullMapping(),
                 clientId
         );
@@ -148,6 +171,24 @@ public class Video extends Table {
 
     public static Video findById(long id) {
         return JonaDb.selectSingle("select " + FULL_COLUMNS + "from video where id = " + id, Video.getFullMapping());
+    }
+
+    public String getInsert() {
+        setId(nextId());
+        setDate(new Date());
+        return "insert into video (" + FULL_COLUMNS + ") values(?,?,?,?,?,?,?,?,?)";
+    }
+
+    public String getUpdate() {
+        return "update video set id = ?, name = ?, link = ?, path = ?, duration_seconds = ?, file_size = ?, video_state = ?, date = ?, client_id = ? where id = " + id;
+    }
+
+    public String getDelete() {
+        return "delete from video where id = " + id;
+    }
+
+    public Object[] getValues() {
+        return new Object[] {id, name, link, path, durationSeconds, fileSize, videoState.name(), new Timestamp(date.getTime()), clientId};
     }
 
     @Override
