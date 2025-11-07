@@ -9,7 +9,7 @@ import java.util.Properties;
 public class AppProps {
     private static final Properties props = new Properties();
     static {
-        try (FileInputStream fis = new FileInputStream("C:/Users/barri/IdeaProjects/padawan-learner/meme-store/app.properties")) {
+        try (FileInputStream fis = new FileInputStream("app.properties")) {
             props.load(fis);
         } catch (IOException e) {
             log.error("Error while loading app.properties: ", e);
@@ -17,12 +17,11 @@ public class AppProps {
         }
     }
 
-    public static String getYoutubeDlWin() {
-        return props.getProperty("youtubeDl.win");
-    }
-
-    public static String getYtDlWin() {
-        return props.getProperty("ytDl.win");
+    public static String getYtDl() {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.equals("win"))
+            return props.getProperty("ytDl") + ".exe";
+        return props.getProperty("ytDl");
     }
 
     public static String getTemporalPath() {

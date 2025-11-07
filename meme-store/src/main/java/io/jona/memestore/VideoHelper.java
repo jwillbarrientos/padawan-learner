@@ -35,6 +35,13 @@ public class VideoHelper {
                         log.error("Error waiting the next video to download: ", e);
                     }
                     //break;
+                } else {
+                    try {
+                        log.info("There are no videos to download, sleeping 5 seconds");
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        log.error("Error trying to sleep: ", e);
+                    }
                 }
             }
         };

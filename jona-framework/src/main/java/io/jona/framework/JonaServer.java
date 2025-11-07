@@ -10,15 +10,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.BiConsumer;
 import static io.jona.framework.http.StaticPathController.processStaticPath;
 
 @Slf4j
 public class JonaServer {
     private final int port;
-    private final ExecutorService requestExecutor = Executors.newCachedThreadPool();
+    private final ExecutorService requestExecutor;
     private final Map<String, BiConsumer<HttpRequest, HttpResponse>> endPoints = new LinkedHashMap<>();
     private final Map<String, BiConsumer<HttpRequest, HttpResponse>> inboundFilters = new LinkedHashMap<>();
     private final Map<String, BiConsumer<HttpRequest, HttpResponse>> outboundFilters = new LinkedHashMap<>();
@@ -32,6 +31,12 @@ public class JonaServer {
 
     public JonaServer(int port) {
         this.port = port;
+        requestExecutor = new ThreadPoolExecutor(
+                3,
+                3,
+                60L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(10)
+        );
     }
 
     public void registerInboundFilter(Method method, String path, BiConsumer<HttpRequest, HttpResponse> biConsumer) {
@@ -50,18 +55,23 @@ public class JonaServer {
         outboundFilters.put(path, biConsumer);
     }
     public void start() throws IOException {
-        try (
-             ServerSocket serverSocket = new ServerSocket(port)) {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
             log.info("Server started");
             while (true) {
-                requestExecutor.execute(() -> processRequest(serverSocket));
+                try {
+                    Socket client = serverSocket.accept();
+                    requestExecutor.execute(() -> processRequest(client));
+                } catch (Exception e) {
+                    log.error("While accepting client: ", e);
+                    break;
+                }
             }
         }
     }
 
-    private void processRequest(ServerSocket serverSocket) {
+    private void processRequest(Socket client) {
         HttpRequest request = null;
-        try (Socket client = serverSocket.accept()) {
+        try {
             request = new HttpRequest(client);
             HttpResponse response = new HttpResponse();
 
@@ -101,6 +111,12 @@ public class JonaServer {
             client.getOutputStream().flush();
         } catch (IOException e) {
             log.error("Exception while processing request: {}", request, e);
+        } finally {
+            try {
+                client.close();
+            } catch (Exception e) {
+                log.error("Exception while closing client: ", e);
+            }
         }
     }
 

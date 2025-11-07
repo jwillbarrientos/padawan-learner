@@ -5,7 +5,7 @@ drop table if exists tag;
 drop table if exists video;
 drop table if exists client;
 
-create table client (
+create table client ( -- asdfasdf
     id bigint primary key,
     email varchar not null unique,
     password varchar not null

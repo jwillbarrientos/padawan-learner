@@ -18,7 +18,14 @@ public class MemeStore {
     static HashMap<String, Client> sessionCookies = new HashMap<>();
     public static void main(String[] args) throws IOException {
 
-        JonaDb.init(AppProps.getJdbcUrl(), AppProps.getDbUser(), AppProps.getDbPassword(), true);
+        JonaDb.init(
+                AppProps.getJdbcUrl(),
+                AppProps.getDbUser(),
+                AppProps.getDbPassword(),
+                true,
+                "db/schema.sql", // todo, make this work
+                "client"
+        );
 
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.submit(VideoHelper.backgroundDownloader());

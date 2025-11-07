@@ -40,8 +40,7 @@ public class DownloadVideo {
             exe = Executable.YT_DLP;
         String[] command;
         log.info("user.dir: {}", System.getProperty("user.dir"));
-        String ytDl = AppProps.getYtDlWin();
-        String youtubeDl = AppProps.getYoutubeDlWin();
+        String ytDl = AppProps.getYtDl();
         String temporalFolder = AppProps.getTemporalPath();
         String destinyFolder = AppProps.getVideoOutputPath();
         switch (platform) {

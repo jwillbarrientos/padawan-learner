@@ -13,7 +13,12 @@ public class JonaDb {
     private static String user;
     private static String password;
 
-    public static void init(String url, String user, String password, boolean startH2Server) {
+    public static void init(String url,
+                            String user,
+                            String password,
+                            boolean startH2Server,
+                            String initSchema,
+                            String testTable) {
 
         try {
             Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers").start();
@@ -24,6 +29,12 @@ public class JonaDb {
         JonaDb.url = url;
         JonaDb.user = user;
         JonaDb.password = password;
+
+        /*
+            select count(*) from testTable
+            if select success, then assume the databaswe exists and it has th8e schema already created,
+            otherwise, execute all statements of the initSchema file using jdbc to create the database
+         */
 
     }
 
