@@ -5,7 +5,6 @@ import io.jona.framework.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -184,6 +183,10 @@ public class Video extends Table {
     }
 
     public String getDelete() {
+        List<VideoTag> videoTags = VideoTag.getVideoTagsByVideo(this.id);
+        for (VideoTag videoTag : videoTags) {
+            JonaDb.delete(videoTag);
+        }
         return "delete from video where id = " + id;
     }
 

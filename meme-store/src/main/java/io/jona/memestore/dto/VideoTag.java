@@ -38,7 +38,7 @@ public class VideoTag extends Table {
         return new Object[] {videoId, tagId};
     }
 
-    public static List<VideoTag> getTagsByVideo(Long videoId) {
+    public static List<VideoTag> getVideoTagsByVideo(Long videoId) {
         return JonaDb.selectList("select " + FULL_COLUMNS + "from video_tag where video_id = ?",
                     VideoTag.getFullMapping(),
                     videoId

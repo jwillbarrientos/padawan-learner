@@ -23,7 +23,7 @@ public class VideoTagController {
 
     public void getTagsForVideo(HttpRequest request, HttpResponse response) {
         Long id = Long.parseLong(request.getQueryParams().get("id"));
-        List<VideoTag> listTagsForVideo = VideoTag.getTagsByVideo(id);
+        List<VideoTag> listTagsForVideo = VideoTag.getVideoTagsByVideo(id);
         Gson gson = new Gson();
         String json = gson.toJson(listTagsForVideo);
         response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
