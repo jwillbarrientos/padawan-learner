@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadTags();
                 return;
             }
+
+            if (response.status === 401) {
+                return;
+            }
+
             alert("Tag already exists");
             console.error("Tag already exists");
         } catch (err) {
