@@ -95,6 +95,7 @@
 </div>
 
 <script>
+    import { myFetch } from "../java-script/myfetch.js";
     // ---- Global elements ----
     let videoEl = document.getElementById("video-player");
     const wrapper = document.getElementById("video-wrapper");
@@ -121,7 +122,7 @@
                 videos = JSON.parse(savedList);
                 console.log(`Loaded ${videos.length} videos from localStorage (tag: ${savedTag})`);
             } else {
-                const res = await fetch(`/api/getvideosforreel?tag=${savedTag}`);
+                const res = await myFetch(`/api/getvideosforreel?tag=${savedTag}`);
                 if (!res.ok) throw new Error(`Failed to fetch videos (${res.status})`);
                 videos = await res.json();
                 console.log(`Fetched ${videos.length} videos for tag "${savedTag}"`);
@@ -243,7 +244,7 @@
         const id = getVideoId(videos[currentIndex]);
         if (!confirm("Are you sure you want to delete this video?")) return;
         try {
-            const res = await fetch(`/api/deletevideo?id=${id}`, { method: "GET" });
+            const res = await myFetch(`/api/deletevideo?id=${id}`, { method: "GET" });
             if (!res.ok) throw new Error(`Failed (${res.status})`);
             alert("Video deleted successfully!");
             videos.splice(currentIndex, 1);
@@ -257,10 +258,10 @@
     actionBtn.addEventListener("click", async () => {
         const videoId = getVideoId(videos[currentIndex]);
         try {
-            const allTagsRes = await fetch("/api/loadtagsinreelspage");
+            const allTagsRes = await myFetch("/api/loadtagsinreelspage");
             if (!allTagsRes.ok) throw new Error("Failed to load all tags");
             const allTags = await allTagsRes.json();
-            const videoTagsRes = await fetch(`/api/gettagsforvideo?id=${videoId}`);
+            const videoTagsRes = await myFetch(`/api/gettagsforvideo?id=${videoId}`);
             if (!videoTagsRes.ok) throw new Error("Failed to load video tags");
             const videoTags = await videoTagsRes.json();
             const assignedTagNames = videoTags.map(t => t.tagId);
@@ -275,10 +276,10 @@
                 checkbox.addEventListener("change", async () => {
                     try {
                         if (checkbox.checked) {
-                            const res = await fetch(`/api/addtagtovideo?videoId=${videoId}&tagId=${tag.id}`, {method: "GET"});
+                            const res = await myFetch(`/api/addtagtovideo?videoId=${videoId}&tagId=${tag.id}`, {method: "GET"});
                             if (!res.ok) throw new Error("Failed to add tag");
                         } else {
-                            const res = await fetch(`/api/deletetagvideo?videoId=${videoId}&tagId=${tag.id}`, {method: "GET"});
+                            const res = await myFetch(`/api/deletetagvideo?videoId=${videoId}&tagId=${tag.id}`, {method: "GET"});
                             if (!res.ok) throw new Error("Failed to remove tag");
                         }
                     } catch (err) { console.error("Tag updated error: ", err); alert("Error updating tag."); checkbox.checked = !checkbox.checked; }

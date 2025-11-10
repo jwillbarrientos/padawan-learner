@@ -1,3 +1,5 @@
+import { myFetch } from "./myfetch.js";
+
 export function createEditButton(tagId, currentName, reloadCallback) {
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
@@ -8,7 +10,7 @@ export function createEditButton(tagId, currentName, reloadCallback) {
         const newName = prompt("Enter new tag name:", currentName);
         if (!newName) return;
         try {
-            const response = await fetch(`/api/edittag?id=${tagId}&name=${encodeURIComponent(newName)}`);
+            const response = await myFetch(`/api/edittag?id=${tagId}&name=${encodeURIComponent(newName)}`);
 
             const serverText = await response.text();
             console.log("Edit response:", response.status, serverText);

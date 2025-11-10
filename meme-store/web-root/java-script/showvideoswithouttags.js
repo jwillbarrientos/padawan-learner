@@ -1,10 +1,12 @@
+import { myFetch } from "./myfetch.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     const videosWithoutTagsBtn = document.getElementById('videosWithoutTagsBtn');
     if (!videosWithoutTagsBtn) return;
 
     videosWithoutTagsBtn.addEventListener('click', async() => {
         try {
-            const response = await fetch('/api/getvideosforreel?tag=without');
+            const response = await myFetch('/api/getvideosforreel?tag=without');
             if (!response.ok) {
                 console.error(`Server returned ${response.status}`);
                 return;

@@ -1,9 +1,10 @@
+import { myFetch } from "./myfetch.js";
 import { createDeleteButton } from "./deletetag.js";
 import { createEditButton } from "./edittag.js";
 
 export async function loadTags() {
     try {
-        const response = await fetch("/api/loadtags");
+        const response = await myFetch("/api/loadtags");
         if (!response.ok) {
             throw new Error("Failed to load tags");
         }
@@ -23,7 +24,7 @@ export async function loadTags() {
 
             nameSpan.addEventListener("click", async () => {
                 try {
-                    const response = await fetch(`/api/getvideosforreel?tag=${encodeURIComponent(tag.id)}`);
+                    const response = await myFetch(`/api/getvideosforreel?tag=${encodeURIComponent(tag.id)}`);
                     if (!response.ok) {
                         console.error(`Failed to fetch videos for tag: ${tag.name}`);
                         return;

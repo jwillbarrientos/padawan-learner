@@ -1,10 +1,12 @@
+import { myFetch } from "./myfetch.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     const showAllBtn = document.getElementById('showAllBtn');
     if (!showAllBtn) return;
 
     showAllBtn.addEventListener('click', async() => {
         try {
-            const response = await fetch('/api/getvideosforreel?tag=all');
+            const response = await myFetch('/api/getvideosforreel?tag=all');
             if (!response.ok) {
                 console.error(`Server returned ${response.status}`);
                 return;

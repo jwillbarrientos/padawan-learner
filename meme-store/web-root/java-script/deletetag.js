@@ -1,3 +1,5 @@
+import { myFetch } from "./myfetch.js";
+
 export function createDeleteButton(tagId, reloadCallback) {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
@@ -7,7 +9,7 @@ export function createDeleteButton(tagId, reloadCallback) {
 
     deleteBtn.addEventListener("click", async () => {
         try {
-            const response = await fetch(`/api/deletetag?id=${tagId}`);
+            const response = await myFetch(`/api/deletetag?id=${tagId}`);
             if (!response.ok) {
                 alert("Error deleting tag");
                 return;

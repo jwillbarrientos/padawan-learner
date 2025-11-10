@@ -1,3 +1,5 @@
+import { myFetch } from "./myfetch.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const uploadBtn = document.getElementById("uploadBtn");
     const linkInput = document.getElementById("videoUrl");
@@ -10,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`/api/addvideobylink?link=${encodeURIComponent(videoLink)}`);
+            const response = await myFetch(`/api/addvideobylink?link=${encodeURIComponent(videoLink)}`);
             const result = await response.text(); // read server response message
 
             if (!response.ok) {

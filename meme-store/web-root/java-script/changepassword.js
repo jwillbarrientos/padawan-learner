@@ -1,3 +1,5 @@
+import { myFetch } from "./myfetch.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const changePasswordBtn = document.getElementById("changePasswordBtn");
 
@@ -6,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!newPassword) return;
 
         try {
-            const response = await fetch(`/api/changepassword?newpassword=${encodeURIComponent(newPassword)}`)
+            const response = await myFetch(`/api/changepassword?newpassword=${encodeURIComponent(newPassword)}`)
             if (response.ok) {
                 alert("Password updated successfully!");
                 window.location.href = "/index.html";

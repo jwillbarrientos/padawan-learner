@@ -1,3 +1,5 @@
+import { myFetch } from "./myfetch.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const processBtn = document.getElementById("processChatBtn");
     const fileInput = document.getElementById("whatsappFile");
@@ -10,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("chatFile", file);
 
         try {
-            const response = await fetch("/api/processwhatsappchat", {
+            const response = await myFetch("/api/processwhatsappchat", {
                 method: "POST",
                 body: formData
             });

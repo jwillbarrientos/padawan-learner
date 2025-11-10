@@ -1,10 +1,12 @@
+import { myFetch } from "./myfetch.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     const videosLongBtn = document.getElementById('videosLongBtn');
     if (!videosLongBtn) return;
 
     videosLongBtn.addEventListener('click', async () => {
         try {
-            const response = await fetch('/api/getvideosforreel?tag=bt60');
+            const response = await myFetch('/api/getvideosforreel?tag=bt60');
             if (!response.ok) {
                 console.error(`Server returned ${response.status}`);
                 return;

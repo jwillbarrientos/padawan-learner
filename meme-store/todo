@@ -6,7 +6,6 @@ Cambios con tio
 -Arreglar la funcion de descargar un video
 
 Cambios que puedo hacer solo
--Metodo myfetch para js
 -Hacer un cambio en el html para que los reels se vean mejor en celular
 
 Cambio para algun futuro
@@ -18,3 +17,4 @@ Hecho
 -Hacer que cuando se borre un video borre tambien sus video tags
 -Hacer un boton para borrar usuario y cambiar contrasena
 -Hacer que se elimine los videos de mi server que ya no esta relacionado a ningun cliente en la base de datos
+-Metodo myfetch para js

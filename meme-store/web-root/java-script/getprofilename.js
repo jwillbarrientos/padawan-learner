@@ -1,6 +1,8 @@
+import { myFetch } from "./myfetch.js";
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        var response = await fetch("/api/getprofilename");
+        var response = await myFetch("/api/getprofilename");
         if (!response.ok) {
             throw new Error("Failed to get profile name");
         }

@@ -1,3 +1,5 @@
+import { myFetch } from "./myfetch.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const deleteAccountBtn = document.getElementById("deleteAccountBtn");
 
@@ -7,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`/api/deleteaccount`);
+            const response = await myFetch(`/api/deleteaccount`);
             if (response.ok) {
                 alert("Your account was deleted successfully");
                 window.location.href = "/index.html";

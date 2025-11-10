@@ -1,4 +1,4 @@
-
+import { myFetch } from "./myfetch.js";
 import { loadTags } from "./loadtags.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tagName = prompt("Enter a name for the new tag:");
         if (!tagName) return;
         try {
-            const response = await fetch(`/api/addtag?tagName=${encodeURIComponent(tagName)}`);
+            const response = await myFetch(`/api/addtag?tagName=${encodeURIComponent(tagName)}`);
             if (response.status === 200) {
                 await loadTags();
                 return;

@@ -1,6 +1,8 @@
+import { myFetch } from "./myfetch.js";
+
 export async function loadVideos() {
     try {
-        const response = await fetch("/api/loadvideos");
+        const response = await myFetch("/api/loadvideos");
         if (!response.ok) {
             throw new Error("Failed to load videos");
         }
