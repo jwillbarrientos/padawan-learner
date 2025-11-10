@@ -168,6 +168,10 @@ public class Video extends Table {
         ) < 1;
     }
 
+    public static String getDeleteFromClient() {
+        return "delete from video where client_id = ?";
+    }
+
     public static Video findById(long id) {
         return JonaDb.selectSingle("select " + FULL_COLUMNS + "from video where id = " + id, Video.getFullMapping());
     }
@@ -183,10 +187,7 @@ public class Video extends Table {
     }
 
     public String getDelete() {
-        List<VideoTag> videoTags = VideoTag.getVideoTagsByVideo(this.id);
-        for (VideoTag videoTag : videoTags) {
-            JonaDb.delete(videoTag);
-        }
+        JonaDb.updateGeneric("select from video_tag where video_id = ", this.id);
         return "delete from video where id = " + id;
     }
 

@@ -35,6 +35,7 @@ public class MemeStore {
         NoCacheFilter noCacheFilter = new NoCacheFilter();
 
         AuthController authController = new AuthController(sessionCookies);
+        ClientController clientController = new ClientController(sessionCookies);
         TagController tagController = new TagController(sessionCookies);
         VideoController videoController = new VideoController(sessionCookies);
         StreamingController streamingController = new StreamingController(sessionCookies);
@@ -50,6 +51,8 @@ public class MemeStore {
 
         jonaServer.registerEndPoint(Method.GET, "/api/signout", authController::signOut);
         jonaServer.registerEndPoint(Method.GET, "/api/getprofilename", authController::getProfileName);
+        jonaServer.registerEndPoint(Method.GET, "/api/deleteaccount", clientController::deleteAccount);
+        jonaServer.registerEndPoint(Method.GET, "/api/changepassword", clientController::changePassword);
         jonaServer.registerEndPoint(Method.GET, "/api/loadtags", tagController::listTags);
         jonaServer.registerEndPoint(Method.GET, "/api/addtag", tagController::addTag);
         jonaServer.registerEndPoint(Method.GET, "/api/edittag", tagController::editTag);

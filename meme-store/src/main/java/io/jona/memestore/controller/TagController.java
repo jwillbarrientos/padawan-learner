@@ -35,7 +35,7 @@ public class TagController {
             response.setResponseCode(HttpCode.CONFLICT_409);
             return;
         }
-        boolean insertSuccess = JonaDb.insert(tag);
+        boolean insertSuccess = JonaDb.insertSingle(tag);
         log.info("Tag creation was successful: {}", insertSuccess);
         response.setResponseCode(HttpCode.OK_200);
         response.setBody(json.getBytes());
@@ -45,14 +45,14 @@ public class TagController {
     public void editTag(HttpRequest request, HttpResponse response) {
         Tag tag = Tag.findById(Long.parseLong(request.getQueryParams().get("id")));;
         tag.setName(request.getQueryParams().get("name"));
-        boolean updateSuccess = JonaDb.update(tag);
+        boolean updateSuccess = JonaDb.updateSingle(tag);
         log.info("Tag update was successful: {}", updateSuccess);
         response.setResponseCode(HttpCode.OK_200);
     }
 
     public void deleteTag(HttpRequest request, HttpResponse response) {
         Tag tag = Tag.findById(Long.parseLong(request.getQueryParams().get("id")));
-        boolean deleteSuccess = JonaDb.delete(tag);
+        boolean deleteSuccess = JonaDb.deleteSingle(tag);
         log.info("Tag deletion was successful: {}", deleteSuccess);
         response.setResponseCode(HttpCode.OK_200);
     }

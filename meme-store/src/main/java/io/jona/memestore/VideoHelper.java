@@ -27,7 +27,7 @@ public class VideoHelper {
                         video.setFileSize((int) (new File(videoPath).length()));
                         video.setVideoState(Video.State.DOWNLOADED);
                     }
-                    JonaDb.update(video);
+                    JonaDb.updateSingle(video);
                     try {
                         log.info("Waiting {} time to download next video", durationSecondsVideo);
                         Thread.sleep(durationSecondsVideo);

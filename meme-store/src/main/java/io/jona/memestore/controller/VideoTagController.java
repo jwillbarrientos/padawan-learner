@@ -23,7 +23,7 @@ public class VideoTagController {
 
     public void getTagsForVideo(HttpRequest request, HttpResponse response) {
         Long id = Long.parseLong(request.getQueryParams().get("id"));
-        List<VideoTag> listTagsForVideo = VideoTag.getVideoTagsByVideo(id);
+        List<VideoTag> listTagsForVideo = VideoTag.getVideoTagsByVideoId(id);
         Gson gson = new Gson();
         String json = gson.toJson(listTagsForVideo);
         response.setContentType(MimeType.APPLICATION_JSON, "UTF-8");
@@ -35,7 +35,7 @@ public class VideoTagController {
         long videoId = Long.parseLong(request.getQueryParams().get("videoId"));
         long tagId = Long.parseLong(request.getQueryParams().get("tagId"));
         VideoTag videoTag = new VideoTag(videoId, tagId);
-        boolean insertSuccess = JonaDb.insert(videoTag);
+        boolean insertSuccess = JonaDb.insertSingle(videoTag);
         log.info("Tag checking was made correctly: {}", insertSuccess);
         response.setResponseCode(HttpCode.OK_200);
     }
@@ -44,7 +44,7 @@ public class VideoTagController {
         long videoId = Long.parseLong(request.getQueryParams().get("videoId"));
         long tagId = Long.parseLong(request.getQueryParams().get("tagId"));
         VideoTag videoTag = new VideoTag(videoId, tagId);
-        boolean deleteSuccess = JonaDb.delete(videoTag);
+        boolean deleteSuccess = JonaDb.deleteSingle(videoTag);
         log.info("Tag unchecking was made correctly: {}", deleteSuccess);
         response.setResponseCode(HttpCode.OK_200);
     }

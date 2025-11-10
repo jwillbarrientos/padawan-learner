@@ -19,6 +19,11 @@ public class Client extends Table {
     private String email;
     private String password;
 
+    public Client(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     public static ThrowingFunction<ResultSet, Client, SQLException> getFullMapping() {
         return rs -> new Client(
                 rs.getLong(1),
@@ -27,9 +32,8 @@ public class Client extends Table {
         );
     }
 
-    public Client(String email, String password) {
-        this.email = email;
-        this.password = password;
+    public static Client findByEmail(String email) {
+        return JonaDb.selectSingle("select " + FULL_COLUMNS + "from client where email = ?", Client.getFullMapping(), email);
     }
 
     public String getInsert() {
@@ -38,7 +42,7 @@ public class Client extends Table {
     }
 
     public String getUpdate() {
-        return "nothing yet";
+        return "update client set password = ? where email = '" + email + "'";
     }
 
     public String getDelete() {

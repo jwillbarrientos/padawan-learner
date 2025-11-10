@@ -6,6 +6,7 @@
 
     <style>
         body {
+
             margin: 0;
             font-family: Arial, sans-serif;
             background: #f7f9fc;
@@ -33,11 +34,37 @@
             gap: 10px;
             align-items: center;
         }
+
         #signOutBtn {
             background: transparent;
             border: none;
             color: #007bff;
             cursor: pointer;
+        }
+
+        #signOutBtn:hover {
+            color: #0056b3;
+        }
+
+        #changePasswordBtn,
+        #deleteAccountBtn {
+            background: transparent;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        #changePasswordBtn:hover {
+            color: #0056b3;
+        }
+
+        #deleteAccountBtn {
+            color: #dc3545;
+        }
+
+        #deleteAccountBtn:hover {
+            color: #b02a37;
         }
 
         /* Layout */
@@ -253,6 +280,7 @@
             align-items: flex-start;
         }
 
+
         .upload-section .upload-box {
             flex: 1;
             min-width: 300px;
@@ -270,6 +298,8 @@
 
     <div class="profile">
         <span id="userName"></span>
+        <button id="changePasswordBtn">Change Password</button>
+        <button id="deleteAccountBtn">Delete Account</button>
         <button id="signOutBtn">Sign Out</button>
     </div>
 </header>
@@ -342,6 +372,8 @@
 <script type="module" src="../java-script/showlongvideos.js"></script>
 <script type="module" src="../java-script/showvideoswithtags.js"></script>
 <script type="module" src="../java-script/showvideoswithouttags.js"></script>
+<script type="module" src="../java-script/deleteaccount.js"></script>
+<script type="module" src="../java-script/changepassword.js"></script>
 <script type="module" src="../java-script/signout.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {

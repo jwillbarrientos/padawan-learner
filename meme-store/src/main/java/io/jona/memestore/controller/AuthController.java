@@ -35,7 +35,7 @@ public class AuthController {
         boolean clientExist = client != null;
         if (!clientExist) {
             client = new Client(request.getQueryParams().get("email"), request.getQueryParams().get("password"));
-            boolean insertSuccessful = JonaDb.insert(client);
+            boolean insertSuccessful = JonaDb.insertSingle(client);
             if (insertSuccessful) {
                 response.setResponseCode(HttpCode.OK_200);
                 String sessionId = UUID.randomUUID().toString();

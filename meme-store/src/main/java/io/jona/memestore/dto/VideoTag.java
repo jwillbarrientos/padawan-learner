@@ -22,6 +22,10 @@ public class VideoTag extends Table {
         );
     }
 
+    public static String getDeleteFromVideoId(long videoId) {
+        return "delete from video_tag where video_id = " + videoId;
+    }
+
     public String getInsert() {
         return "insert into video_tag (video_id, tag_id) values(?,?)";
     }
@@ -38,7 +42,7 @@ public class VideoTag extends Table {
         return new Object[] {videoId, tagId};
     }
 
-    public static List<VideoTag> getVideoTagsByVideo(Long videoId) {
+    public static List<VideoTag> getVideoTagsByVideoId(Long videoId) {
         return JonaDb.selectList("select " + FULL_COLUMNS + "from video_tag where video_id = ?",
                     VideoTag.getFullMapping(),
                     videoId

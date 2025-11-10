@@ -43,6 +43,10 @@ public class Tag extends Table {
         return JonaDb.findCount("select count(name) from tag where name = ? and client_id = ?", tag.name, tag.clientId) > 0;
     }
 
+    public static String getDeleteFromClient() {
+        return "delete from tag where client_id = ?";
+    }
+
     public String getInsert() {
         setId(nextId());
         return "insert into tag (id, name, client_id) values(?,?,?)";

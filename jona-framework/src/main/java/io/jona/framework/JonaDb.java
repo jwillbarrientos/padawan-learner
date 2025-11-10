@@ -38,8 +38,8 @@ public class JonaDb {
 
     }
 
-    public static boolean insert(Table table) {
-        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+    public static boolean insertSingle(Table table) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(table.getInsert());
             setMapping(stmt, table.getValues());
             int rowsInserted = stmt.executeUpdate();
@@ -53,8 +53,8 @@ public class JonaDb {
         return false;
     }
 
-    public static boolean update(Table table) {
-        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+    public static boolean updateSingle(Table table) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(table.getUpdate());
             setMapping(stmt, table.getValues());
             int rowsUpdated = stmt.executeUpdate();
@@ -68,8 +68,8 @@ public class JonaDb {
         return false;
     }
 
-    public static boolean delete(Table table) {
-        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+    public static boolean deleteSingle(Table table) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(table.getDelete());
             int rowsDeleted = stmt.executeUpdate();
             log.info("Element in table deleted successfully!");
@@ -80,8 +80,21 @@ public class JonaDb {
         return false;
     }
 
+    public static boolean updateGeneric(String query, Object... queryMappings) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            setMapping(stmt, queryMappings);
+            int rowsDeleted = stmt.executeUpdate();
+            log.info("Element/s in table updated successfully!");
+            return rowsDeleted > 0;
+        } catch (SQLException e) {
+            log.error("Update generic fail: ", e);
+        }
+        return false;
+    }
+
     public static <T extends Table> T selectSingle(String query, Table.ThrowingFunction<ResultSet, T, SQLException> rowMapper, Object... queryMappings) {
-        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(query);
             setMapping(stmt, queryMappings);
             ResultSet rs = stmt.executeQuery();
@@ -94,7 +107,7 @@ public class JonaDb {
     }
 
     public static <T extends Table> List<T> selectList(String query, Table.ThrowingFunction<ResultSet, T, SQLException> rowMapper, Object... queryMappings) {
-        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
            PreparedStatement stmt = conn.prepareStatement(query);
            setMapping(stmt, queryMappings);
            ResultSet rs = stmt.executeQuery();
@@ -109,7 +122,7 @@ public class JonaDb {
     }
 
     public static int findCount(String query, Object... queryMappings) {
-        try(Connection conn = DriverManager.getConnection(url, user, password)) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(query);
             setMapping(stmt, queryMappings);
             ResultSet rs = stmt.executeQuery();

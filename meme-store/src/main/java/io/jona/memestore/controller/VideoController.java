@@ -29,7 +29,7 @@ public class VideoController {
         Client client = sessionCookies.get(sessionCookie);
         Video video = new Video(request.getQueryParams().get("link"), Video.State.SUBMITTED, client.getId());
         if (Video.notYetInserted(video)) {
-            JonaDb.insert(video);
+            JonaDb.insertSingle(video);
         }
         response.setResponseCode(HttpCode.OK_200);
     }
@@ -42,7 +42,7 @@ public class VideoController {
         for (String link : links) {
             Video video = new Video(link, Video.State.SUBMITTED, client.getId());
             if (Video.notYetInserted(video)) {
-                JonaDb.insert(video);
+                JonaDb.insertSingle(video);
             }
         }
         response.setResponseCode(HttpCode.OK_200);
@@ -50,7 +50,7 @@ public class VideoController {
 
     public void deleteVideo(HttpRequest request, HttpResponse response) {
         Video video = Video.findById(Long.parseLong(request.getQueryParams().get("id")));
-        boolean deleteSuccess = JonaDb.delete(video);
+        boolean deleteSuccess = JonaDb.deleteSingle(video);
         log.info("Video deletion was successful: {}", deleteSuccess);
         response.setResponseCode(HttpCode.OK_200);
     }
