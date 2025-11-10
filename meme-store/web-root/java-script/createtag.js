@@ -10,13 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!tagName) return;
         try {
             const response = await fetch(`/api/addtag?tagName=${encodeURIComponent(tagName)}`);
-            const newTag = await response.json();
-            if (!response.ok) {
-                console.error(newTag);
+            if (response.status === 200) {
+                await loadTags();
                 return;
             }
-            await loadTags();
-
+            alert("Tag already exists");
+            console.error("Tag already exists");
         } catch (err) {
             console.error("Error creating tag:", err);
         }

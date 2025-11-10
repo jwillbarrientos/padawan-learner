@@ -29,10 +29,17 @@ public class TagController {
         Tag tag = new Tag(request.getQueryParams().get("tagName"), client.getId());
         Gson gson = new Gson();
         String json = gson.toJson(tag);
+        boolean alreadyExists = Tag.alreadyExists(tag);
+        if (alreadyExists) {
+            log.info("Tag already exists");
+            response.setResponseCode(HttpCode.CONFLICT_409);
+            return;
+        }
         boolean insertSuccess = JonaDb.insert(tag);
         log.info("Tag creation was successful: {}", insertSuccess);
         response.setResponseCode(HttpCode.OK_200);
         response.setBody(json.getBytes());
+
     }
 
     public void editTag(HttpRequest request, HttpResponse response) {

@@ -32,16 +32,20 @@ public class Tag extends Table {
         );
     }
 
-    public String getInsert() {
-        setId(nextId());
-        return "insert into tag (id, name, client_id) values(?,?,?)";
-    }
-
     public static List<Tag> getTagsByClient(Client client) {
         return JonaDb.selectList("select " + FULL_COLUMNS + "from tag where client_id = ?",
                 Tag.getFullMapping(),
                 client.getId()
         );
+    }
+
+    public static boolean alreadyExists(Tag tag) {
+        return JonaDb.findCount("select count(name) from tag where name = ? and client_id = ?", tag.name, tag.clientId) > 0;
+    }
+
+    public String getInsert() {
+        setId(nextId());
+        return "insert into tag (id, name, client_id) values(?,?,?)";
     }
 
     public String getUpdate() {

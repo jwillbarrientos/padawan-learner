@@ -49,7 +49,13 @@ public class VideoHelper {
 
     public static int getSeconds(String link) {
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{"./downloaders/yt-dlp.exe", "-j",  link, "--skip-download", "--print", "%(duration)s"});
+            String os = System.getProperty("os.name").toLowerCase();
+            Process process;
+            if (os.equals("win")) {
+                process = Runtime.getRuntime().exec(new String[]{"./downloaders/yt-dlp.exe", "-j", link, "--skip-download", "--print", "%(duration)s"});
+            } else {
+                process = Runtime.getRuntime().exec(new String[]{"downloaders/yt-dlp", "-j", link, "--skip-download", "--print", "%(duration)s"});
+            }
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null && line.matches("^[0-9]+([0-9]\\.[0-9]+)?$")) {
