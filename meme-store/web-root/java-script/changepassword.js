@@ -1,14 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
     const changePasswordBtn = document.getElementById("changePasswordBtn");
-    const userName = document.getElementById("userName");
 
     changePasswordBtn.addEventListener("click", async () => {
         const newPassword = prompt("Enter your new password:");
         if (!newPassword) return;
 
         try {
-            const email = userName.textContent;
-            const response = await fetch(`/api/changepassword?email=${email}&newpassword=${encodeURIComponent(newPassword)}`)
+            const response = await fetch(`/api/changepassword?newpassword=${encodeURIComponent(newPassword)}`)
             if (response.ok) {
                 alert("Password updated successfully!");
                 window.location.href = "/index.html";

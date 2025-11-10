@@ -9,6 +9,12 @@ import io.jona.memestore.dto.Client;
 import io.jona.memestore.dto.Video;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +56,15 @@ public class VideoController {
 
     public void deleteVideo(HttpRequest request, HttpResponse response) {
         Video video = Video.findById(Long.parseLong(request.getQueryParams().get("id")));
+        if (video.existClientWithThisVideo()) {
+            Path path = Paths.get(video.getPath()).toAbsolutePath();
+            try {
+                Files.delete(path);
+                log.info("Video deleted inside the server, any client is using it");
+            } catch (IOException e) {
+                log.error("Error deleting video inside the server: ", e);
+            }
+        }
         boolean deleteSuccess = JonaDb.deleteSingle(video);
         log.info("Video deletion was successful: {}", deleteSuccess);
         response.setResponseCode(HttpCode.OK_200);

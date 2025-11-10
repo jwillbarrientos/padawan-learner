@@ -20,7 +20,8 @@ public class ClientController {
     }
 
     public void deleteAccount(HttpRequest request, HttpResponse response) {
-        Client client = Client.findByEmail(request.getQueryParams().get("email"));
+        String sessionCookie = request.getCookies().get("sessionCookie");
+        Client client = sessionCookies.get(sessionCookie);
         JonaDb.updateGeneric(Video.getDeleteFromClient(), client.getId());
         JonaDb.updateGeneric(Tag.getDeleteFromClient(), client.getId());
         boolean deleteSuccess = JonaDb.deleteSingle(client);
@@ -29,7 +30,8 @@ public class ClientController {
     }
 
     public void changePassword(HttpRequest request, HttpResponse response) {
-        Client client = Client.findByEmail(request.getQueryParams().get("email"));
+        String sessionCookie = request.getCookies().get("sessionCookie");
+        Client client = sessionCookies.get(sessionCookie);
         String newPassword = request.getQueryParams().get("newpassword");
         boolean updatePasswordSuccess = JonaDb.updateGeneric(client.getUpdate(), newPassword);
         log.info("Password update was successful: {}", updatePasswordSuccess);

@@ -176,6 +176,10 @@ public class Video extends Table {
         return JonaDb.selectSingle("select " + FULL_COLUMNS + "from video where id = " + id, Video.getFullMapping());
     }
 
+    public boolean existClientWithThisVideo() {
+        return JonaDb.findCount("select count(name) from video where name = ?", this.name) > 0;
+    }
+
     public String getInsert() {
         setId(nextId());
         setDate(new Date());
@@ -187,7 +191,7 @@ public class Video extends Table {
     }
 
     public String getDelete() {
-        JonaDb.updateGeneric("select from video_tag where video_id = ", this.id);
+        JonaDb.updateGeneric("delete from video_tag where video_id = ?", this.id);
         return "delete from video where id = " + id;
     }
 

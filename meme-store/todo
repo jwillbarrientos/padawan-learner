@@ -6,10 +6,8 @@ Cambios con tio
 -Arreglar la funcion de descargar un video
 
 Cambios que puedo hacer solo
--Hacer un boton para borrar usuario y cambiar contrasena
--Hacer que se elimine los videos de mi server que ya no esta relacionado a ningun cliente en la basse de datos
--Hacer un cambio en el html para que los reels se vean mejor en celular
 -Metodo myfetch para js
+-Hacer un cambio en el html para que los reels se vean mejor en celular
 
 Cambio para algun futuro
 -Hacer que funcione como una aplicacion web
@@ -18,3 +16,5 @@ Cambio para algun futuro
 Hecho
 -Si ya hay un tag que se llama exactamente igual a uno ya existente en el mismo cliente, no dejar crear
 -Hacer que cuando se borre un video borre tambien sus video tags
+-Hacer un boton para borrar usuario y cambiar contrasena
+-Hacer que se elimine los videos de mi server que ya no esta relacionado a ningun cliente en la base de datos
