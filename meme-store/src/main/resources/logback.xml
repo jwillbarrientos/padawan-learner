@@ -24,8 +24,8 @@
     </appender>
 
     <!-- Root Logger -->
-    <root level="TRACE">
-        <appender-ref ref="CONSOLE" />
+    <root level="debug">
+<!--        <appender-ref ref="CONSOLE" />-->
         <appender-ref ref="FILE" />
     </root>
 </configuration>

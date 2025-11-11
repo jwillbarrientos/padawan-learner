@@ -85,7 +85,7 @@ public class VideoController {
             MimeType mimeType = MimeType.getMimeForExtension(extension);
             response.setContentType(mimeType);
             response.setBody(Files.readAllBytes(Paths.get(video.getPath())));
-            response.setContentDisposition("attachment; filename\"" + file.getName() + "\"");
+            response.setContentDisposition("attachment; filename=\"" + file.getName() + "\"");
             response.setResponseCode(HttpCode.OK_200);
         } catch (IOException e) {
             log.error("Error trying to download the video: ", e);

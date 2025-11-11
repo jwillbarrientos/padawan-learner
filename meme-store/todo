@@ -1,10 +1,6 @@
 Cambios con tio
 -Hacer el tema de que cuando pusheo se hacen los cambios automaticamente a mi server
--Hacer que mi server siempre corra sin estar abierto mi terminal
 -Agregar vpn
-
-Cambios que puedo hacer solo
--Hacer un cambio en el html para que los reels se vean mejor en celular
 
 Cambio para algun futuro
 -Hacer que funcione como una aplicacion web
@@ -18,3 +14,5 @@ Hecho
 -Metodo myfetch para js
 -Arreglar la funcion de descargar un video
 -Arreglar el codec de algunos videos, un video de youtube en especifico no esta funcionando bien por alguna razon, y todos los videos de tiktok no andan
+-Hacer que mi server siempre corra sin estar abierto mi terminal
+-Hacer un cambio en el html para que los reels se vean mejor en celular

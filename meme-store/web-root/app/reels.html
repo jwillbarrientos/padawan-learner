@@ -2,45 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Video Reels</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { height: 100%; overflow: hidden; background: #000; }
         .reel-container {
-            position: relative;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: calc(var(--vh, 1vh) * 100);
         }
-        .video-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .video-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
         .video-wrapper video {
+            max-height: 90%;
+            max-width: 50vh; /* vertical “portrait” */
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            border-radius: 12px;
             position: absolute;
             top: 5vh;
             left: 50%;
             transform: translateX(-50%);
-            width: 100%;
-            height: 100%;
-            max-height: 90vh;
-            max-width: 50vh;
-            object-fit: cover;
-            border-radius: 12px;
             transition: top 0.45s ease-in-out;
-            will-change: top;
         }
+
         .controls {
             position: absolute;
-            bottom: 30px;
+            bottom: calc(30px + env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            flex-direction: row;
-            gap: 20px;
-            z-index: 10;
+            gap: 10px; /* espacio entre botones */
+            flex-wrap: nowrap; /* nunca se rompen a otra fila */
+            justify-content: center; /* centrado horizontal */
         }
+
         .control-button {
             background: rgba(255, 255, 255, 0.2);
             border: none;
@@ -51,6 +55,7 @@
             font-size: 20px;
             transition: background 0.3s;
         }
+
         .control-button:hover { background: rgba(255, 255, 255, 0.5); }
         .home-button {
             position: absolute;
@@ -157,11 +162,15 @@
         v.style.position = "absolute";
         v.style.top = "5vh";
         v.style.left = "50%";
-        v.style.transform = "translateX(-50%)";
-        v.style.width = "100%";
-        v.style.height = "100%";
+        v.style.width = "auto";
+        v.style.height = "auto";
+        v.style.maxHeight = "90%";
+        v.style.maxWidth = "50vh"; // mantiene vertical
         v.style.objectFit = "cover";
-        v.style.borderRadius = "12px";
+        v.style.position = "absolute";
+        v.style.top = "5vh";
+        v.style.left = "50%";
+        v.style.transform = "translateX(-50%)";
         v.style.transition = "top 0.45s ease-in-out";
         v.addEventListener("click", () => {
             if (v.paused) v.play();
@@ -290,6 +299,13 @@
             tagModal.style.display = "flex";
         } catch (err) { console.error("Error fetching tags: ", err); alert("Failed to load tags."); }
     });
+
+    function setVh() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    window.addEventListener('resize', setVh);
+    setVh();
 
     closeModal.addEventListener("click", () => { tagModal.style.display = "none"; });
 

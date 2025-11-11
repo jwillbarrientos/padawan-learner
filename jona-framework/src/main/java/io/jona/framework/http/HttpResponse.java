@@ -19,7 +19,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class HttpResponse {
     private static final String CRLF = "\r\n";
-    public static final long CHUNK_SIZE_BYTES = 1024 * 64L;
+    public static final long CHUNK_SIZE_BYTES = 1024 * 256L;
     private static final String SERVER_NAME = "JonaServer";
     private static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
 

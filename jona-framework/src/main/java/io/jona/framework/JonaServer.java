@@ -6,6 +6,7 @@ import io.jona.framework.http.Method;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedHashMap;
@@ -55,7 +56,7 @@ public class JonaServer {
         outboundFilters.put(path, biConsumer);
     }
     public void start() throws IOException {
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
+        try (ServerSocket serverSocket = new ServerSocket(port, 100, InetAddress.getByName("0.0.0.0"))) {
             log.info("Server started");
             while (true) {
                 try {
