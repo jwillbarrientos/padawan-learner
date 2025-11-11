@@ -54,7 +54,12 @@ public class DownloadVideo {
                 command = buildCommand(ytDl, temporalFolder, url);
                 break;
             case TIKTOK:
-                command = buildCommand(ytDl, temporalFolder, url);
+                command = new String[]{
+                        ytDl,
+                        "-o", temporalFolder + "/%(title)s.%(ext)s",
+                        "--exec", "ffmpeg -y -i \"{}\" -c:v libx264 -c:a aac -movflags +faststart \"{}-temp.mp4\" && move /Y \"{}-temp.mp4\" \"{}\"",
+                        url
+                };
                 break;
             default:
                 log.debug("Invalid url");
