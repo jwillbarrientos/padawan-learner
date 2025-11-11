@@ -359,6 +359,15 @@
 
 </div>
 
+<!-- Tag Selection Modal -->
+<div id="tag-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); color: white; z-index: 50; align-items: center; justify-content: center;">
+    <div style="background: #111; padding: 20px; border-radius: 12px; max-width: 320px; width: 90%; text-align: left;">
+        <h2 style="margin-bottom: 10px;">Manage Tags</h2>
+        <div id="tag-list" style="max-height: 300px; overflow-y: auto;"></div>
+        <button id="close-modal" class="control-button" style="margin-top: 15px;">Close</button>
+    </div>
+</div>
+
 <script type="module" src="../java-script/getprofilename.js"></script>
 <script type="module" src="../java-script/loadtags.js"></script>
 <script type="module" src="../java-script/createtag.js"></script>

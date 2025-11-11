@@ -24,7 +24,7 @@ public class Video extends Table {
 
     @Setter @Getter
     private long id;
-    @Setter
+    @Setter @Getter
     private String name;
     @Setter @Getter
     private String link;

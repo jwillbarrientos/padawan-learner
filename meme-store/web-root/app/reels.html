@@ -94,7 +94,7 @@
     </div>
 </div>
 
-<script>
+<script type="module">
     import { myFetch } from "../java-script/myfetch.js";
     // ---- Global elements ----
     let videoEl = document.getElementById("video-player");
@@ -225,12 +225,7 @@
     // ---- Control buttons ----
     downloadBtn.addEventListener("click", () => {
         const id = getVideoId(videos[currentIndex]);
-        const link = document.createElement("a");
-        link.href = `/api/streamingvideos?id=${id}`;
-        link.download = `video_${id}.mp4`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        window.location.href = `/api/downloadvideo?id=${id}`;
     });
 
     soundBtn.addEventListener("click", () => { if (!videoEl) return; videoEl.muted = !videoEl.muted; soundBtn.textContent = videoEl.muted ? "🔇" : "🔊"; });

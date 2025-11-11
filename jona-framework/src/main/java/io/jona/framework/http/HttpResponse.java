@@ -33,6 +33,8 @@ public class HttpResponse {
     private HttpCode responseCode;
     private String contentType;
     private MimeType mimeType;
+    @Setter
+    private String contentDisposition;
     private long headerRangeStart;
     private long headerRangeEnd;
     private long headerRangeTotal;
@@ -138,11 +140,15 @@ public class HttpResponse {
 
         if (contentType != null) {
             headers.append(HttpResponseHeader.CONTENT_TYPE.headerKey).append(contentType).append(CRLF);
-            if (mimeType.isVideo()) {
+            if (mimeType.isVideo() && contentDisposition == null) {
                 headers.append(HttpResponseHeader.CONTENT_RANGE.headerKey)
                         .append("bytes %s-%s/%s%s".formatted(headerRangeStart, headerRangeEnd, headerRangeTotal, CRLF));
                 headers.append(HttpResponseHeader.ACCEPT_RANGES.headerKey).append("bytes").append(CRLF);
             }
+        }
+
+        if (contentDisposition != null) {
+            headers.append(HttpResponseHeader.CONTENT_DISPOSITION.headerKey).append(contentDisposition).append(CRLF);
         }
 
         if (noCache) {

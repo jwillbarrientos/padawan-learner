@@ -4,6 +4,8 @@ import io.jona.framework.http.HttpCode;
 import io.jona.framework.http.HttpRequest;
 import io.jona.framework.http.HttpResponse;
 import io.jona.framework.JonaDb;
+import io.jona.framework.http.MimeType;
+import io.jona.memestore.AppProps;
 import io.jona.memestore.Platform;
 import io.jona.memestore.dto.Client;
 import io.jona.memestore.dto.Video;
@@ -68,6 +70,26 @@ public class VideoController {
         boolean deleteSuccess = JonaDb.deleteSingle(video);
         log.info("Video deletion was successful: {}", deleteSuccess);
         response.setResponseCode(HttpCode.OK_200);
+    }
+
+    public void downloadVideo(HttpRequest request, HttpResponse response) {
+        long id = Long.parseLong(request.getQueryParams().get("id"));
+        Video video = Video.findById(id);
+        File file = new File(video.getPath());
+        if (!file.exists()) {
+            response.setResponseCode(HttpCode.NOT_FOUND_404);
+            return;
+        }
+        try {
+            String extension = "." + video.getName().split("\\.")[1];
+            MimeType mimeType = MimeType.getMimeForExtension(extension);
+            response.setContentType(mimeType);
+            response.setBody(Files.readAllBytes(Paths.get(video.getPath())));
+            response.setContentDisposition("attachment; filename\"" + file.getName() + "\"");
+            response.setResponseCode(HttpCode.OK_200);
+        } catch (IOException e) {
+            log.error("Error trying to download the video: ", e);
+        }
     }
 
     private String parseBody(String body) {
