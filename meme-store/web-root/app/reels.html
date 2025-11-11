@@ -232,9 +232,33 @@
     window.addEventListener("wheel", e => { if (isTransitioning) return; if (e.deltaY > 0) showNextVideo(); else if (e.deltaY < 0) showPrevVideo(); });
 
     // ---- Control buttons ----
-    downloadBtn.addEventListener("click", () => {
+    downloadBtn.addEventListener("click", async () => {
         const id = getVideoId(videos[currentIndex]);
-        window.location.href = `/api/downloadvideo?id=${id}`;
+        try {
+            const res = await fetch(`/api/downloadvideo?id=${id}`);
+            if (!res.ok) { throw new Error("Error downloading the video") }
+
+            const blob = await res.blob();
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            const cd = res.headers.get("Content-Disposition");
+            let fileName = "video.mp4";
+            if (cd && cd.includes("filename=")) {
+                fileName = cd.split("filename=")[1].replace(/"/g, "");
+            }
+
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Error downloading the video: ", err);
+            alert("The video can't be downloaded");
+        }
     });
 
     soundBtn.addEventListener("click", () => { if (!videoEl) return; videoEl.muted = !videoEl.muted; soundBtn.textContent = videoEl.muted ? "🔇" : "🔊"; });

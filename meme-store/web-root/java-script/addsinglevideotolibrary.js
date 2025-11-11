@@ -77,8 +77,32 @@ export async function loadVideos() {
             const downloadBtn = document.createElement("button");
             downloadBtn.textContent = "⬇️";
             styleButton(downloadBtn);
-            downloadBtn.addEventListener("click", () => {
-                window.location.href = "/api/downloadvideo?id=" + encodeURIComponent(video.id);
+            downloadBtn.addEventListener("click", async () => {
+                try {
+                    const res = await fetch(`/api/downloadvideo?id=${encodeURIComponent(video.id)}`);
+                    if (!res.ok) { throw new Error("Error downloading the video") }
+
+                    const blob = await res.blob();
+
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+
+                    const cd = res.headers.get("Content-Disposition");
+                    let fileName = "video.mp4";
+                    if (cd && cd.includes("filename=")) {
+                        fileName = cd.split("filename=")[1].replace(/"/g, "");
+                    }
+
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    console.error("Error downloading the video: ", err);
+                    alert("The video can't be downloaded");
+                }
             });
 
             const actionBtn = document.createElement("button");
