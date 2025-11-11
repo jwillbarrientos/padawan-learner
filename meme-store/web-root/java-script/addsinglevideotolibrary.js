@@ -61,6 +61,8 @@ export async function loadVideos() {
             deleteBtn.textContent = "🗑️";
             styleButton(deleteBtn);
             deleteBtn.addEventListener("click", async () => {
+                const videoId = video.id; // ✅ capturar ID antes de remover el elemento
+                if (!videoId) return;
                 if (!confirm("Are you sure you want to delete this video?")) return;
                 try {
                     const res = await myFetch(`/api/deletevideo?id=${encodeURIComponent(video.id)}`, { method: "GET" });
