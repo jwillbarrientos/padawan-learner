@@ -4,25 +4,9 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/tateti/pom.xml" />
-        <option value="$PROJECT_DIR$/ocfa/pom.xml" />
-        <option value="$PROJECT_DIR$/oca/pom.xml" />
-        <option value="$PROJECT_DIR$/terminal-chat/pom.xml" />
-        <option value="$PROJECT_DIR$/simple-http-server/pom.xml" />
-        <option value="$PROJECT_DIR$/ocp/pom.xml" />
-        <option value="$PROJECT_DIR$/meme-store/pom.xml" />
-        <option value="$PROJECT_DIR$/jona-framework/pom.xml" />
-        <option value="$PROJECT_DIR$/pom.xml/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
-    <option name="ignoredFiles">
-      <set>
-        <option value="$PROJECT_DIR$/pom.xml/pom.xml" />
-      </set>
-    </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK">
-    <output url="file://$PROJECT_DIR$/out" />
-  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="openjdk-21" project-jdk-type="JavaSDK" />
 </project>

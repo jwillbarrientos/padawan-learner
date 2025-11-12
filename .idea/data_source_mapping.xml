@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/meme-store/db/init.sql" value="48afb9be-bbbb-4b64-916e-8ed7715016d7" />
-    <file url="file://$PROJECT_DIR$/meme-store/db/schema.sql" value="48afb9be-bbbb-4b64-916e-8ed7715016d7" />
-  </component>
-</project>
